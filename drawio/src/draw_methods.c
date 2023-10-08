@@ -3,6 +3,7 @@
 
 #include "shapes/shapeLines.h"
 #include "drawio/cairo.h"
+#include "shapes/circle/circle.h"
 
 
 void drawio_loop_method(DrawableShape shape, cairo_t *cr, cairo_bool_t stroke) {
@@ -20,4 +21,11 @@ void drawio_loop_method(DrawableShape shape, cairo_t *cr, cairo_bool_t stroke) {
   }
 
   shapes_lines_free(shapeLines, true);
+}
+
+void drawio_circle_method(DrawableShape drawableShape, cairo_t *cr, cairo_bool_t stroke) {
+  Shape *circle = drawableShape.shape;
+  Point center = shapes_circle_get_center(*circle);
+  double radius = shapes_circle_radius(*circle);
+  drawio_circle_draw(cr, center, radius, stroke);
 }
