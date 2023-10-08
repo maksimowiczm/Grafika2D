@@ -1,6 +1,6 @@
 #pragma once
 
-#include "shapes/shape.h"
+#include "shapes/shape/shape.h"
 
 typedef struct {
   size_t length;

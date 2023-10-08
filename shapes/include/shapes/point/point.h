@@ -1,6 +1,6 @@
 #pragma once
 
-#include "shape.h"
+#include "shapes/shape/shape.h"
 
 Shape *shapes_new_point(Point from);
 

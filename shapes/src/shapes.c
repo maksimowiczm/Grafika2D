@@ -1,9 +1,9 @@
-#include "shapes/shape.h"
+#include "shapes/shape/shape.h"
 
 #include "stdlib.h"
 #include "shapes/line/line.h"
 #include "shapes/rectangle/rectangle.h"
-#include "shapes/point.h"
+#include "shapes/point/point.h"
 
 
 Shape *shapes_new_shape(enum ShapeType type, Point *points) {
@@ -23,4 +23,8 @@ void shapes_shape_free(Shape *shape, bool free_self) {
   if (free_self) {
     free(shape);
   }
+}
+
+inline double shapes_shape_distance(Shape shape, Point point) {
+  return shape.header.distance(shape, point);
 }

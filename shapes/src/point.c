@@ -1,4 +1,4 @@
-#include "shapes/point.h"
+#include "shapes/point/point.h"
 
 #include "math.h"
 #include "stdio.h"
