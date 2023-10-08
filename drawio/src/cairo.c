@@ -20,3 +20,12 @@ void drawio_circle_draw(cairo_t *cairo, Point center, double radius, cairo_bool_
     cairo_stroke(cairo);
   }
 }
+
+void drawio_points_mark(cairo_t *cairo, Point *points, size_t count) {
+  for (int i = 0; i < count; i++) {
+    Point point = points[i];
+    drawio_circle_draw(cairo, point, 1, true);
+  }
+
+  cairo_stroke(cairo);
+}
