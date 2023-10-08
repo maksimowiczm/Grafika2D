@@ -1,6 +1,7 @@
 #include "shapes/shape/shape.h"
 
 #include "stdlib.h"
+#include "stdint.h"
 #include "shapes/line/line.h"
 #include "shapes/rectangle/rectangle.h"
 #include "shapes/point/point.h"
@@ -30,4 +31,18 @@ void shapes_shape_free(Shape *shape, bool free_self) {
 
 inline double shapes_shape_distance(Shape shape, Point point) {
   return shape.header.distance(shape, point);
+}
+
+size_t shapes_point_count_to_create(enum ShapeType type) {
+  switch (type) {
+    case PointAsShape:
+      return 1;
+    case Line:
+    case Rectangle:
+    case Circle:
+      return 2;
+    case NoShape:
+    case ShapesCount:
+      return SIZE_MAX;
+  }
 }
