@@ -1,4 +1,5 @@
 #include "gtk/gtk.h"
+#include "drawing_app/window.h"
 
 #define APP_ACTIVATE(name) void(*name)(GtkApplication *)
 
@@ -11,5 +12,5 @@ int my_app_start(int argc, char *argv[], APP_ACTIVATE(activate_app)) {
 }
 
 int main(int argc, char *argv[]) {
-  return my_app_start(argc, argv, NULL);
+  return my_app_start(argc, argv, drawing_app_activate);
 }
