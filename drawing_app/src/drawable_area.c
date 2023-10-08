@@ -22,7 +22,7 @@ do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer da
   }
 
   cairo_set_source_rgb(cr, 255, 0, 0);
-  drawio_points_mark(cr, state->buffer, state->buffer_current_size);
+  drawio_points_mark(cr, state->buffer.buffer, state->buffer.buffer_current_size);
 }
 
 
@@ -35,17 +35,18 @@ static gboolean
 left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
   ClickData *clickData = data;
   WindowState *state = clickData->state;
+  PointBuffer *buffer = &state->buffer;
 
   // do smth todo
-  if (state->buffer_current_size + 1 > state->buffer_size) {
-    state_clear_buffer(state);
+  if (buffer->buffer_current_size + 1 > buffer->buffer_size) {
+    buffer_clear(&state->buffer);
     gtk_widget_queue_draw(clickData->drawingArea);
 
     return TRUE;
   }
-  state->buffer[state->buffer_current_size].x = x;
-  state->buffer[state->buffer_current_size].y = y;
-  state->buffer_current_size++;
+  buffer->buffer[buffer->buffer_current_size].x = x;
+  buffer->buffer[buffer->buffer_current_size].y = y;
+  buffer->buffer_current_size++;
 
   gtk_widget_queue_draw(clickData->drawingArea);
 
