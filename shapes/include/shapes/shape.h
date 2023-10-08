@@ -6,6 +6,7 @@
 enum ShapeType {
   NoShape,
   Line,
+  Rectangle,
   ShapesCount
 };
 

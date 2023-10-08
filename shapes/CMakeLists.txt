@@ -2,6 +2,7 @@ add_library(
         shapes
         src/shapes.c
         src/line.c
+        src/rectangle.c
 )
 
 target_include_directories(shapes PUBLIC include)
