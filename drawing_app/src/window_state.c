@@ -59,5 +59,6 @@ void state_clear_shapes(WindowState *state) {
 }
 
 void state_clear_buffer(WindowState *state) {
+  state->buffer_current_size = 0;
   memset(state->buffer, 0, sizeof(Point) * state->buffer_size);
 }

@@ -1,4 +1,5 @@
 #include "drawing_app/widgets/drawable_area.h"
+#include "drawio/cairo.h"
 
 
 static void
@@ -14,12 +15,14 @@ do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer da
       continue;
     }
     bool shouldBeDrawn = shape->header.shouldBeDrawn;
-    bool isDrawn = shape->header.isDrawn;
-    if (shouldBeDrawn && !isDrawn) {
+    if (shouldBeDrawn) {
       shape->header.draw_method(*shape, cr, true);
       shape->header.isDrawn = true;
     }
   }
+
+  cairo_set_source_rgb(cr, 255, 0, 0);
+  drawio_points_mark(cr, state->buffer, state->buffer_current_size);
 }
 
 
@@ -31,8 +34,18 @@ typedef struct {
 static gboolean
 left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
   ClickData *clickData = data;
+  WindowState *state = clickData->state;
 
   // do smth todo
+  if (state->buffer_current_size + 1 > state->buffer_size) {
+    state_clear_buffer(state);
+    gtk_widget_queue_draw(clickData->drawingArea);
+
+    return TRUE;
+  }
+  state->buffer[state->buffer_current_size].x = x;
+  state->buffer[state->buffer_current_size].y = y;
+  state->buffer_current_size++;
 
   gtk_widget_queue_draw(clickData->drawingArea);
 
