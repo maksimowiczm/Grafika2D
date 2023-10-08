@@ -22,6 +22,30 @@ do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer da
   }
 }
 
+
+typedef struct {
+  WindowState *state;
+  GtkWidget *drawingArea;
+} ClickData;
+
+static gboolean
+left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
+  ClickData *clickData = data;
+
+  // do smth todo
+
+  gtk_widget_queue_draw(clickData->drawingArea);
+
+  return TRUE;
+}
+
+
+static void
+destroy_handler(GtkWidget *widget, gpointer data) {
+  free(data);
+}
+
+
 GtkWidget *new_drawable_area(WindowState *state) {
   GtkWidget *area = gtk_drawing_area_new();
 
@@ -29,6 +53,16 @@ GtkWidget *new_drawable_area(WindowState *state) {
   gtk_widget_set_size_request(area, 1000, 0); // todo
   gtk_widget_set_halign(area, GTK_ALIGN_FILL);
   gtk_widget_set_valign(area, GTK_ALIGN_FILL);
+
+  // left click
+  GtkGesture *gesture_click = gtk_gesture_click_new();
+  gtk_gesture_single_set_button(GTK_GESTURE_SINGLE(gesture_click), 1);
+  gtk_widget_add_controller(area, GTK_EVENT_CONTROLLER (gesture_click));
+  ClickData *clickData = malloc(sizeof(*clickData));
+  clickData->state = state;
+  clickData->drawingArea = area;
+  g_signal_connect(gesture_click, "pressed", G_CALLBACK(left_clicked), clickData);
+  g_signal_connect(area, "destroy", G_CALLBACK(destroy_handler), clickData);
 
   return area;
 }
