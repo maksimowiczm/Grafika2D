@@ -5,15 +5,24 @@
 #include "stdlib.h"
 
 
+static void
+set_header(Shape *point) {
+  point->header.type = PointAsShape;
+  point->header.distance = shapes_point_distance_to_point;
+}
+
+static void
+set_points(Shape *shape, Point point) {
+  shape->points_length = 1;
+  shape->points = malloc(sizeof(Point));
+  shape->points[0] = point;
+}
+
 Shape *shapes_new_point(Point point) {
   Shape *shape = malloc(sizeof(*shape));
 
-  shape->points_length = 1;
-
-  shape->points = malloc(sizeof(Point));
-  shape->points[0] = point;
-
-  shape->header.type = PointAsShape;
+  set_header(shape);
+  set_points(shape, point);
 
   return shape;
 }
@@ -30,3 +39,6 @@ Point shapes_point_parse_from_string(const char *input) {
   return (Point) {x, y};
 }
 
+inline double shapes_point_distance_to_point(Shape shape, Point point) {
+  return shapes_point_distance_between_points(shape.points[0], point);
+}
