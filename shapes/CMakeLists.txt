@@ -5,6 +5,7 @@ add_library(
         src/rectangle.c
         src/shapeLines.c
         src/point.c
+        src/circle.c
 )
 
 target_include_directories(shapes PUBLIC include)

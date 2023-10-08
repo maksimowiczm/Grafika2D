@@ -6,11 +6,13 @@ typedef struct shape Shape;
 typedef struct point Point;
 typedef struct shape_header ShapeHeader;
 
+
 enum ShapeType {
   NoShape,
   PointAsShape,
   Line,
   Rectangle,
+  Circle,
   ShapesCount
 };
 
@@ -34,5 +36,3 @@ struct shape {
   size_t points_length;
   Point *points;
 };
-
-
