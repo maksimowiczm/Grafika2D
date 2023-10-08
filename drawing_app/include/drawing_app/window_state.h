@@ -28,7 +28,7 @@ void state_initialize(WindowState *state, size_t shapes_count, size_t buffer_max
 
 void state_free(WindowState *state, bool free_self);
 
-ssize_t state_add_shape(WindowState *state, DrawableShape *shape);
+void state_add_shape(WindowState *state);
 
 void state_clear_shapes(WindowState *state);
 

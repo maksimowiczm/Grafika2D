@@ -3,6 +3,7 @@
 
 
 #include "drawio/draw.h"
+#include "drawio/draw_methods.h"
 
 
 void state_initialize(WindowState *state, size_t shapes_max_count, size_t buffer_max_size) {
@@ -43,7 +44,8 @@ void state_free(WindowState *state, bool free_self) {
 }
 
 
-ssize_t state_add_shape(WindowState *state, DrawableShape *shape) {
+static ssize_t
+internal_state_add_shape(WindowState *state, DrawableShape *shape) {
   for (int i = 0; i < state->shapes_length; i++) {
     if (state->shapes[i] == NULL) {
       *(state->shapes + i) = shape;
@@ -52,6 +54,14 @@ ssize_t state_add_shape(WindowState *state, DrawableShape *shape) {
   }
 
   return -1;
+}
+
+
+void state_add_shape(WindowState *state) {
+  Shape *shape = shapes_new_shape(state->currentType, state->buffer.buffer);
+  DrawableShape *drawableShape = drawio_new_drawableShape(shape, drawio_get_draw_method(state->currentType));
+  internal_state_add_shape(state, drawableShape);
+  state_buffer_clear(state);
 }
 
 

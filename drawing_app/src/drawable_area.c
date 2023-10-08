@@ -45,6 +45,11 @@ left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer
   }
   state_buffer_add(state, (Point) {x, y});
 
+  // handle shape creation
+  if (state->buffer.buffer_current_size >= shapes_point_count_to_create(state->currentType)) {
+    state_add_shape(state);
+  }
+
   gtk_widget_queue_draw(clickData->drawingArea);
 
   return TRUE;
