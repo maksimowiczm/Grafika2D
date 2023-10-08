@@ -30,7 +30,7 @@ state_populate_shapes(WindowState *state) {
 void drawing_app_activate(GtkApplication *app) {
   GtkWidget *window = gtk_application_window_new(app);
   WindowState *state = malloc(sizeof(*state));
-  state_initialize(state, 1000);
+  state_initialize(state, 1000, 10);
   state_populate_shapes(state);
 
   gtk_window_set_default_size(GTK_WINDOW(window), 1280, 720);
