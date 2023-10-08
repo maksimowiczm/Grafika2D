@@ -29,3 +29,18 @@ void drawio_circle_method(DrawableShape drawableShape, cairo_t *cr, cairo_bool_t
   double radius = shapes_circle_radius(*circle);
   drawio_circle_draw(cr, center, radius, stroke);
 }
+
+void (*drawio_get_draw_method(enum ShapeType type))(DrawableShape, cairo_t *, cairo_bool_t) {
+  switch (type) {
+    case PointAsShape:
+      return NULL;
+    case Line:
+    case Rectangle:
+      return drawio_loop_method;
+    case Circle:
+      return drawio_circle_method;
+    case NoShape:
+    case ShapesCount:
+      return NULL;
+  }
+}
