@@ -1,3 +1,4 @@
+#include <string.h>
 #include "shapes/shapeLines.h"
 
 #include "stdlib.h"
@@ -5,7 +6,7 @@
 
 ShapeLines *shapes_get_lines(Shape *shape) {
   size_t length = shape->points_length;
-  if (length < 3) {
+  if (length < 2) {
     return NULL;
   }
 
@@ -20,7 +21,7 @@ ShapeLines *shapes_get_lines(Shape *shape) {
     shapeLines->lines[i] = line;
   }
 
-  shapeLines->lines[0] = shapes_new_line(points[0], points[length - 1]);;
+  shapeLines->lines[0] = shapes_new_line(points[0], points[length - 1]);
 
   return shapeLines;
 }
