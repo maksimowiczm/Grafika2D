@@ -9,22 +9,7 @@ static void
 destroy_handler(GtkWidget *widget, gpointer data) {
   WindowState *state = data;
 
-  for (int i = 0; i < state->shapes_length; i++) {
-    DrawableShape *shape = state->shapes[i];
-    if (shape == NULL) {
-      continue;
-    }
-
-    // free inner shape
-    shapes_shape_free(shape->shape, true);
-
-    // free outer shape
-    drawio_drawableShape_free(shape, true);
-  }
-
-  // free state
-  free(state->shapes);
-  free(state);
+  state_free(state, true);
 }
 
 static void
@@ -42,19 +27,11 @@ state_populate_shapes(WindowState *state) {
   *(state->shapes + 2) = drawableCircle;
 }
 
-static void
-state_initialize(WindowState *state, size_t shape_max_size) {
-  state->shapes_length = shape_max_size;
-  state->shapes = malloc(sizeof(DrawableShape **) * state->shapes_length);
-  memset(state->shapes, 0, sizeof(DrawableShape **) * state->shapes_length);
-
-  state_populate_shapes(state);
-}
-
 void drawing_app_activate(GtkApplication *app) {
   GtkWidget *window = gtk_application_window_new(app);
   WindowState *state = malloc(sizeof(*state));
   state_initialize(state, 1000);
+  state_populate_shapes(state);
 
   gtk_window_set_default_size(GTK_WINDOW(window), 1280, 720);
   gtk_window_set_title(GTK_WINDOW(window), "Drawing app");
