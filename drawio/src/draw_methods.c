@@ -8,11 +8,11 @@
 
 void drawio_loop_method(DrawableShape shape, cairo_t *cr, cairo_bool_t stroke) {
   ShapeLines *shapeLines = shapes_get_lines(shape.shape);
-  Shape *lines = *shapeLines->lines;
 
   for (int i = 0; i < shapeLines->length; i++) {
-    Point from = {lines[i].points[0].x, lines[i].points[0].y};
-    Point to = {lines[i].points[0].x, lines[i].points[0].y};
+    Point *points = shapeLines->lines[i]->points;
+    Point from = {points[0].x, points[0].y};
+    Point to = {points[1].x, points[1].y};
     drawio_line_draw(cr, from, to, false);
   }
 
