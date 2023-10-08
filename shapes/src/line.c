@@ -35,6 +35,7 @@ double shapes_line_distance_to_point(Shape line, Point point) {
   Point start = line.points[0];
   Point end = line.points[1];
 
+  // FROGOR
   if ((point.x < start.x && point.y < end.x) || (point.x > start.x && point.x > end.x)) {
     double to_start = shapes_point_distance_between_points(point, start);
     double to_end = shapes_point_distance_between_points(point, end);
