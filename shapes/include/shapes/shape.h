@@ -5,6 +5,7 @@
 
 enum ShapeType {
   NoShape,
+  PointAsShape,
   Line,
   Rectangle,
   ShapesCount
