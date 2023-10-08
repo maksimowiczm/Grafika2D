@@ -8,10 +8,6 @@ typedef struct {
   Point *buffer;
 } PointBuffer;
 
-
-void buffer_clear(PointBuffer* buffer);
-
-
 typedef struct {
   // lock some functionalities if user is using mouse for drawing
   bool drawing;
@@ -35,3 +31,7 @@ void state_free(WindowState *state, bool free_self);
 ssize_t state_add_shape(WindowState *state, DrawableShape *shape);
 
 void state_clear_shapes(WindowState *state);
+
+void state_buffer_clear(WindowState *state);
+
+void state_buffer_add(WindowState *state, Point point);

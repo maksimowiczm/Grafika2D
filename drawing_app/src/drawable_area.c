@@ -37,16 +37,13 @@ left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer
   WindowState *state = clickData->state;
   PointBuffer *buffer = &state->buffer;
 
-  // do smth todo
+  // add points to state buffer
   if (buffer->buffer_current_size + 1 > buffer->buffer_size) {
-    buffer_clear(&state->buffer);
+    state_buffer_clear(state);
     gtk_widget_queue_draw(clickData->drawingArea);
-
     return TRUE;
   }
-  buffer->buffer[buffer->buffer_current_size].x = x;
-  buffer->buffer[buffer->buffer_current_size].y = y;
-  buffer->buffer_current_size++;
+  state_buffer_add(state, (Point) {x, y});
 
   gtk_widget_queue_draw(clickData->drawingArea);
 

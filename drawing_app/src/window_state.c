@@ -61,7 +61,15 @@ void state_clear_shapes(WindowState *state) {
 }
 
 
-void buffer_clear(PointBuffer *buffer) {
-  buffer->buffer_current_size = 0;
-  memset(buffer->buffer, 0, sizeof(Point) * buffer->buffer_size);
+void state_buffer_clear(WindowState *state) {
+  state->drawing = false;
+  state->buffer.buffer_current_size = 0;
+  memset(state->buffer.buffer, 0, sizeof(Point) * state->buffer.buffer_size);
+}
+
+
+void state_buffer_add(WindowState *state, Point point) {
+  state->drawing = true;
+  state->buffer.buffer[state->buffer.buffer_current_size] = point;
+  state->buffer.buffer_current_size++;
 }
