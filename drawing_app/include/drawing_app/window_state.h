@@ -17,7 +17,7 @@ typedef struct {
   // which shape is being drawn now
   enum ShapeType currentType;
 
-  GtkWidget* drawing_area;
+  GtkWidget *drawing_area;
 
   // store points in buffer
   PointBuffer buffer;
@@ -35,6 +35,8 @@ void state_free(WindowState *state, bool free_self);
 void state_shapes_add(WindowState *state);
 
 void state_shapes_clear(WindowState *state);
+
+DrawableShape *state_shapes_closest_shape(WindowState *state, Point point);
 
 void state_buffer_clear(WindowState *state);
 

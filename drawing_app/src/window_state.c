@@ -98,3 +98,28 @@ void state_buffer_add(WindowState *state, Point point) {
   state->buffer.buffer[state->buffer.buffer_current_size] = point;
   state->buffer.buffer_current_size++;
 }
+
+
+DrawableShape *state_shapes_closest_shape(WindowState *state, Point point) {
+  double closest = DBL_MAX;
+  int index = -1;
+  for (int i = 0; i < state->shapes_length; i++) {
+    DrawableShape *drawable = *(state->shapes + i);
+    if (drawable == NULL || !drawable->header.isDrawn) {
+      continue;
+    }
+    Shape *shape = drawable->shape;
+
+    double distance = shapes_shape_distance(*shape, point);
+    if (distance < closest) {
+      closest = distance;
+      index = i;
+    }
+  }
+
+  if (index != -1) {
+    return state->shapes[index];
+  }
+
+  return NULL;
+}
