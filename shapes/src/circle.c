@@ -31,8 +31,10 @@ inline double shapes_circle_radius(Shape circle) {
   return shapes_point_distance_between_points(circle.points[0], circle.points[1]);
 }
 
-inline double shapes_circle_distance_to_point(Shape circle, Point point) {
-  return fabs(shapes_point_distance_between_points(circle.points[0], point) - shapes_circle_radius(circle));
+double shapes_circle_distance_to_point(Shape circle, Point point) {
+  double to_center = shapes_point_distance_between_points(circle.points[0], point);
+  double to_edge = shapes_point_distance_between_points(circle.points[1], point);
+  return to_center < to_edge ? to_center : to_edge;
 }
 
 inline Point shapes_circle_get_center(Shape circle) {
