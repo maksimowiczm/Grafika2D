@@ -7,6 +7,8 @@
 
 
 void state_initialize(WindowState *state, size_t shapes_max_count, size_t buffer_max_size) {
+  state->drawing_area = NULL;
+
   state->drawing = false;
   state->currentType = Line;
   state->buffer.buffer_size = buffer_max_size;
@@ -70,7 +72,7 @@ internal_state_add_shape(WindowState *state, DrawableShape *shape, bool override
 }
 
 
-void state_add_shape(WindowState *state) {
+void state_shapes_add(WindowState *state) {
   Shape *shape = shapes_new_shape(state->currentType, state->buffer.buffer);
   DrawableShape *drawableShape = drawio_new_drawableShape(shape, drawio_get_draw_method(state->currentType));
   internal_state_add_shape(state, drawableShape, true);
@@ -78,7 +80,7 @@ void state_add_shape(WindowState *state) {
 }
 
 
-void state_clear_shapes(WindowState *state) {
+void state_shapes_clear(WindowState *state) {
   state_free(state, false);
   memset(state->shapes, 0, sizeof(DrawableShape **) * state->shapes_length);
 }

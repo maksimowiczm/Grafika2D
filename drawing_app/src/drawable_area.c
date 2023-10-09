@@ -33,37 +33,31 @@ typedef struct {
 
 static gboolean
 left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
-  ClickData *clickData = data;
-  WindowState *state = clickData->state;
+  WindowState *state = data;
   PointBuffer *buffer = &state->buffer;
 
   // add points to state buffer
   if (buffer->buffer_current_size + 1 > buffer->buffer_size) {
     state_buffer_clear(state);
-    gtk_widget_queue_draw(clickData->drawingArea);
+    gtk_widget_queue_draw(state->drawing_area);
     return TRUE;
   }
   state_buffer_add(state, (Point) {x, y});
 
   // handle shape creation
   if (state->buffer.buffer_current_size >= shapes_point_count_to_create(state->currentType)) {
-    state_add_shape(state);
+    state_shapes_add(state);
   }
 
-  gtk_widget_queue_draw(clickData->drawingArea);
+  gtk_widget_queue_draw(state->drawing_area);
 
   return TRUE;
 }
 
 
-static void
-destroy_handler(GtkWidget *widget, gpointer data) {
-  free(data);
-}
-
-
 GtkWidget *new_drawable_area(WindowState *state) {
   GtkWidget *area = gtk_drawing_area_new();
+  state->drawing_area = area;
 
   gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (area), (GtkDrawingAreaDrawFunc) do_drawing, state, NULL);
   gtk_widget_set_size_request(area, 1000, 0); // todo
@@ -74,11 +68,7 @@ GtkWidget *new_drawable_area(WindowState *state) {
   GtkGesture *gesture_click = gtk_gesture_click_new();
   gtk_gesture_single_set_button(GTK_GESTURE_SINGLE(gesture_click), 1);
   gtk_widget_add_controller(area, GTK_EVENT_CONTROLLER (gesture_click));
-  ClickData *clickData = malloc(sizeof(*clickData));
-  clickData->state = state;
-  clickData->drawingArea = area;
-  g_signal_connect(gesture_click, "pressed", G_CALLBACK(left_clicked), clickData);
-  g_signal_connect(area, "destroy", G_CALLBACK(destroy_handler), clickData);
+  g_signal_connect(gesture_click, "pressed", G_CALLBACK(left_clicked), state);
 
   return area;
 }
