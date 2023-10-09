@@ -11,9 +11,11 @@ name(GtkWidget *gesture, gpointer data) { \
 
 SHAPE_CLICKED(Line, line_click)
 
-SHAPE_CLICKED(Rectangle, rectangle_click)
+SHAPE_CLICKED(Quadrilateral, quadrilateral_click)
 
 SHAPE_CLICKED(Circle, circle_click)
+
+SHAPE_CLICKED(Rectangle, rectangle_click)
 
 
 static GtkWidget *
@@ -45,6 +47,9 @@ GtkWidget *new_side_menu(WindowState *state) {
 
   GtkWidget *rectangle = shape_button_new("rectangle", rectangle_click, state);
   gtk_box_append(GTK_BOX(container), rectangle);
+
+  GtkWidget *quadrilateral = shape_button_new("quadrilateral", quadrilateral_click, state);
+  gtk_box_append(GTK_BOX(container), quadrilateral);
 
   GtkWidget *circle = shape_button_new("circle", circle_click, state);
   gtk_box_append(GTK_BOX(container), circle);

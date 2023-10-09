@@ -15,7 +15,7 @@ destroy_handler(GtkWidget *widget, gpointer data) {
 static void
 state_populate_shapes(WindowState *state) {
   Shape *rectangle = shapes_new_shape(Rectangle, (Point[2]) {10, 10, 400, 400});
-  DrawableShape *drawableRectangle = drawio_new_drawableShape(rectangle, drawio_loop_method);
+  DrawableShape *drawableRectangle = drawio_new_drawableShape(rectangle, drawio_rectangle_method);
   *state->shapes = drawableRectangle;
 
   Shape *line = shapes_new_shape(Line, (Point[2]) {10, 10, 500, 500});

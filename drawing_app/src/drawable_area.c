@@ -82,6 +82,7 @@ static gboolean
 right_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
   WindowState *state = data;
   DrawableShape *shape = state_shapes_closest_shape(state, (Point) {x, y});
+  state_buffer_clear(state);
 
   Point *closest = shapes_shape_closest_point(shape->shape, (Point) {x, y});
   state_moving_point_set(state, closest);
@@ -111,8 +112,6 @@ GtkWidget *new_drawable_area(WindowState *state) {
   gtk_gesture_single_set_button(GTK_GESTURE_SINGLE(gesture_right_click), 3);
   gtk_widget_add_controller(area, GTK_EVENT_CONTROLLER (gesture_right_click));
   g_signal_connect(gesture_right_click, "pressed", G_CALLBACK(right_clicked), state);
-
-
 
   return area;
 }
