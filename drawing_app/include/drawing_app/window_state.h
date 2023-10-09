@@ -4,6 +4,13 @@
 #include "gtk/gtk.h"
 
 
+enum DrawingAction {
+  NoAction,
+  Drawing,
+  Moving,
+  ActionCount,
+};
+
 typedef struct {
   size_t buffer_size;
   size_t buffer_current_size;
@@ -12,7 +19,7 @@ typedef struct {
 
 typedef struct {
   // lock some functionalities if user is using mouse for drawing
-  bool drawing;
+  enum DrawingAction action;
 
   // which shape is being drawn now
   enum ShapeType currentType;

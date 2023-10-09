@@ -9,7 +9,7 @@
 void state_initialize(WindowState *state, size_t shapes_max_count, size_t buffer_max_size) {
   state->drawing_area = NULL;
 
-  state->drawing = false;
+  state->action = NoAction;
   state->currentType = Line;
   state->buffer.buffer_size = buffer_max_size;
   state->buffer.buffer_current_size = 0;
@@ -87,14 +87,14 @@ void state_shapes_clear(WindowState *state) {
 
 
 void state_buffer_clear(WindowState *state) {
-  state->drawing = false;
+  state->action = NoAction;
   state->buffer.buffer_current_size = 0;
   memset(state->buffer.buffer, 0, sizeof(Point) * state->buffer.buffer_size);
 }
 
 
 void state_buffer_add(WindowState *state, Point point) {
-  state->drawing = true;
+  state->action = Drawing;
   state->buffer.buffer[state->buffer.buffer_current_size] = point;
   state->buffer.buffer_current_size++;
 }
