@@ -11,7 +11,7 @@ enum ShapeType {
   NoShape,
   PointAsShape,
   Line,
-  Rectangle,
+  Quadrilateral,
   Circle,
   ShapesCount
 };

@@ -2,7 +2,7 @@ add_library(
         shapes
         src/shapes.c
         src/line.c
-        src/rectangle.c
+        src/quadrilateral.c
         src/shapeLines.c
         src/point.c
         src/circle.c

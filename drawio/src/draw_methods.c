@@ -35,7 +35,7 @@ void (*drawio_get_draw_method(enum ShapeType type))(DrawableShape, cairo_t *, ca
     case PointAsShape:
       return NULL;
     case Line:
-    case Rectangle:
+    case Quadrilateral:
       return drawio_loop_method;
     case Circle:
       return drawio_circle_method;
