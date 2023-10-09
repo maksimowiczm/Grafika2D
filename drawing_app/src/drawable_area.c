@@ -31,9 +31,9 @@ typedef struct {
   GtkWidget *drawingArea;
 } ClickData;
 
+
 static gboolean
-left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
-  WindowState *state = data;
+handle_draw(WindowState *state, double x, double y) {
   PointBuffer *buffer = &state->buffer;
 
   // add points to state buffer
@@ -50,8 +50,43 @@ left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer
   }
 
   gtk_widget_queue_draw(state->drawing_area);
+  return TRUE;
+}
+
+
+static gboolean
+handle_move(WindowState *state, double x, double y) {
+  state_moving_point_move(state, (Point) {x, y});
+
+  gtk_widget_queue_draw(state->drawing_area);
 
   return TRUE;
+}
+
+
+static gboolean
+left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
+  WindowState *state = data;
+
+  if (state->action == NoAction || state->action == Drawing) {
+    return handle_draw(state, x, y);
+  } else if (state->action == Moving) {
+    return handle_move(state, x, y);
+  }
+
+  return FALSE;
+}
+
+
+static gboolean
+right_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
+  WindowState *state = data;
+  DrawableShape *shape = state_shapes_closest_shape(state, (Point) {x, y});
+
+  Point *closest = shapes_shape_closest_point(shape->shape, (Point) {x, y});
+  state_moving_point_set(state, closest);
+
+  gtk_widget_queue_draw(state->drawing_area);
 }
 
 
@@ -69,6 +104,15 @@ GtkWidget *new_drawable_area(WindowState *state) {
   gtk_gesture_single_set_button(GTK_GESTURE_SINGLE(gesture_click), 1);
   gtk_widget_add_controller(area, GTK_EVENT_CONTROLLER (gesture_click));
   g_signal_connect(gesture_click, "pressed", G_CALLBACK(left_clicked), state);
+
+
+  // right click
+  GtkGesture *gesture_right_click = gtk_gesture_click_new();
+  gtk_gesture_single_set_button(GTK_GESTURE_SINGLE(gesture_right_click), 3);
+  gtk_widget_add_controller(area, GTK_EVENT_CONTROLLER (gesture_right_click));
+  g_signal_connect(gesture_right_click, "pressed", G_CALLBACK(right_clicked), state);
+
+
 
   return area;
 }

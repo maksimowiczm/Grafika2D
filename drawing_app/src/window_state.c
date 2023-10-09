@@ -123,3 +123,14 @@ DrawableShape *state_shapes_closest_shape(WindowState *state, Point point) {
 
   return NULL;
 }
+
+void state_moving_point_set(WindowState *state, Point *point) {
+  state->moving_point = point;
+  state->action = Moving;
+}
+
+void state_moving_point_move(WindowState *state, Point where) {
+  state->moving_point->x = where.x;
+  state->moving_point->y = where.y;
+  state->action = NoAction;
+}

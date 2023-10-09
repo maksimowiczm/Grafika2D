@@ -21,6 +21,9 @@ typedef struct {
   // lock some functionalities if user is using mouse for drawing
   enum DrawingAction action;
 
+  // point which will be moved if action is Moving
+  Point *moving_point;
+
   // which shape is being drawn now
   enum ShapeType currentType;
 
@@ -44,6 +47,10 @@ void state_shapes_add(WindowState *state);
 void state_shapes_clear(WindowState *state);
 
 DrawableShape *state_shapes_closest_shape(WindowState *state, Point point);
+
+void state_moving_point_set(WindowState *state, Point *point);
+
+void state_moving_point_move(WindowState *state, Point where);
 
 void state_buffer_clear(WindowState *state);
 
