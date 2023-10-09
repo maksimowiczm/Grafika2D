@@ -7,6 +7,7 @@
 #include "shapes/point/point.h"
 #include "shapes/circle/circle.h"
 #include "shapes/quadrilateral/quadrilateral.h"
+#include "shapes/rectangle/rectangle.h"
 
 
 Shape *shapes_new_shape(enum ShapeType type, Point *points) {
@@ -16,6 +17,8 @@ Shape *shapes_new_shape(enum ShapeType type, Point *points) {
     return shapes_new_line(points[0], points[1]);
   } else if (type == Quadrilateral) {
     return shapes_new_quadrilateral(points);
+  } else if (type == Rectangle) {
+    return shapes_new_rectangle(points[0], points[1]);
   } else if (type == Circle) {
     return shapes_new_circle(points[0], points[1]);
   }
@@ -40,6 +43,7 @@ size_t shapes_point_count_to_create(enum ShapeType type) {
       return 1;
     case Line:
     case Circle:
+    case Rectangle:
       return 2;
     case Quadrilateral:
       return 4;
