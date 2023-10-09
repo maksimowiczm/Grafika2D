@@ -1,6 +1,9 @@
 #include "drawing_app/widgets/drawable_area.h"
 #include "drawio/cairo.h"
 
+#define RED 255, 0, 0
+#define GREEN 0, 255, 0
+#define BLUE 0, 0, 255
 
 static void
 do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer data) {
@@ -21,8 +24,23 @@ do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer da
     }
   }
 
-  cairo_set_source_rgb(cr, 255, 0, 0);
-  drawio_points_mark(cr, state->buffer.buffer, state->buffer.buffer_current_size);
+  // mark buffer
+  drawio_points_mark(cr, state->buffer.buffer, state->buffer.buffer_current_size, RED);
+
+  // mark shapes
+  for (int i = 0; i < state->shapes_length; i++) {
+    if (state->shapes[i] == NULL) {
+      continue;
+    }
+    Point *points = state->shapes[i]->shape->points;
+    size_t length = state->shapes[i]->shape->points_length;
+    drawio_points_mark(cr, points, length, GREEN);
+  }
+
+  // mark moving point
+  if (state->action == Moving) {
+    drawio_points_mark(cr, state->moving_point, 1, BLUE);
+  }
 }
 
 
