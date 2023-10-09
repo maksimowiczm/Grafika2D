@@ -45,12 +45,25 @@ void state_free(WindowState *state, bool free_self) {
 
 
 static ssize_t
-internal_state_add_shape(WindowState *state, DrawableShape *shape) {
+internal_state_add_shape(WindowState *state, DrawableShape *shape, bool override) {
   for (int i = 0; i < state->shapes_length; i++) {
     if (state->shapes[i] == NULL) {
       *(state->shapes + i) = shape;
       return i;
     }
+  }
+
+  static size_t override_index = 0;
+  if (override) {
+    // free memory
+    DrawableShape *drawableShape = *(state->shapes + override_index);
+    shapes_shape_free(drawableShape->shape, true);
+    drawio_drawableShape_free(*(state->shapes + override_index), true);
+
+    // override
+    *(state->shapes + override_index) = shape;
+    override_index = (override_index + 1) % state->shapes_length;
+    return override_index - 1;
   }
 
   return -1;
@@ -60,7 +73,7 @@ internal_state_add_shape(WindowState *state, DrawableShape *shape) {
 void state_add_shape(WindowState *state) {
   Shape *shape = shapes_new_shape(state->currentType, state->buffer.buffer);
   DrawableShape *drawableShape = drawio_new_drawableShape(shape, drawio_get_draw_method(state->currentType));
-  internal_state_add_shape(state, drawableShape);
+  internal_state_add_shape(state, drawableShape, true);
   state_buffer_clear(state);
 }
 
