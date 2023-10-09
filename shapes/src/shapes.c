@@ -2,6 +2,7 @@
 
 #include "stdlib.h"
 #include "stdint.h"
+#include "float.h"
 #include "shapes/line/line.h"
 #include "shapes/rectangle/rectangle.h"
 #include "shapes/point/point.h"
@@ -45,4 +46,19 @@ size_t shapes_point_count_to_create(enum ShapeType type) {
     case ShapesCount:
       return SIZE_MAX;
   }
+}
+
+Point *shapes_shape_closest_point(Shape *shape, Point point) {
+  double distance = DBL_MAX;
+  Point *result = NULL;
+  for (int i = 0; i < shape->points_length; i++) {
+    Point *currentPoint = shape->points + i;
+    double currentDistance = shapes_point_distance_between_points(*currentPoint, point);
+    if (currentDistance < distance) {
+      result = currentPoint;
+      distance = currentDistance;
+    }
+  }
+
+  return result;
 }

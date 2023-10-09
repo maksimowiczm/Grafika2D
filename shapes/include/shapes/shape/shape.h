@@ -12,3 +12,5 @@ size_t shapes_point_count_to_create(enum ShapeType type);
 void shapes_shape_free(Shape *shape, bool free_self);
 
 double shapes_shape_distance(Shape shape, Point point);
+
+Point *shapes_shape_closest_point(Shape *shape, Point point);
