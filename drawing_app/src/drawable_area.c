@@ -39,7 +39,7 @@ handle_draw(WindowState *state, double x, double y) {
   // add points to state buffer
   if (buffer->buffer_current_size + 1 > buffer->buffer_size) {
     state_buffer_clear(state);
-    gtk_widget_queue_draw(state->drawing_area);
+    state_shapes_draw(state);
     return TRUE;
   }
   state_buffer_add(state, (Point) {x, y});
@@ -49,7 +49,7 @@ handle_draw(WindowState *state, double x, double y) {
     state_shapes_add(state);
   }
 
-  gtk_widget_queue_draw(state->drawing_area);
+  state_shapes_draw(state);
   return TRUE;
 }
 
@@ -57,9 +57,7 @@ handle_draw(WindowState *state, double x, double y) {
 static gboolean
 handle_move(WindowState *state, double x, double y) {
   state_moving_point_move(state, (Point) {x, y});
-
-  gtk_widget_queue_draw(state->drawing_area);
-
+  state_shapes_draw(state);
   return TRUE;
 }
 
@@ -87,7 +85,7 @@ right_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointe
   Point *closest = shapes_shape_closest_point(shape->shape, (Point) {x, y});
   state_moving_point_set(state, closest);
 
-  gtk_widget_queue_draw(state->drawing_area);
+  state_shapes_draw(state);
 }
 
 

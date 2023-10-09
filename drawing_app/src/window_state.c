@@ -134,3 +134,11 @@ void state_moving_point_move(WindowState *state, Point where) {
   state->moving_point->y = where.y;
   state->action = NoAction;
 }
+
+void state_shapes_draw(WindowState *state) {
+  if (state->drawing_area == NULL) {
+    return;
+  }
+
+  gtk_widget_queue_draw(state->drawing_area);
+}

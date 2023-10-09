@@ -34,7 +34,7 @@ button_clear_click(GtkWidget *button, gpointer data) {
   WindowState *state = data;
   state_shapes_clear(state);
   state_buffer_clear(state);
-  gtk_widget_queue_draw(state->drawing_area);
+  state_shapes_draw(state);
   return TRUE;
 }
 
