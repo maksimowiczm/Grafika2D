@@ -57,7 +57,7 @@ handle_draw(WindowState *state, double x, double y) {
   // add points to state buffer
   if (buffer->buffer_current_size + 1 > buffer->buffer_size) {
     state_buffer_clear(state);
-    state_shapes_draw(state);
+    state_redraw(state);
     return TRUE;
   }
   state_buffer_add(state, (Point) {x, y});
@@ -67,7 +67,7 @@ handle_draw(WindowState *state, double x, double y) {
     state_shapes_add(state);
   }
 
-  state_shapes_draw(state);
+  state_redraw(state);
   return TRUE;
 }
 
@@ -75,7 +75,7 @@ handle_draw(WindowState *state, double x, double y) {
 static gboolean
 handle_move(WindowState *state, double x, double y) {
   state_moving_point_move(state, (Point) {x, y});
-  state_shapes_draw(state);
+  state_redraw(state);
   return TRUE;
 }
 
@@ -90,20 +90,30 @@ left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer
     return handle_move(state, x, y);
   }
 
-  return FALSE;
+  return TRUE;
 }
 
 
 static gboolean
 right_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
   WindowState *state = data;
+
+  if (state->action == Moving) {
+    state_buffer_clear(state);
+    state->action = NoAction;
+    state_redraw(state);
+    return TRUE;
+  }
+
   DrawableShape *shape = state_shapes_closest_shape(state, (Point) {x, y});
   state_buffer_clear(state);
 
   Point *closest = shapes_shape_closest_point(shape->shape, (Point) {x, y});
   state_moving_point_set(state, closest);
 
-  state_shapes_draw(state);
+  state_redraw(state);
+
+  return TRUE;
 }
 
 

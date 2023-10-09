@@ -52,7 +52,7 @@ void state_moving_point_set(WindowState *state, Point *point);
 
 void state_moving_point_move(WindowState *state, Point where);
 
-void state_shapes_draw(WindowState *state);
+void state_redraw(WindowState *state);
 
 void state_buffer_clear(WindowState *state);
 

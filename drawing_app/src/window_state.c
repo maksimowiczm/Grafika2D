@@ -135,7 +135,7 @@ void state_moving_point_move(WindowState *state, Point where) {
   state->action = NoAction;
 }
 
-void state_shapes_draw(WindowState *state) {
+void state_redraw(WindowState *state) {
   if (state->drawing_area == NULL) {
     return;
   }
