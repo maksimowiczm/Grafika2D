@@ -4,6 +4,7 @@ add_library(
         src/main_container.c
         src/drawable_area.c
         src/window_state.c
+        src/side_menu.c
 )
 
 target_include_directories(drawing_app PUBLIC include)

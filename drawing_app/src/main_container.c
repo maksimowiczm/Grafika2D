@@ -2,13 +2,17 @@
 
 
 #include "drawing_app/widgets/drawable_area.h"
+#include "drawing_app/widgets/side_menu.h"
 
 
-GtkWidget *new_main_container(WindowState* state) {
+GtkWidget *new_main_container(WindowState *state) {
   GtkWidget *container = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
 
   GtkWidget *drawable_area = new_drawable_area(state);
   gtk_box_append(GTK_BOX(container), drawable_area);
+
+  GtkWidget *side_menu = new_side_menu(state);
+  gtk_box_append(GTK_BOX(container), side_menu);
 
   return container;
 }
