@@ -4,6 +4,7 @@
 #define RED 255, 0, 0
 #define GREEN 0, 255, 0
 #define BLUE 0, 0, 255
+#define BLACK 0, 0, 0
 
 static void
 do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer data) {
@@ -19,9 +20,17 @@ do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer da
     }
     bool shouldBeDrawn = shape->header.shouldBeDrawn;
     if (shouldBeDrawn) {
-      shape->header.draw_method(*shape, cr, true);
+      shape->header.draw_method(*shape, cr, true, BLACK);
       shape->header.isDrawn = true;
     }
+  }
+
+  // mark moving shape
+  if (state->action == MovingShape) {
+    DrawableShape *shape = *state->moving_shape;
+    shape->header.draw_method(*shape, cr, true, RED);
+    drawio_points_mark(cr, shape->shape->points, shape->shape->points_length, RED);
+    return;
   }
 
   // mark buffer
@@ -42,12 +51,6 @@ do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer da
     drawio_points_mark(cr, state->moving_point, 1, BLUE);
   }
 }
-
-
-typedef struct {
-  WindowState *state;
-  GtkWidget *drawingArea;
-} ClickData;
 
 
 static gboolean
@@ -84,10 +87,15 @@ static gboolean
 left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
   WindowState *state = data;
 
+
   if (state->action == NoAction || state->action == Drawing) {
     return handle_draw(state, x, y);
   } else if (state->action == MovingPoint) {
     return handle_move(state, x, y);
+  } else if (state->action == MovingShape) {
+    state_moving_shape_move(state, x, y);
+    state_redraw(state);
+    return TRUE;
   }
 
   return TRUE;
@@ -97,6 +105,10 @@ left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer
 static gboolean
 right_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
   WindowState *state = data;
+
+  if (state->action == MovingShape) {
+    return FALSE;
+  }
 
   if (state->action == MovingPoint) {
     state_buffer_clear(state);
@@ -117,6 +129,42 @@ right_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointe
   state_redraw(state);
 
   return TRUE;
+}
+
+
+static gboolean
+long_right_click(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
+  WindowState *state = data;
+  if (state->action == MovingShape) {
+    return FALSE;
+  }
+
+  DrawableShape *shape = state_shapes_closest_shape(state, (Point) {x, y});
+  if (shape == NULL) {
+    return TRUE;
+  }
+  state_moving_shape_set(state, shape, (Point) {x, y});
+  state_redraw(state);
+
+  return TRUE;
+}
+
+
+static void
+mouse_movement(GtkEventControllerMotion *self, gdouble x, gdouble y, gpointer user_data) {
+  WindowState *state = user_data;
+  if (state->action != MovingShape) {
+    return;
+  }
+
+  Vector2D vector = {-(state->previous_moving_shape_position.x - x),
+                     -(state->previous_moving_shape_position.y - y)};
+  state->previous_moving_shape_position.x = x;
+  state->previous_moving_shape_position.y = y;
+
+  Shape *shape = (*state->moving_shape)->shape;
+  shapes_shape_move(shape, vector);
+  state_redraw(state);
 }
 
 
@@ -141,6 +189,18 @@ GtkWidget *new_drawable_area(WindowState *state) {
   gtk_gesture_single_set_button(GTK_GESTURE_SINGLE(gesture_right_click), 3);
   gtk_widget_add_controller(area, GTK_EVENT_CONTROLLER (gesture_right_click));
   g_signal_connect(gesture_right_click, "pressed", G_CALLBACK(right_clicked), state);
+
+
+  // real
+  GtkGesture *gesture_long_press = gtk_gesture_long_press_new();
+  gtk_gesture_long_press_set_delay_factor(GTK_GESTURE_LONG_PRESS(gesture_long_press), .5);
+  gtk_gesture_single_set_button(GTK_GESTURE_SINGLE(gesture_long_press), 3);
+  gtk_widget_add_controller(area, GTK_EVENT_CONTROLLER (gesture_long_press));
+  g_signal_connect(gesture_long_press, "pressed", G_CALLBACK(long_right_click), state);
+
+  GtkEventController *controller = gtk_event_controller_motion_new();
+  gtk_widget_add_controller(area, GTK_EVENT_CONTROLLER(controller));
+  g_signal_connect(controller, "motion", G_CALLBACK(mouse_movement), state);
 
   return area;
 }

@@ -18,6 +18,8 @@ void state_initialize(WindowState *state, size_t shapes_max_count, size_t buffer
   state->shapes_length = shapes_max_count;
   state->shapes = malloc(sizeof(DrawableShape **) * state->shapes_length);
   memset(state->shapes, 0, sizeof(DrawableShape **) * state->shapes_length);
+
+  state->moving_shape = malloc(sizeof(DrawableShape **));
 }
 
 
@@ -42,6 +44,7 @@ void state_free(WindowState *state, bool free_self) {
   // free state
   free(state->buffer.buffer);
   free(state->shapes);
+  free(state->moving_shape);
   free(state);
 }
 
@@ -124,16 +127,19 @@ DrawableShape *state_shapes_closest_shape(WindowState *state, Point point) {
   return NULL;
 }
 
+
 void state_moving_point_set(WindowState *state, Point *point) {
   state->moving_point = point;
   state->action = MovingPoint;
 }
+
 
 void state_moving_point_move(WindowState *state, Point where) {
   state->moving_point->x = where.x;
   state->moving_point->y = where.y;
   state->action = NoAction;
 }
+
 
 void state_redraw(WindowState *state) {
   if (state->drawing_area == NULL) {
@@ -147,4 +153,17 @@ void state_shape_choose(WindowState *state, enum ShapeType type) {
   state->currentType = type;
   state_buffer_clear(state);
   state_redraw(state);
+}
+
+
+void state_moving_shape_set(WindowState *state, DrawableShape *shape, Point starting_point) {
+  state->action = MovingShape;
+  *state->moving_shape = shape;
+  state->previous_moving_shape_position = starting_point;
+}
+
+
+void state_moving_shape_move(WindowState *state, double x, double y) {
+  state->action = NoAction;
+  *state->moving_shape = NULL;
 }

@@ -8,6 +8,7 @@ enum DrawingAction {
   NoAction,
   Drawing,
   MovingPoint,
+  MovingShape,
   ActionCount,
 };
 
@@ -23,6 +24,10 @@ typedef struct {
 
   // point which will be moved if action is MovingPoint
   Point *moving_point;
+
+  // shape which will be moving id action is MovingShape
+  DrawableShape **moving_shape;
+  Point previous_moving_shape_position;
 
   // which shape is being drawn now
   enum ShapeType currentType;
@@ -52,7 +57,11 @@ void state_moving_point_set(WindowState *state, Point *point);
 
 void state_moving_point_move(WindowState *state, Point where);
 
-void state_shape_chose(WindowState *state, enum ShapeType type);
+void state_shape_choose(WindowState *state, enum ShapeType type);
+
+void state_moving_shape_set(WindowState *state, DrawableShape *shape, Point starting_point);
+
+void state_moving_shape_move(WindowState *state, double x, double y);
 
 void state_redraw(WindowState *state);
 
