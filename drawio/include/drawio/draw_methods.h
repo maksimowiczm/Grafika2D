@@ -1,6 +1,7 @@
 #pragma once
 
 #include "shapes/shapes.h"
+#include "drawio/cairo.h"
 
 
 void drawio_loop_method(DrawableShape drawableShape, cairo_t *cr, cairo_bool_t stroke, COLOR(r, g, b));
