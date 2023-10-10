@@ -1,10 +1,10 @@
 #include "drawing_app/context.h"
 
 #include "drawio/draw.h"
-#include "drawing_app/state/no_action_state.h"
 #include "drawio/draw_methods.h"
 #include "drawing_app/context/context.h"
 #include "drawing_app/context/internal_context.h"
+#include "drawing_app/state/state.h"
 
 
 inline bool context_handle_left_click(Context *context, Point mouse) {
@@ -24,10 +24,14 @@ inline void context_handle_mouse_movement(Context *context, Point mouse) {
 }
 
 Context *context_new(size_t shapes_max_count, size_t buffer_max_size) {
+  if (buffer_max_size < 2 || shapes_max_count < 1) {
+    return NULL;
+  }
+
   Context *context = malloc(sizeof(*context));
 
   context->state = malloc(sizeof(State *));
-  (*context->state) = no_action_state_get();
+  (*context->state) = state_get_state(NoAction);
 
   context->buffer.buffer_size = buffer_max_size;
   context->buffer.buffer_current_size = 0;
@@ -70,8 +74,12 @@ void context_free(Context *context, bool free_self) {
   free(context);
 }
 
-void context_state_change(Context *context, enum StateEnum newState) {
-  //todo
+void context_state_change(Context *context, enum StateEnum newType) {
+  State *newState = state_get_state(newType);
+
+  free(*context->state);
+  *context->state = newState;
+
   context_redraw(context);
 }
 
@@ -84,7 +92,9 @@ inline void context_redraw(Context *context) {
 }
 
 void context_set_shape(Context *context, enum ShapeType type) {
-  // todo
+  context->currentType = type;
+  internal_context_buffer_clear(context);
+  context_redraw(context);
 }
 
 static ssize_t

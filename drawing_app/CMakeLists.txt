@@ -8,6 +8,8 @@ add_library(
         src/context.c
         src/state/no_action_state.c
         src/internal_context.c
+        src/state/drawing_state.c
+        src/state/state.c
 )
 
 target_include_directories(drawing_app PUBLIC include)
