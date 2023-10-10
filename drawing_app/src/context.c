@@ -31,3 +31,15 @@ void context_free(Context *context, bool free_self) {
 void context_state_change(Context *context, enum StateEnum newState) {
   //todo
 }
+
+void context_draw(Context *context) {
+  // todo
+}
+
+void context_clear(Context *context) {
+  // todo
+}
+
+void context_set_shape(Context *context, enum ShapeType type) {
+  // todo
+}

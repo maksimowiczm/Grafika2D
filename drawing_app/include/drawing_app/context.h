@@ -15,3 +15,9 @@ bool context_handle_right_click_long(Context *context, Point mouse);
 void context_handle_mouse_movement(Context *context, Point mouse);
 
 void context_state_change(Context *context, enum StateEnum newState);
+
+void context_draw(Context *context);
+
+void context_clear(Context *context);
+
+void context_set_shape(Context *context, enum ShapeType type);

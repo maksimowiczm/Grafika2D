@@ -5,10 +5,10 @@
 
 
 enum DrawingAction {
-  NoAction,
-  Drawing,
-  MovingPoint,
-  MovingShape,
+//  NoAction,
+//  Drawing,
+//  MovingPoint,
+//  MovingShape,
   ActionCount,
 };
 

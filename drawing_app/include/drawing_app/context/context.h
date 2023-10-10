@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gtk/gtk.h"
 #include "shapes/shapes.h"
 #include "stdbool.h"
 
@@ -27,5 +28,7 @@ struct state {
 
 
 struct context {
+  GtkWidget* drawing_area;
+
   State **state;
 };

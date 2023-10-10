@@ -7,80 +7,83 @@
 #define BLACK 0, 0, 0
 
 static void
-do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer data) {
+do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer user_data) {
   cairo_set_source_rgb(cr, 0, 0, 0);
   cairo_set_line_width(cr, 1);
 
-  WindowState *state = data;
+  Context *context = user_data;
+  context_draw(context);
 
-  for (int i = 0; i < state->shapes_length; i++) {
-    DrawableShape *shape = state->shapes[i];
-    if (shape == NULL) {
-      continue;
-    }
-    bool shouldBeDrawn = shape->header.shouldBeDrawn;
-    if (shouldBeDrawn) {
-      shape->header.draw_method(*shape, cr, true, BLACK);
-      shape->header.isDrawn = true;
-    }
-  }
-
-  // mark moving shape
-  if (state->action == MovingShape) {
-    DrawableShape *shape = *state->moving_shape;
-    shape->header.draw_method(*shape, cr, true, RED);
-    drawio_points_mark(cr, shape->shape->points, shape->shape->points_length, RED);
-    return;
-  }
-
-  // mark buffer
-  drawio_points_mark(cr, state->buffer.buffer, state->buffer.buffer_current_size, RED);
-
-  // mark shapes
-  for (int i = 0; i < state->shapes_length; i++) {
-    if (state->shapes[i] == NULL) {
-      continue;
-    }
-    Point *points = state->shapes[i]->shape->points;
-    size_t length = state->shapes[i]->shape->points_length;
-    drawio_points_mark(cr, points, length, GREEN);
-  }
-
-  // mark moving point
-  if (state->action == MovingPoint) {
-    drawio_points_mark(cr, state->moving_point, 1, BLUE);
-  }
+//  WindowState *state = data;
+//
+//  for (int i = 0; i < state->shapes_length; i++) {
+//    DrawableShape *shape = state->shapes[i];
+//    if (shape == NULL) {
+//      continue;
+//    }
+//    bool shouldBeDrawn = shape->header.shouldBeDrawn;
+//    if (shouldBeDrawn) {
+//      shape->header.draw_method(*shape, cr, true, BLACK);
+//      shape->header.isDrawn = true;
+//    }
+//  }
+//
+//  // mark moving shape
+//  if (state->action == MovingShape) {
+//    DrawableShape *shape = *state->moving_shape;
+//    shape->header.draw_method(*shape, cr, true, RED);
+//    drawio_points_mark(cr, shape->shape->points, shape->shape->points_length, RED);
+//    return;
+//  }
+//
+//  // mark buffer
+//  drawio_points_mark(cr, state->buffer.buffer, state->buffer.buffer_current_size, RED);
+//
+//  // mark shapes
+//  for (int i = 0; i < state->shapes_length; i++) {
+//    if (state->shapes[i] == NULL) {
+//      continue;
+//    }
+//    Point *points = state->shapes[i]->shape->points;
+//    size_t length = state->shapes[i]->shape->points_length;
+//    drawio_points_mark(cr, points, length, GREEN);
+//  }
+//
+//  // mark moving point
+//  if (state->action == MovingPoint) {
+//    drawio_points_mark(cr, state->moving_point, 1, BLUE);
+//  }
 }
 
 static gboolean
-left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
-  WindowState *state = data;
-  return state_handle_left_click(state, (Point) {x, y});
+left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer user_data) {
+  Context *context = user_data;
+  return context_handle_left_click(context, (Point) {x, y});
 }
 
 static gboolean
-right_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
-  WindowState *state = data;
-  return state_handle_right_click(state, (Point) {x, y});
+right_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer user_data) {
+  Context *context = user_data;
+  return context_handle_right_click(context, (Point) {x, y});
 }
 
 static gboolean
-long_right_click(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
-  WindowState *state = data;
-  return state_handle_right_click_long(state, (Point) {x, y});
+long_right_click(GtkGestureClick *gesture, int n_press, double x, double y, gpointer user_data) {
+  Context *context = user_data;
+  return context_handle_right_click_long(context, (Point) {x, y});
 }
 
 static void
 mouse_movement(GtkEventControllerMotion *self, gdouble x, gdouble y, gpointer user_data) {
-  WindowState *state = user_data;
-  state_handle_mouse_movement(state, (Point) {x, y});
+  Context *context = user_data;
+  return context_handle_mouse_movement(context, (Point) {x, y});
 }
 
-GtkWidget *new_drawable_area(WindowState *state) {
+GtkWidget *new_drawable_area(Context *context) {
   GtkWidget *area = gtk_drawing_area_new();
-  state->drawing_area = area;
+  context->drawing_area = area;
 
-  gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (area), (GtkDrawingAreaDrawFunc) do_drawing, state, NULL);
+  gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (area), (GtkDrawingAreaDrawFunc) do_drawing, context, NULL);
   gtk_widget_set_size_request(area, 1000, 0); // todo
   gtk_widget_set_halign(area, GTK_ALIGN_FILL);
   gtk_widget_set_valign(area, GTK_ALIGN_FILL);
@@ -89,14 +92,14 @@ GtkWidget *new_drawable_area(WindowState *state) {
   GtkGesture *gesture_click = gtk_gesture_click_new();
   gtk_gesture_single_set_button(GTK_GESTURE_SINGLE(gesture_click), 1);
   gtk_widget_add_controller(area, GTK_EVENT_CONTROLLER (gesture_click));
-  g_signal_connect(gesture_click, "pressed", G_CALLBACK(left_clicked), state);
+  g_signal_connect(gesture_click, "pressed", G_CALLBACK(left_clicked), context);
 
 
   // right click
   GtkGesture *gesture_right_click = gtk_gesture_click_new();
   gtk_gesture_single_set_button(GTK_GESTURE_SINGLE(gesture_right_click), 3);
   gtk_widget_add_controller(area, GTK_EVENT_CONTROLLER (gesture_right_click));
-  g_signal_connect(gesture_right_click, "pressed", G_CALLBACK(right_clicked), state);
+  g_signal_connect(gesture_right_click, "pressed", G_CALLBACK(right_clicked), context);
 
 
   // real
@@ -104,11 +107,11 @@ GtkWidget *new_drawable_area(WindowState *state) {
   gtk_gesture_long_press_set_delay_factor(GTK_GESTURE_LONG_PRESS(gesture_long_press), .5);
   gtk_gesture_single_set_button(GTK_GESTURE_SINGLE(gesture_long_press), 3);
   gtk_widget_add_controller(area, GTK_EVENT_CONTROLLER (gesture_long_press));
-  g_signal_connect(gesture_long_press, "pressed", G_CALLBACK(long_right_click), state);
+  g_signal_connect(gesture_long_press, "pressed", G_CALLBACK(long_right_click), context);
 
   GtkEventController *controller = gtk_event_controller_motion_new();
   gtk_widget_add_controller(area, GTK_EVENT_CONTROLLER(controller));
-  g_signal_connect(controller, "motion", G_CALLBACK(mouse_movement), state);
+  g_signal_connect(controller, "motion", G_CALLBACK(mouse_movement), context);
 
   return area;
 }

@@ -3,9 +3,9 @@
 
 #define SHAPE_CLICKED(shape, name) \
 static gboolean \
-name(GtkWidget *gesture, gpointer data) { \
-  WindowState *state = data; \
-  state_shape_choose(state, shape); \
+name(GtkWidget *gesture, gpointer user_data) { \
+  Context* context = user_data; \
+  context_set_shape(context, shape); \
   return TRUE; \
 }
 
@@ -30,32 +30,33 @@ shape_button_new(const char *label,
 
 
 static gboolean
-button_clear_click(GtkWidget *button, gpointer data) {
-  WindowState *state = data;
-  state_shapes_clear(state);
-  state_buffer_clear(state);
-  state_redraw(state);
+button_clear_click(GtkWidget *button, gpointer user_data) {
+  Context* context = user_data;
+  context_clear(context);
+//  state_shapes_clear(state);
+//  state_buffer_clear(state);
+//  state_redraw(state);
   return TRUE;
 }
 
 
-GtkWidget *new_side_menu(WindowState *state) {
+GtkWidget *new_side_menu(Context* context) {
   GtkWidget *container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
-  GtkWidget *line = shape_button_new("line", line_click, state);
+  GtkWidget *line = shape_button_new("line", line_click, context);
   gtk_box_append(GTK_BOX(container), line);
 
-  GtkWidget *rectangle = shape_button_new("rectangle", rectangle_click, state);
+  GtkWidget *rectangle = shape_button_new("rectangle", rectangle_click, context);
   gtk_box_append(GTK_BOX(container), rectangle);
 
-  GtkWidget *quadrilateral = shape_button_new("quadrilateral", quadrilateral_click, state);
+  GtkWidget *quadrilateral = shape_button_new("quadrilateral", quadrilateral_click, context);
   gtk_box_append(GTK_BOX(container), quadrilateral);
 
-  GtkWidget *circle = shape_button_new("circle", circle_click, state);
+  GtkWidget *circle = shape_button_new("circle", circle_click, context);
   gtk_box_append(GTK_BOX(container), circle);
 
   GtkWidget *clear_button = gtk_button_new_with_label("clear");
-  g_signal_connect(clear_button, "clicked", G_CALLBACK(button_clear_click), state);
+  g_signal_connect(clear_button, "clicked", G_CALLBACK(button_clear_click), context);
   gtk_box_append(GTK_BOX(container), clear_button);
 
   return container;
