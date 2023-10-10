@@ -68,6 +68,7 @@ void context_free(Context *context, bool free_self) {
   if (*context->state != NULL) {
     free(*context->state);
   }
+  free(context->moving_shape);
   free(context->buffer.buffer);
   free(context->state);
   free(context->shapes);
