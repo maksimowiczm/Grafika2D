@@ -117,7 +117,7 @@ DrawableShape *state_shapes_closest_shape(WindowState *state, Point point) {
     }
   }
 
-  if (index != -1) {
+  if (index != -1 && closest < 10) {
     return state->shapes[index];
   }
 
@@ -126,7 +126,7 @@ DrawableShape *state_shapes_closest_shape(WindowState *state, Point point) {
 
 void state_moving_point_set(WindowState *state, Point *point) {
   state->moving_point = point;
-  state->action = Moving;
+  state->action = MovingPoint;
 }
 
 void state_moving_point_move(WindowState *state, Point where) {
@@ -141,4 +141,10 @@ void state_redraw(WindowState *state) {
   }
 
   gtk_widget_queue_draw(state->drawing_area);
+}
+
+void state_shape_choose(WindowState *state, enum ShapeType type) {
+  state->currentType = type;
+  state_buffer_clear(state);
+  state_redraw(state);
 }

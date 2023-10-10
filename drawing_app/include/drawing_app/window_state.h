@@ -7,7 +7,7 @@
 enum DrawingAction {
   NoAction,
   Drawing,
-  Moving,
+  MovingPoint,
   ActionCount,
 };
 
@@ -21,7 +21,7 @@ typedef struct {
   // lock some functionalities if user is using mouse for drawing
   enum DrawingAction action;
 
-  // point which will be moved if action is Moving
+  // point which will be moved if action is MovingPoint
   Point *moving_point;
 
   // which shape is being drawn now
@@ -51,6 +51,8 @@ DrawableShape *state_shapes_closest_shape(WindowState *state, Point point);
 void state_moving_point_set(WindowState *state, Point *point);
 
 void state_moving_point_move(WindowState *state, Point where);
+
+void state_shape_chose(WindowState *state, enum ShapeType type);
 
 void state_redraw(WindowState *state);
 

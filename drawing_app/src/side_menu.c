@@ -5,7 +5,7 @@
 static gboolean \
 name(GtkWidget *gesture, gpointer data) { \
   WindowState *state = data; \
-  state->currentType = shape; \
+  state_shape_choose(state, shape); \
   return TRUE; \
 }
 

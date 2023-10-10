@@ -38,7 +38,7 @@ do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer da
   }
 
   // mark moving point
-  if (state->action == Moving) {
+  if (state->action == MovingPoint) {
     drawio_points_mark(cr, state->moving_point, 1, BLUE);
   }
 }
@@ -86,7 +86,7 @@ left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer
 
   if (state->action == NoAction || state->action == Drawing) {
     return handle_draw(state, x, y);
-  } else if (state->action == Moving) {
+  } else if (state->action == MovingPoint) {
     return handle_move(state, x, y);
   }
 
@@ -98,7 +98,7 @@ static gboolean
 right_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
   WindowState *state = data;
 
-  if (state->action == Moving) {
+  if (state->action == MovingPoint) {
     state_buffer_clear(state);
     state->action = NoAction;
     state_redraw(state);
@@ -106,6 +106,9 @@ right_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointe
   }
 
   DrawableShape *shape = state_shapes_closest_shape(state, (Point) {x, y});
+  if (shape == NULL) {
+    return TRUE;
+  }
   state_buffer_clear(state);
 
   Point *closest = shapes_shape_closest_point(shape->shape, (Point) {x, y});
