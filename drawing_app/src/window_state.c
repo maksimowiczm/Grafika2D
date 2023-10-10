@@ -167,3 +167,35 @@ void state_moving_shape_move(WindowState *state, double x, double y) {
   state->action = NoAction;
   *state->moving_shape = NULL;
 }
+
+bool state_handle_left_click(WindowState *state, Point mouse) {
+  if (state->action == NoAction || state->action == Drawing) {
+    PointBuffer *buffer = &state->buffer;
+
+    // add points to state buffer
+    if (buffer->buffer_current_size + 1 > buffer->buffer_size) {
+      state_buffer_clear(state);
+      state_redraw(state);
+      return TRUE;
+    }
+    state_buffer_add(state, mouse);
+
+    // handle shape creation
+    if (state->buffer.buffer_current_size >= shapes_point_count_to_create(state->currentType)) {
+      state_shapes_add(state);
+    }
+
+    state_redraw(state);
+    return TRUE;
+  } else if (state->action == MovingPoint) {
+    state_moving_point_move(state, mouse);
+    state_redraw(state);
+    return TRUE;
+  } else if (state->action == MovingShape) {
+    state_moving_shape_move(state, mouse.x, mouse.y);
+    state_redraw(state);
+    return TRUE;
+  }
+
+  return TRUE;
+}

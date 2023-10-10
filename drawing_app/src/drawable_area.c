@@ -54,51 +54,9 @@ do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer da
 
 
 static gboolean
-handle_draw(WindowState *state, double x, double y) {
-  PointBuffer *buffer = &state->buffer;
-
-  // add points to state buffer
-  if (buffer->buffer_current_size + 1 > buffer->buffer_size) {
-    state_buffer_clear(state);
-    state_redraw(state);
-    return TRUE;
-  }
-  state_buffer_add(state, (Point) {x, y});
-
-  // handle shape creation
-  if (state->buffer.buffer_current_size >= shapes_point_count_to_create(state->currentType)) {
-    state_shapes_add(state);
-  }
-
-  state_redraw(state);
-  return TRUE;
-}
-
-
-static gboolean
-handle_move(WindowState *state, double x, double y) {
-  state_moving_point_move(state, (Point) {x, y});
-  state_redraw(state);
-  return TRUE;
-}
-
-
-static gboolean
 left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
   WindowState *state = data;
-
-
-  if (state->action == NoAction || state->action == Drawing) {
-    return handle_draw(state, x, y);
-  } else if (state->action == MovingPoint) {
-    return handle_move(state, x, y);
-  } else if (state->action == MovingShape) {
-    state_moving_shape_move(state, x, y);
-    state_redraw(state);
-    return TRUE;
-  }
-
-  return TRUE;
+  return state_handle_left_click(state, (Point){x,y});
 }
 
 
