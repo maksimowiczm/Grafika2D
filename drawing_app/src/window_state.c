@@ -226,3 +226,18 @@ bool state_handle_right_click(WindowState *state, Point mouse) {
 
   return TRUE;
 }
+
+bool state_handle_right_click_long(WindowState *state, Point mouse) {
+  if (state->action == MovingShape) {
+    return FALSE;
+  }
+
+  DrawableShape *shape = state_shapes_closest_shape(state, mouse);
+  if (shape == NULL) {
+    return TRUE;
+  }
+  state_moving_shape_set(state, shape, mouse);
+  state_redraw(state);
+
+  return TRUE;
+}

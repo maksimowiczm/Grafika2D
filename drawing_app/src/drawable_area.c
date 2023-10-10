@@ -52,38 +52,23 @@ do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer da
   }
 }
 
-
 static gboolean
 left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
   WindowState *state = data;
   return state_handle_left_click(state, (Point) {x, y});
 }
 
-
 static gboolean
 right_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
   WindowState *state = data;
-  state_handle_right_click(state, (Point) {x, y});
+  return state_handle_right_click(state, (Point) {x, y});
 }
-
 
 static gboolean
 long_right_click(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
   WindowState *state = data;
-  if (state->action == MovingShape) {
-    return FALSE;
-  }
-
-  DrawableShape *shape = state_shapes_closest_shape(state, (Point) {x, y});
-  if (shape == NULL) {
-    return TRUE;
-  }
-  state_moving_shape_set(state, shape, (Point) {x, y});
-  state_redraw(state);
-
-  return TRUE;
+  return state_handle_right_click_long(state, (Point) {x, y});
 }
-
 
 static void
 mouse_movement(GtkEventControllerMotion *self, gdouble x, gdouble y, gpointer user_data) {
@@ -101,7 +86,6 @@ mouse_movement(GtkEventControllerMotion *self, gdouble x, gdouble y, gpointer us
   shapes_shape_move(shape, vector);
   state_redraw(state);
 }
-
 
 GtkWidget *new_drawable_area(WindowState *state) {
   GtkWidget *area = gtk_drawing_area_new();
