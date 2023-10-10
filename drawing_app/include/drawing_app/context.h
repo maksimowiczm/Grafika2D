@@ -25,3 +25,5 @@ void context_set_shape(Context *context, enum ShapeType type);
 void context_shapes_add(Context *context);
 
 void context_clear_all(Context *context);
+
+DrawableShape *context_shapes_closest_to_point(Context *context, Point point);

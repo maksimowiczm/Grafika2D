@@ -40,6 +40,13 @@ struct state {
 struct context {
   GtkWidget *drawing_area;
 
+  // point which will be moved if action is MovingPoint
+  Point *moving_point;
+
+  // shape which will be moving id action is MovingShape
+  DrawableShape **moving_shape;
+  Point previous_moving_shape_position;
+
   State **state;
 
   // store points in buffer

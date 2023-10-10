@@ -38,6 +38,8 @@ Context *context_new(size_t shapes_max_count, size_t buffer_max_size) {
   context->shapes = malloc(sizeof(DrawableShape *) * context->shapes_length);
   memset(context->shapes, 0, sizeof(DrawableShape *) * context->shapes_length);
 
+  context->moving_shape = malloc(sizeof(DrawableShape *)); // idk ** or * ? i mean its the same but
+
   return context;
 }
 
@@ -70,6 +72,7 @@ void context_free(Context *context, bool free_self) {
 
 void context_state_change(Context *context, enum StateEnum newState) {
   //todo
+  context_redraw(context);
 }
 
 inline void context_draw(Context *context, cairo_t *cr) {
@@ -119,4 +122,28 @@ void context_shapes_add(Context *context) {
 void context_clear_all(Context *context) {
   internal_context_shapes_clear(context);
   internal_context_buffer_clear(context);
+}
+
+DrawableShape *context_shapes_closest_to_point(Context *context, Point point) {
+  double closest = DBL_MAX;
+  int index = -1;
+  for (int i = 0; i < context->shapes_length; i++) {
+    DrawableShape *drawable = *(context->shapes + i);
+    if (drawable == NULL || !drawable->header.isDrawn) {
+      continue;
+    }
+    Shape *shape = drawable->shape;
+
+    double distance = shapes_shape_distance(*shape, point);
+    if (distance < closest) {
+      closest = distance;
+      index = i;
+    }
+  }
+
+  if (index != -1 && closest < 10) {
+    return context->shapes[index];
+  }
+
+  return NULL;
 }

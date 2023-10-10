@@ -1,5 +1,7 @@
 #include "drawing_app/state/no_action_state.h"
 #include "drawio/cairo.h"
+#include "drawing_app/context/internal_context.h"
+#include "drawing_app/context.h"
 
 State *no_action_state_get() {
   State *state = malloc(sizeof(*state));
@@ -11,21 +13,41 @@ State *no_action_state_get() {
   return state;
 }
 
-// todo
 bool no_action_state_handle_left_click(Context *context, Point mouse) {
-  return 0;
+  internal_context_buffer_add(context, mouse);
+  context_state_change(context, Drawing);
+  return TRUE;
 }
 
 bool no_action_state_handle_right_click(Context *context, Point mouse) {
-  return 0;
+  DrawableShape *shape = context_shapes_closest_to_point(context, mouse);
+  if (shape == NULL) {
+    return TRUE;
+  }
+
+  internal_context_buffer_clear(context);
+
+  Point *closest = shapes_shape_closest_point(shape->shape, mouse);
+  context->moving_point = closest;
+
+  context_state_change(context, MovingPoint);
 }
 
 bool no_action_state_handle_right_click_long(Context *context, Point mouse) {
-  return 0;
+  DrawableShape *shape = context_shapes_closest_to_point(context, mouse);
+  if (shape == NULL) {
+    return TRUE;
+  }
+
+  *context->moving_shape = shape;
+  context->previous_moving_shape_position = mouse;
+
+  context_state_change(context, MovingShape);
+  return TRUE;
 }
 
-void no_action_state_handle_mouse_movement(Context *context, Point mouse) {
-
+inline void no_action_state_handle_mouse_movement(Context *context, Point mouse) {
+  return;
 }
 
 #define RED 255, 0, 0
