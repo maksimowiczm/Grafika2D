@@ -168,6 +168,7 @@ void state_moving_shape_move(WindowState *state, double x, double y) {
   *state->moving_shape = NULL;
 }
 
+
 bool state_handle_left_click(WindowState *state, Point mouse) {
   if (state->action == NoAction || state->action == Drawing) {
     PointBuffer *buffer = &state->buffer;
@@ -196,6 +197,32 @@ bool state_handle_left_click(WindowState *state, Point mouse) {
     state_redraw(state);
     return TRUE;
   }
+
+  return TRUE;
+}
+
+bool state_handle_right_click(WindowState *state, Point mouse) {
+  if (state->action == MovingShape) {
+    return FALSE;
+  }
+
+  if (state->action == MovingPoint) {
+    state_buffer_clear(state);
+    state->action = NoAction;
+    state_redraw(state);
+    return TRUE;
+  }
+
+  DrawableShape *shape = state_shapes_closest_shape(state, mouse);
+  if (shape == NULL) {
+    return TRUE;
+  }
+  state_buffer_clear(state);
+
+  Point *closest = shapes_shape_closest_point(shape->shape, mouse);
+  state_moving_point_set(state, closest);
+
+  state_redraw(state);
 
   return TRUE;
 }

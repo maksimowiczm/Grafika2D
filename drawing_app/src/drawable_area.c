@@ -56,37 +56,14 @@ do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer da
 static gboolean
 left_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
   WindowState *state = data;
-  return state_handle_left_click(state, (Point){x,y});
+  return state_handle_left_click(state, (Point) {x, y});
 }
 
 
 static gboolean
 right_clicked(GtkGestureClick *gesture, int n_press, double x, double y, gpointer data) {
   WindowState *state = data;
-
-  if (state->action == MovingShape) {
-    return FALSE;
-  }
-
-  if (state->action == MovingPoint) {
-    state_buffer_clear(state);
-    state->action = NoAction;
-    state_redraw(state);
-    return TRUE;
-  }
-
-  DrawableShape *shape = state_shapes_closest_shape(state, (Point) {x, y});
-  if (shape == NULL) {
-    return TRUE;
-  }
-  state_buffer_clear(state);
-
-  Point *closest = shapes_shape_closest_point(shape->shape, (Point) {x, y});
-  state_moving_point_set(state, closest);
-
-  state_redraw(state);
-
-  return TRUE;
+  state_handle_right_click(state, (Point) {x, y});
 }
 
 

@@ -70,3 +70,5 @@ void state_buffer_clear(WindowState *state);
 void state_buffer_add(WindowState *state, Point point);
 
 bool state_handle_left_click(WindowState *state, Point mouse);
+
+bool state_handle_right_click(WindowState *state, Point mouse);
