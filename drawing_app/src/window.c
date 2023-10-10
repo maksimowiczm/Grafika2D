@@ -29,7 +29,7 @@ context_populate_shapes(Context *context) {
 
 void drawing_app_activate(GtkApplication *app) {
   GtkWidget *window = gtk_application_window_new(app);
-  Context *context = context_new(1000);
+  Context *context = context_new(1000, 10);
   context_populate_shapes(context);
 
   gtk_window_set_default_size(GTK_WINDOW(window), 1280, 720);

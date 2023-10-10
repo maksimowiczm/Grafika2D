@@ -1,5 +1,7 @@
 #include "drawing_app/context.h"
+
 #include "drawio/draw.h"
+#include "drawing_app/state/no_action_state.h"
 
 inline bool context_handle_left_click(Context *context, Point mouse) {
   return (*context->state)->handle_left_click(context, mouse);
@@ -17,11 +19,17 @@ inline void context_handle_mouse_movement(Context *context, Point mouse) {
   return (*context->state)->handle_mouse_movement(context, mouse);
 }
 
-Context *context_new(size_t shapes_max_count) {
+Context *context_new(size_t shapes_max_count, size_t buffer_max_size) {
   Context *context = malloc(sizeof(*context));
 
   context->state = malloc(sizeof(State *));
+  (*context->state) = no_action_state_get();
 
+  context->buffer.buffer_size = buffer_max_size;
+  context->buffer.buffer_current_size = 0;
+  context->buffer.buffer = malloc(sizeof(Point) * buffer_max_size);
+
+  context->currentType = Line;
   context->shapes_length = shapes_max_count;
   context->shapes = malloc(sizeof(DrawableShape *) * context->shapes_length);
   memset(context->shapes, 0, sizeof(DrawableShape *) * context->shapes_length);
@@ -47,6 +55,10 @@ void context_free(Context *context, bool free_self) {
     return;
   }
 
+  if (*context->state != NULL) {
+    free(*context->state);
+  }
+  free(context->buffer.buffer);
   free(context->state);
   free(context->shapes);
   free(context);

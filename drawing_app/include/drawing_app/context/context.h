@@ -17,23 +17,41 @@ enum StateEnum {
 };
 
 
+typedef struct {
+  size_t buffer_size;
+  size_t buffer_current_size;
+  Point *buffer;
+} PointBuffer;
+
+
 struct state {
-  bool (*handle_left_click)(Context *, Point);
+  bool (*handle_left_click)(Context *context, Point mouse);
 
-  bool (*handle_right_click)(Context *, Point);
+  bool (*handle_right_click)(Context *context, Point mouse);
 
-  bool (*handle_right_click_long)(Context *, Point);
+  bool (*handle_right_click_long)(Context *context, Point mouse);
 
-  void (*handle_mouse_movement)(Context *, Point);
+  void (*handle_mouse_movement)(Context *context, Point mouse);
 };
 
 
 struct context {
-  GtkWidget* drawing_area;
+  GtkWidget *drawing_area;
 
   State **state;
 
+  // store points in buffer
+  PointBuffer buffer;
+
+  // which shape is being drawn now
+  enum ShapeType currentType;
+  
   // array of shapes
   size_t shapes_length;
   DrawableShape **shapes;
 };
+
+
+void context_buffer_clear(Context *context);
+
+void context_buffer_add(Context *context, Point point);
