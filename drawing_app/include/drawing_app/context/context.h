@@ -6,6 +6,14 @@
 typedef struct state State;
 typedef struct context Context;
 
+enum StateEnum {
+  NoAction,
+  Drawing,
+  MovingPoint,
+  MovingShape,
+  StateCount,
+};
+
 
 struct state {
   bool (*handle_left_click)(Context *, Point);
