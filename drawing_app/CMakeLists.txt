@@ -10,6 +10,7 @@ add_library(
         src/internal_context.c
         src/state/drawing_state.c
         src/state/state.c
+        src/state/moving_point_state.c
 )
 
 target_include_directories(drawing_app PUBLIC include)
