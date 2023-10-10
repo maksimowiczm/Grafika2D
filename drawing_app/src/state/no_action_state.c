@@ -31,6 +31,8 @@ bool no_action_state_handle_right_click(Context *context, Point mouse) {
   context->moving_point = closest;
 
   context_state_change(context, MovingPoint);
+
+  return TRUE;
 }
 
 bool no_action_state_handle_right_click_long(Context *context, Point mouse) {

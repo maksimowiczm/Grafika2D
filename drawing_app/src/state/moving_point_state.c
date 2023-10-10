@@ -29,7 +29,7 @@ bool moving_point_state_handle_right_click(Context *context, Point mouse) {
 }
 
 inline bool moving_point_state_handle_right_click_long(Context *context, Point mouse) {
-  return TRUE;
+  return no_action_state_handle_right_click_long(context, mouse);
 }
 
 inline void moving_point_state_handle_mouse_movement(Context *context, Point mouse) {
