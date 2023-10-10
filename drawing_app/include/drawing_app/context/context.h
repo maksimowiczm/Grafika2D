@@ -32,6 +32,8 @@ struct state {
   bool (*handle_right_click_long)(Context *context, Point mouse);
 
   void (*handle_mouse_movement)(Context *context, Point mouse);
+
+  void (*draw)(Context *context, cairo_t *cr);
 };
 
 

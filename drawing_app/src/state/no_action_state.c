@@ -1,4 +1,5 @@
 #include "drawing_app/state/no_action_state.h"
+#include "drawio/cairo.h"
 
 State *no_action_state_get() {
   State *state = malloc(sizeof(*state));
@@ -6,6 +7,7 @@ State *no_action_state_get() {
   state->handle_right_click = no_action_state_handle_right_click;
   state->handle_right_click_long = no_action_state_handle_right_click_long;
   state->handle_mouse_movement = no_action_state_handle_mouse_movement;
+  state->draw = no_action_state_draw;
   return state;
 }
 
@@ -24,4 +26,36 @@ bool no_action_state_handle_right_click_long(Context *context, Point mouse) {
 
 void no_action_state_handle_mouse_movement(Context *context, Point mouse) {
 
+}
+
+#define RED 255, 0, 0
+#define GREEN 0, 255, 0
+#define BLACK 0, 0, 0
+
+void no_action_state_draw(Context *context, cairo_t *cr) {
+  // draw shapes
+  for (int i = 0; i < context->shapes_length; i++) {
+    DrawableShape *shape = context->shapes[i];
+    if (shape == NULL) {
+      continue;
+    }
+    bool shouldBeDrawn = shape->header.shouldBeDrawn;
+    if (shouldBeDrawn) {
+      shape->header.draw_method(*shape, cr, true, BLACK);
+      shape->header.isDrawn = true;
+    }
+  }
+
+  // mark buffer
+  drawio_points_mark(cr, context->buffer.buffer, context->buffer.buffer_current_size, RED);
+
+  // mark shapes
+  for (int i = 0; i < context->shapes_length; i++) {
+    if (context->shapes[i] == NULL) {
+      continue;
+    }
+    Point *points = context->shapes[i]->shape->points;
+    size_t length = context->shapes[i]->shape->points_length;
+    drawio_points_mark(cr, points, length, GREEN);
+  }
 }

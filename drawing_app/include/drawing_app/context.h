@@ -16,7 +16,9 @@ void context_handle_mouse_movement(Context *context, Point mouse);
 
 void context_state_change(Context *context, enum StateEnum newState);
 
-void context_draw(Context *context);
+void context_draw(Context *context, cairo_t *cr);
+
+void context_redraw(Context *context);
 
 void context_set_shape(Context *context, enum ShapeType type);
 

@@ -72,8 +72,12 @@ void context_state_change(Context *context, enum StateEnum newState) {
   //todo
 }
 
-void context_draw(Context *context) {
-  // todo
+inline void context_draw(Context *context, cairo_t *cr) {
+  (*context->state)->draw(context, cr);
+}
+
+inline void context_redraw(Context *context) {
+  gtk_widget_queue_draw(context->drawing_area);
 }
 
 void context_set_shape(Context *context, enum ShapeType type) {

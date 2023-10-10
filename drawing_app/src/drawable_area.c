@@ -12,7 +12,7 @@ do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer us
   cairo_set_line_width(cr, 1);
 
   Context *context = user_data;
-  context_draw(context);
+  context_draw(context, cr);
 
 //  WindowState *state = data;
 //

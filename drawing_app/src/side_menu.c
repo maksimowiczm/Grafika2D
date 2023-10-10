@@ -33,7 +33,7 @@ static gboolean
 button_clear_click(GtkWidget *button, gpointer user_data) {
   Context* context = user_data;
   context_clear_all(context);
-  context_draw(context);
+  context_redraw(context);
   return TRUE;
 }
 
