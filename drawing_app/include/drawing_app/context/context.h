@@ -45,13 +45,8 @@ struct context {
 
   // which shape is being drawn now
   enum ShapeType currentType;
-  
+
   // array of shapes
   size_t shapes_length;
   DrawableShape **shapes;
 };
-
-
-void context_buffer_clear(Context *context);
-
-void context_buffer_add(Context *context, Point point);

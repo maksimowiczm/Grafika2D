@@ -7,6 +7,7 @@ add_library(
         src/side_menu.c
         src/context.c
         src/state/no_action_state.c
+        src/internal_context.c
 )
 
 target_include_directories(drawing_app PUBLIC include)
