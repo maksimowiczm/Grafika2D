@@ -3,6 +3,7 @@
 #include "gtk/gtk.h"
 #include "shapes/shapes.h"
 #include "stdbool.h"
+#include "drawio/shapes/shapes.h"
 
 typedef struct state State;
 typedef struct context Context;
@@ -31,4 +32,8 @@ struct context {
   GtkWidget* drawing_area;
 
   State **state;
+
+  // array of shapes
+  size_t shapes_length;
+  DrawableShape **shapes;
 };
