@@ -41,8 +41,6 @@ void moving_shape_state_handle_mouse_movement(Context *context, Point mouse) {
   context_redraw(context);
 }
 
-#define RED 255, 0, 0
-
 void moving_shape_state_draw(Context *context, cairo_t *cr) {
   no_action_state_draw(context, cr);
 

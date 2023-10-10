@@ -37,8 +37,6 @@ inline void moving_point_state_handle_mouse_movement(Context *context, Point mou
   return;
 }
 
-#define BLUE 0, 0, 255
-
 void moving_point_state_draw(Context *context, cairo_t *cr) {
   no_action_state_draw(context, cr);
   drawio_points_mark(cr, context->moving_point, 1, BLUE);

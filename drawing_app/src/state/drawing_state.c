@@ -50,7 +50,6 @@ inline void drawing_state_handle_mouse_movement(Context *context, Point mouse) {
   return;
 }
 
-
 inline void drawing_state_draw(Context *context, cairo_t *cr) {
   return no_action_state_draw(context, cr);
 }

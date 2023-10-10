@@ -53,10 +53,6 @@ inline void no_action_state_handle_mouse_movement(Context *context, Point mouse)
   return;
 }
 
-#define RED 255, 0, 0
-#define GREEN 0, 255, 0
-#define BLACK 0, 0, 0
-
 void no_action_state_draw(Context *context, cairo_t *cr) {
   // draw shapes
   for (int i = 0; i < context->shapes_length; i++) {
