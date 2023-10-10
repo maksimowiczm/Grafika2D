@@ -3,6 +3,7 @@
 #include "drawing_app/context/internal_context.h"
 #include "drawing_app/context.h"
 
+
 State *no_action_state_get() {
   State *state = malloc(sizeof(*state));
   state->handle_left_click = no_action_state_handle_left_click;

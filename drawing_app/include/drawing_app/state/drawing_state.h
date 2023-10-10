@@ -2,6 +2,7 @@
 
 #include "drawing_app/context/context.h"
 
+
 State *drawing_state_get();
 
 bool drawing_state_handle_left_click(Context *context, Point mouse);

@@ -1,4 +1,5 @@
 #include "drawing_app/state/state.h"
+
 #include "drawing_app/state/no_action_state.h"
 #include "drawing_app/state/drawing_state.h"
 #include "drawing_app/state/moving_point_state.h"

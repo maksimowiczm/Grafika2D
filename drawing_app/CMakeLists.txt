@@ -3,7 +3,6 @@ add_library(
         src/window.c
         src/main_container.c
         src/drawable_area.c
-        src/window_state.c
         src/side_menu.c
         src/context.c
         src/state/no_action_state.c

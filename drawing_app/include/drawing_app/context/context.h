@@ -5,8 +5,10 @@
 #include "stdbool.h"
 #include "drawio/shapes/shapes.h"
 
+
 typedef struct state State;
 typedef struct context Context;
+
 
 enum StateEnum {
   NoAction,

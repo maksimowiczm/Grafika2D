@@ -1,6 +1,7 @@
 #include "drawing_app/widgets/drawable_area.h"
 #include "drawio/cairo.h"
 
+
 #define RED 255, 0, 0
 #define GREEN 0, 255, 0
 #define BLUE 0, 0, 255
@@ -13,46 +14,6 @@ do_drawing(GtkDrawingArea *area, cairo_t *cr, int width, int height, gpointer us
 
   Context *context = user_data;
   context_draw(context, cr);
-
-//  WindowState *state = data;
-//
-//  for (int i = 0; i < state->shapes_length; i++) {
-//    DrawableShape *shape = state->shapes[i];
-//    if (shape == NULL) {
-//      continue;
-//    }
-//    bool shouldBeDrawn = shape->header.shouldBeDrawn;
-//    if (shouldBeDrawn) {
-//      shape->header.draw_method(*shape, cr, true, BLACK);
-//      shape->header.isDrawn = true;
-//    }
-//  }
-//
-//  // mark moving shape
-//  if (state->action == MovingShape) {
-//    DrawableShape *shape = *state->moving_shape;
-//    shape->header.draw_method(*shape, cr, true, RED);
-//    drawio_points_mark(cr, shape->shape->points, shape->shape->points_length, RED);
-//    return;
-//  }
-//
-//  // mark buffer
-//  drawio_points_mark(cr, state->buffer.buffer, state->buffer.buffer_current_size, RED);
-//
-//  // mark shapes
-//  for (int i = 0; i < state->shapes_length; i++) {
-//    if (state->shapes[i] == NULL) {
-//      continue;
-//    }
-//    Point *points = state->shapes[i]->shape->points;
-//    size_t length = state->shapes[i]->shape->points_length;
-//    drawio_points_mark(cr, points, length, GREEN);
-//  }
-//
-//  // mark moving point
-//  if (state->action == MovingPoint) {
-//    drawio_points_mark(cr, state->moving_point, 1, BLUE);
-//  }
 }
 
 static gboolean

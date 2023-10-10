@@ -1,4 +1,5 @@
 #include "drawing_app/state/moving_shape_state.h"
+
 #include "drawing_app/context.h"
 #include "drawing_app/context/internal_context.h"
 #include "drawing_app/state/no_action_state.h"
