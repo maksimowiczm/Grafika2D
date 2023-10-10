@@ -74,3 +74,5 @@ bool state_handle_left_click(WindowState *state, Point mouse);
 bool state_handle_right_click(WindowState *state, Point mouse);
 
 bool state_handle_right_click_long(WindowState *state, Point mouse);
+
+void state_handle_mouse_movement(WindowState *state, Point mouse);

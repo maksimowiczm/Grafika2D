@@ -241,3 +241,18 @@ bool state_handle_right_click_long(WindowState *state, Point mouse) {
 
   return TRUE;
 }
+
+void state_handle_mouse_movement(WindowState *state, Point mouse) {
+  if (state->action != MovingShape) {
+    return;
+  }
+
+  Vector2D vector = {-(state->previous_moving_shape_position.x - mouse.x),
+                     -(state->previous_moving_shape_position.y - mouse.y)};
+  state->previous_moving_shape_position.x = mouse.x;
+  state->previous_moving_shape_position.y = mouse.y;
+
+  Shape *shape = (*state->moving_shape)->shape;
+  shapes_shape_move(shape, vector);
+  state_redraw(state);
+}

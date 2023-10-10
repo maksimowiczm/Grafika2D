@@ -73,18 +73,7 @@ long_right_click(GtkGestureClick *gesture, int n_press, double x, double y, gpoi
 static void
 mouse_movement(GtkEventControllerMotion *self, gdouble x, gdouble y, gpointer user_data) {
   WindowState *state = user_data;
-  if (state->action != MovingShape) {
-    return;
-  }
-
-  Vector2D vector = {-(state->previous_moving_shape_position.x - x),
-                     -(state->previous_moving_shape_position.y - y)};
-  state->previous_moving_shape_position.x = x;
-  state->previous_moving_shape_position.y = y;
-
-  Shape *shape = (*state->moving_shape)->shape;
-  shapes_shape_move(shape, vector);
-  state_redraw(state);
+  state_handle_mouse_movement(state, (Point) {x, y});
 }
 
 GtkWidget *new_drawable_area(WindowState *state) {
