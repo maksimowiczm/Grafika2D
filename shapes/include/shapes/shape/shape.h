@@ -14,3 +14,5 @@ void shapes_shape_free(Shape *shape, bool free_self);
 double shapes_shape_distance(Shape shape, Point point);
 
 Point *shapes_shape_closest_point(Shape *shape, Point point);
+
+void shapes_shape_move(Shape *shape, Vector2D vector);

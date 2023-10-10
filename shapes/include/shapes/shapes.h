@@ -4,6 +4,7 @@
 
 typedef struct shape Shape;
 typedef struct point Point;
+typedef struct point Vector2D;
 typedef struct shape_header ShapeHeader;
 
 

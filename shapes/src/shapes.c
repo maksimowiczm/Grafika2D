@@ -67,3 +67,10 @@ Point *shapes_shape_closest_point(Shape *shape, Point point) {
 
   return result;
 }
+
+void shapes_shape_move(Shape *shape, Vector2D vector) {
+  for (int i = 0; i < shape->points_length; i++) {
+    shape->points[i].x += vector.x;
+    shape->points[i].y += vector.y;
+  }
+}
