@@ -7,7 +7,8 @@
 #include "shapes/rectangle/rectangle.h"
 
 
-void drawio_loop_method(DrawableShape shape, cairo_t *cr, cairo_bool_t stroke) {
+void drawio_loop_method(DrawableShape shape, cairo_t *cr, cairo_bool_t stroke, COLOR(red, green, blue)) {
+  cairo_set_source_rgb(cr, red, green, blue);
   ShapeLines *shapeLines = shapes_get_lines(shape.shape);
 
   for (int i = 0; i < shapeLines->length; i++) {
@@ -24,23 +25,24 @@ void drawio_loop_method(DrawableShape shape, cairo_t *cr, cairo_bool_t stroke) {
   shapes_lines_free(shapeLines, true);
 }
 
-void drawio_circle_method(DrawableShape drawableShape, cairo_t *cr, cairo_bool_t stroke) {
+void drawio_circle_method(DrawableShape drawableShape, cairo_t *cr, cairo_bool_t stroke, COLOR(red, green, blue)) {
+  cairo_set_source_rgb(cr, red, green, blue);
   Shape *circle = drawableShape.shape;
   Point center = shapes_circle_get_center(*circle);
   double radius = shapes_circle_radius(*circle);
   drawio_circle_draw(cr, center, radius, stroke);
 }
 
-void drawio_rectangle_method(DrawableShape drawableShape, cairo_t *ct, cairo_bool_t stroke) {
+void drawio_rectangle_method(DrawableShape drawableShape, cairo_t *ct, cairo_bool_t stroke, COLOR(red, green, blue)) {
   Shape *rectangle = drawableShape.shape;
   Shape *quadrilateral = shapes_rectangle_to_quadrilateral(*rectangle);
   DrawableShape quadrilateral_DRAW = {0};
   quadrilateral_DRAW.shape = quadrilateral;
-  drawio_loop_method(quadrilateral_DRAW, ct, stroke);
+  drawio_loop_method(quadrilateral_DRAW, ct, stroke, red, green, blue);
   shapes_shape_free(quadrilateral, true);
 }
 
-void (*drawio_get_draw_method(enum ShapeType type))(DrawableShape, cairo_t *, cairo_bool_t) {
+void (*drawio_get_draw_method(enum ShapeType type))(DrawableShape, cairo_t *, cairo_bool_t, COLOR(r, g, b)) {
   switch (type) {
     case PointAsShape:
       return NULL;
