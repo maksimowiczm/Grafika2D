@@ -18,6 +18,8 @@ void context_state_change(Context *context, enum StateEnum newState);
 
 void context_draw(Context *context);
 
-void context_clear(Context *context);
-
 void context_set_shape(Context *context, enum ShapeType type);
+
+void context_shapes_add(Context *context);
+
+void context_clear_all(Context *context);

@@ -2,6 +2,10 @@
 
 #include "drawio/draw.h"
 #include "drawing_app/state/no_action_state.h"
+#include "drawio/draw_methods.h"
+#include "drawing_app/context/context.h"
+#include "drawing_app/context/internal_context.h"
+
 
 inline bool context_handle_left_click(Context *context, Point mouse) {
   return (*context->state)->handle_left_click(context, mouse);
@@ -72,10 +76,43 @@ void context_draw(Context *context) {
   // todo
 }
 
-void context_clear(Context *context) {
+void context_set_shape(Context *context, enum ShapeType type) {
   // todo
 }
 
-void context_set_shape(Context *context, enum ShapeType type) {
-  // todo
+static ssize_t
+internal_context_add_shape(Context *context, DrawableShape *shape, bool override) {
+  for (int i = 0; i < context->shapes_length; i++) {
+    if (context->shapes[i] == NULL) {
+      *(context->shapes + i) = shape;
+      return i;
+    }
+  }
+
+  static size_t override_index = 0;
+  if (override) {
+    // free memory
+    DrawableShape *drawableShape = *(context->shapes + override_index);
+    shapes_shape_free(drawableShape->shape, true);
+    drawio_drawableShape_free(*(context->shapes + override_index), true);
+
+    // override
+    *(context->shapes + override_index) = shape;
+    override_index = (override_index + 1) % context->shapes_length;
+    return override_index - 1;
+  }
+
+  return -1;
+}
+
+void context_shapes_add(Context *context) {
+  Shape *shape = shapes_new_shape(context->currentType, context->buffer.buffer);
+  DrawableShape *drawableShape = drawio_new_drawableShape(shape, drawio_get_draw_method(context->currentType));
+  internal_context_add_shape(context, drawableShape, true);
+  internal_context_buffer_clear(context);
+}
+
+void context_clear_all(Context *context) {
+  internal_context_shapes_clear(context);
+  internal_context_buffer_clear(context);
 }

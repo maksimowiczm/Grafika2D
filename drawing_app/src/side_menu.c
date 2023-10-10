@@ -32,10 +32,8 @@ shape_button_new(const char *label,
 static gboolean
 button_clear_click(GtkWidget *button, gpointer user_data) {
   Context* context = user_data;
-  context_clear(context);
-//  state_shapes_clear(state);
-//  state_buffer_clear(state);
-//  state_redraw(state);
+  context_clear_all(context);
+  context_draw(context);
   return TRUE;
 }
 
