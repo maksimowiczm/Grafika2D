@@ -83,6 +83,33 @@ void no_action_state_draw(Context *context, cairo_t *cr) {
   }
 }
 
-inline gboolean no_action_shape_state_handle_draw_button_click(Context *context) {
+
+static gboolean
+handle_draw_error(Context *context) {
+  internal_context_buffer_clear(context);
+  return TRUE;
+}
+
+gboolean no_action_shape_state_handle_draw_button_click(Context *context) {
+  for (int i = 0; i < shapes_point_count_to_create(context->currentType); i++) {
+    GtkWidget *container = context->user_input.inputs[i];
+    GtkWidget *entry = gtk_widget_get_last_child(container);
+    const char *buffer = gtk_entry_buffer_get_text(gtk_entry_get_buffer(GTK_ENTRY(entry)));
+
+    // on error
+    if (buffer == NULL) {
+      return handle_draw_error(context);
+    }
+
+    Point point = shapes_point_parse_from_string(buffer);
+    if (point.x == -1 && point.y == -1) {
+      return handle_draw_error(context);
+    }
+
+    internal_context_buffer_add(context, point);
+  }
+
+  context_shapes_add(context);
+  context_redraw(context);
   return TRUE;
 }
