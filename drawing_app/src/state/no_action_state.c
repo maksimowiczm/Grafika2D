@@ -17,12 +17,12 @@ State *no_action_state_get() {
 bool no_action_state_handle_left_click(Context *context, Point mouse) {
   internal_context_buffer_add(context, mouse);
   internal_context_hide_user_inputs(context);
-  context_state_change(context, Drawing);
+  internal_context_state_change(context, Drawing);
   return TRUE;
 }
 
 bool no_action_state_handle_right_click(Context *context, Point mouse) {
-  DrawableShape *shape = context_shapes_closest_to_point(context, mouse);
+  DrawableShape *shape = internal_context_shapes_closest_to_point(context, mouse);
   if (shape == NULL) {
     return TRUE;
   }
@@ -32,13 +32,13 @@ bool no_action_state_handle_right_click(Context *context, Point mouse) {
   Point *closest = shapes_shape_closest_point(shape->shape, mouse);
   context->moving_point = closest;
 
-  context_state_change(context, MovingPoint);
+  internal_context_state_change(context, MovingPoint);
 
   return TRUE;
 }
 
 bool no_action_state_handle_right_click_long(Context *context, Point mouse) {
-  DrawableShape *shape = context_shapes_closest_to_point(context, mouse);
+  DrawableShape *shape = internal_context_shapes_closest_to_point(context, mouse);
   if (shape == NULL) {
     return TRUE;
   }
@@ -48,7 +48,7 @@ bool no_action_state_handle_right_click_long(Context *context, Point mouse) {
 
   internal_context_load_shape_to_user_input(context, shape);
 
-  context_state_change(context, MovingShape);
+  internal_context_state_change(context, MovingShape);
   return TRUE;
 }
 
@@ -109,7 +109,7 @@ gboolean no_action_shape_state_handle_draw_button_click(Context *context) {
     internal_context_buffer_add(context, point);
   }
 
-  context_shapes_add(context);
+  internal_context_shapes_add(context);
   context_redraw(context);
   return TRUE;
 }

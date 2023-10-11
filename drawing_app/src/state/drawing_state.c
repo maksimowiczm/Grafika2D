@@ -23,16 +23,16 @@ bool drawing_state_handle_left_click(Context *context, Point mouse) {
   // add points to state buffer
   if (buffer->buffer_current_size + 1 > buffer->buffer_size) {
     internal_context_buffer_clear(context);
-    context_state_change(context, NoAction);
+    internal_context_state_change(context, NoAction);
     return TRUE;
   }
   internal_context_buffer_add(context, mouse);
 
   // handle shape creation
   if (context->buffer.buffer_current_size >= shapes_point_count_to_create(context->currentType)) {
-    context_shapes_add(context);
+    internal_context_shapes_add(context);
     internal_context_show_user_inputs(context);
-    context_state_change(context, NoAction);
+    internal_context_state_change(context, NoAction);
   }
 
   context_redraw(context);

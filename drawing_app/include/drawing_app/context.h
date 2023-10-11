@@ -2,7 +2,6 @@
 
 #include "drawing_app/context/context.h"
 
-
 Context *context_new(size_t shapes_max_count, size_t buffer_max_size);
 
 void context_free(Context *context, bool free_self);
@@ -17,16 +16,10 @@ void context_handle_mouse_movement(Context *context, Point mouse);
 
 bool handle_draw_button_click(Context *context);
 
-void context_state_change(Context *context, enum StateEnum newState);
-
 void context_draw(Context *context, cairo_t *cr);
 
 void context_redraw(Context *context);
 
 void context_set_shape(Context *context, enum ShapeType type);
 
-void context_shapes_add(Context *context);
-
 void context_clear_all(Context *context);
-
-DrawableShape *context_shapes_closest_to_point(Context *context, Point point);

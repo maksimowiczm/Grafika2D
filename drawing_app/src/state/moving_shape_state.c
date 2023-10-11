@@ -19,7 +19,7 @@ State *moving_shape_state_get() {
 
 bool moving_shape_state_handle_left_click(Context *context, Point mouse) {
   *context->moving_shape = NULL;
-  context_state_change(context, NoAction);
+  internal_context_state_change(context, NoAction);
   return TRUE;
 }
 

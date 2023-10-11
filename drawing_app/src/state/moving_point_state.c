@@ -20,13 +20,13 @@ State *moving_point_state_get() {
 bool moving_point_state_handle_left_click(Context *context, Point mouse) {
   context->moving_point->x = mouse.x;
   context->moving_point->y = mouse.y;
-  context_state_change(context, NoAction);
+  internal_context_state_change(context, NoAction);
   return TRUE;
 }
 
 bool moving_point_state_handle_right_click(Context *context, Point mouse) {
   internal_context_buffer_clear(context);
-  context_state_change(context, NoAction);
+  internal_context_state_change(context, NoAction);
   return TRUE;
 }
 
