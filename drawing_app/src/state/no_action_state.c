@@ -10,6 +10,7 @@ State *no_action_state_get() {
   state->handle_right_click = no_action_state_handle_right_click;
   state->handle_right_click_long = no_action_state_handle_right_click_long;
   state->handle_mouse_movement = no_action_state_handle_mouse_movement;
+  state->handle_draw_button_click = no_action_shape_state_handle_draw_button_click;
   state->draw = no_action_state_draw;
   return state;
 }
@@ -80,4 +81,8 @@ void no_action_state_draw(Context *context, cairo_t *cr) {
     size_t length = context->shapes[i]->shape->points_length;
     drawio_points_mark(cr, points, length, GREEN);
   }
+}
+
+inline gboolean no_action_shape_state_handle_draw_button_click(Context *context) {
+  return TRUE;
 }

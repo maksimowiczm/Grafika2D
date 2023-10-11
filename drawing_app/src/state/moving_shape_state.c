@@ -12,6 +12,7 @@ State *moving_shape_state_get() {
   state->handle_right_click = moving_shape_state_handle_right_click;
   state->handle_right_click_long = moving_shape_state_handle_right_click_long;
   state->handle_mouse_movement = moving_shape_state_handle_mouse_movement;
+  state->handle_draw_button_click = moving_shape_state_handle_draw_button_click;
   state->draw = moving_shape_state_draw;
   return state;
 }
@@ -47,4 +48,8 @@ void moving_shape_state_draw(Context *context, cairo_t *cr) {
   DrawableShape *shape = *context->moving_shape;
   shape->header.draw_method(*shape, cr, true, RED);
   drawio_points_mark(cr, shape->shape->points, shape->shape->points_length, RED);
+}
+
+inline gboolean moving_shape_state_handle_draw_button_click(Context *context) {
+  return TRUE;
 }

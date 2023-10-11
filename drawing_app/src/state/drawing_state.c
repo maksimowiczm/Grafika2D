@@ -12,6 +12,7 @@ State *drawing_state_get() {
   state->handle_right_click = drawing_state_handle_right_click;
   state->handle_right_click_long = drawing_state_handle_right_click_long;
   state->handle_mouse_movement = drawing_state_handle_mouse_movement;
+  state->handle_draw_button_click = drawing_state_handle_draw_button_click;
   state->draw = drawing_state_draw;
   return state;
 }
@@ -53,4 +54,8 @@ inline void drawing_state_handle_mouse_movement(Context *context, Point mouse) {
 
 inline void drawing_state_draw(Context *context, cairo_t *cr) {
   return no_action_state_draw(context, cr);
+}
+
+inline gboolean drawing_state_handle_draw_button_click(Context *context) {
+  return TRUE;
 }

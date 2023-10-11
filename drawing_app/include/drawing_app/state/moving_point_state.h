@@ -14,3 +14,5 @@ bool moving_point_state_handle_right_click_long(Context *context, Point mouse);
 void moving_point_state_handle_mouse_movement(Context *context, Point mouse);
 
 void moving_point_state_draw(Context *context, cairo_t *cr);
+
+gboolean moving_point_state_handle_draw_button_click(Context *context);

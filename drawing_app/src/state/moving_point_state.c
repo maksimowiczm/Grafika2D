@@ -12,6 +12,7 @@ State *moving_point_state_get() {
   state->handle_right_click = moving_point_state_handle_right_click;
   state->handle_right_click_long = moving_point_state_handle_right_click_long;
   state->handle_mouse_movement = moving_point_state_handle_mouse_movement;
+  state->handle_draw_button_click = moving_point_state_handle_draw_button_click;
   state->draw = moving_point_state_draw;
   return state;
 }
@@ -40,4 +41,8 @@ inline void moving_point_state_handle_mouse_movement(Context *context, Point mou
 void moving_point_state_draw(Context *context, cairo_t *cr) {
   no_action_state_draw(context, cr);
   drawio_points_mark(cr, context->moving_point, 1, BLUE);
+}
+
+inline gboolean moving_point_state_handle_draw_button_click(Context *context) {
+  return TRUE;
 }
