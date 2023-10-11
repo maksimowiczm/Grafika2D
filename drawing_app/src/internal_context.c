@@ -45,16 +45,16 @@ void internal_context_show_user_inputs(Context *context) {
   }
 }
 
-void internal_context_load_shape_to_user_input(Context *context, DrawableShape *shape) {
+void internal_context_load_shape_to_user_input(Context *context, Shape *shape) {
   for (int i = 0; i < shapes_point_count_to_create(context->currentType); i++) {
     GtkWidget *container = context->user_input.inputs[i];
     GtkWidget *entry = gtk_widget_get_last_child(container);
     GtkEntryBuffer *buffer = gtk_entry_get_buffer(GTK_ENTRY(entry));
-    Point point = shape->shape->points[i];
+    Point point = shape->points[i];
     char *string = shapes_point_to_string_int(point);
     gtk_entry_buffer_set_text(buffer, string, strlen(string));
     free(string);
-    context_set_shape(context, shape->shape->header.type);
+    context_set_shape(context, shape->header.type);
     internal_context_show_user_inputs(context);
   }
 }
@@ -126,4 +126,8 @@ void internal_context_state_change(Context *context, enum StateEnum newType) {
   *context->state = newState;
 
   context_redraw(context);
+}
+
+void internal_context_apply_user_input_move(Context *context) {
+
 }

@@ -5,7 +5,6 @@
 #include "drawing_app/state/no_action_state.h"
 #include "drawio/cairo.h"
 
-
 State *moving_shape_state_get() {
   State *state = malloc(sizeof(*state));
   state->handle_left_click = moving_shape_state_handle_left_click;
@@ -40,6 +39,7 @@ void moving_shape_state_handle_mouse_movement(Context *context, Point mouse) {
   Shape *shape = (*context->moving_shape)->shape;
   shapes_shape_move(shape, vector);
   context_redraw(context);
+  internal_context_load_shape_to_user_input(context, shape);
 }
 
 void moving_shape_state_draw(Context *context, cairo_t *cr) {
