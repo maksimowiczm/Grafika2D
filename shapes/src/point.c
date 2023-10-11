@@ -1,7 +1,7 @@
 #include "shapes/point/point.h"
 
 #include "math.h"
-#include "stdio.h"
+#include "string.h"
 #include "stdlib.h"
 
 
@@ -34,7 +34,7 @@ inline double shapes_point_distance_between_points(Point from, Point to) {
 void shapes_point_parse_from_string_to_reference(const char *input, Point **point) {
   char *end;
   double x = strtod(input, &end);
-  if (input == end) {
+  if (input == end || strlen(end) == 0) {
     *point = NULL;
     return;
   }
@@ -51,5 +51,8 @@ inline double shapes_point_distance_to_point(Shape shape, Point point) {
 Point shapes_point_parse_from_string(const char *input) {
   Point result, *ptr = &result;
   shapes_point_parse_from_string_to_reference(input, &ptr);
+  if (ptr == NULL) {
+    return (Point) {-1, -1};
+  }
   return result;
 }
