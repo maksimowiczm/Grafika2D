@@ -51,9 +51,11 @@ void internal_context_load_shape_to_user_input(Context *context, DrawableShape *
     GtkWidget *entry = gtk_widget_get_last_child(container);
     GtkEntryBuffer *buffer = gtk_entry_get_buffer(GTK_ENTRY(entry));
     Point point = shape->shape->points[i];
-    char *string = shapes_point_to_string(point);
+    char *string = shapes_point_to_string_int(point);
     gtk_entry_buffer_set_text(buffer, string, strlen(string));
     free(string);
+    context_set_shape(context, shape->shape->header.type);
+    internal_context_show_user_inputs(context);
   }
 }
 
