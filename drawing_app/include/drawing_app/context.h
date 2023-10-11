@@ -15,6 +15,8 @@ bool context_handle_right_click_long(Context *context, Point mouse);
 
 void context_handle_mouse_movement(Context *context, Point mouse);
 
+bool handle_draw_button_click(Context *context);
+
 void context_state_change(Context *context, enum StateEnum newState);
 
 void context_draw(Context *context, cairo_t *cr);

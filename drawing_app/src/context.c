@@ -161,3 +161,7 @@ DrawableShape *context_shapes_closest_to_point(Context *context, Point point) {
 
   return NULL;
 }
+
+inline bool handle_draw_button_click(Context *context) {
+  return (*context->state)->handle_draw_button_click(context);
+}
