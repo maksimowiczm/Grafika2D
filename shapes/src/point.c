@@ -3,7 +3,7 @@
 #include "math.h"
 #include "string.h"
 #include "stdlib.h"
-
+#include "stdio.h"
 
 static void
 set_header(Shape *point) {
@@ -55,4 +55,10 @@ Point shapes_point_parse_from_string(const char *input) {
     return (Point) {-1, -1};
   }
   return result;
+}
+
+char *shapes_point_to_string(Point point) {
+  char *str = malloc(sizeof(char) * 100);
+  sprintf(str, "%lf,%lf", point.x, point.y);
+  return str;
 }
