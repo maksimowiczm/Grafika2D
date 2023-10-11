@@ -27,3 +27,18 @@ void internal_context_initialize_user_inputs(Context *context, size_t length) {
 void internal_context_free_user_inputs(Context *context) {
   free(context->user_input.inputs);
 }
+
+void internal_context_hide_user_inputs(Context *context) {
+  for (int i = 0; i < context->user_input.inputs_length; i++) {
+    GtkWidget *input = context->user_input.inputs[i];
+    gtk_widget_set_visible(input, false);
+  }
+}
+
+void internal_context_show_user_inputs(Context *context) {
+  internal_context_hide_user_inputs(context);
+  for (int i = 0; i < shapes_point_count_to_create(context->currentType); i++) {
+    GtkWidget *input = context->user_input.inputs[i];
+    gtk_widget_set_visible(input, true);
+  }
+}
