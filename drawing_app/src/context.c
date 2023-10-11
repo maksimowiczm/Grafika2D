@@ -44,6 +44,8 @@ Context *context_new(size_t shapes_max_count, size_t buffer_max_size) {
 
   context->moving_shape = malloc(sizeof(DrawableShape *)); // idk ** or * ? i mean its the same but
 
+  internal_context_initialize_user_inputs(context, buffer_max_size);
+
   return context;
 }
 
@@ -65,6 +67,7 @@ void context_free(Context *context, bool free_self) {
     return;
   }
 
+  internal_context_free_user_inputs(context);
   if (*context->state != NULL) {
     free(*context->state);
   }

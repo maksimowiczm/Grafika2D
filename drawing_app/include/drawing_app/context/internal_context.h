@@ -8,3 +8,7 @@ void internal_context_buffer_clear(Context *context);
 void internal_context_buffer_add(Context *context, Point point);
 
 void internal_context_shapes_clear(Context *context);
+
+void internal_context_initialize_user_inputs(Context *context, size_t length);
+
+void internal_context_free_user_inputs(Context *context);

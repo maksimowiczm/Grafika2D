@@ -38,9 +38,16 @@ struct state {
   void (*draw)(Context *context, cairo_t *cr);
 };
 
+typedef struct {
+  size_t inputs_length;
+  GtkWidget **inputs;
+  GtkWidget *draw_button;
+} UserInput;
+
 
 struct context {
   GtkWidget *drawing_area;
+  UserInput user_input;
 
   // point which will be moved if action is MovingPoint
   Point *moving_point;
