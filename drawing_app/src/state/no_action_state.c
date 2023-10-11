@@ -16,6 +16,7 @@ State *no_action_state_get() {
 
 bool no_action_state_handle_left_click(Context *context, Point mouse) {
   internal_context_buffer_add(context, mouse);
+  internal_context_hide_user_inputs(context);
   context_state_change(context, Drawing);
   return TRUE;
 }

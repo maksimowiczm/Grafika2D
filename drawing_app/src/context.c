@@ -98,6 +98,7 @@ inline void context_redraw(Context *context) {
 void context_set_shape(Context *context, enum ShapeType type) {
   context->currentType = type;
   internal_context_buffer_clear(context);
+  internal_context_show_user_inputs(context);
   context_redraw(context);
 }
 
