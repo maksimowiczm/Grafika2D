@@ -1,4 +1,5 @@
 #include "drawing_app/widgets/side_menu.h"
+#include "drawing_app/widgets/user_input_container.h"
 
 
 #define SHAPE_CLICKED(shape, name) \
@@ -31,14 +32,14 @@ shape_button_new(const char *label,
 
 static gboolean
 button_clear_click(GtkWidget *button, gpointer user_data) {
-  Context* context = user_data;
+  Context *context = user_data;
   context_clear_all(context);
   context_redraw(context);
   return TRUE;
 }
 
 
-GtkWidget *new_side_menu(Context* context) {
+GtkWidget *new_side_menu(Context *context) {
   GtkWidget *container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
   GtkWidget *line = shape_button_new("line", line_click, context);
@@ -56,6 +57,9 @@ GtkWidget *new_side_menu(Context* context) {
   GtkWidget *clear_button = gtk_button_new_with_label("clear");
   g_signal_connect(clear_button, "clicked", G_CALLBACK(button_clear_click), context);
   gtk_box_append(GTK_BOX(container), clear_button);
+
+  GtkWidget *user_input = new_user_input_container(context);
+  gtk_box_append(GTK_BOX(container), user_input);
 
   return container;
 }

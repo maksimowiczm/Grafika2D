@@ -13,7 +13,7 @@ destroy_handler(GtkWidget *widget, gpointer data) {
 
 void drawing_app_activate(GtkApplication *app) {
   GtkWidget *window = gtk_application_window_new(app);
-  Context *context = context_new(1000, 10);
+  Context *context = context_new(1000, 4);
 
   gtk_window_set_default_size(GTK_WINDOW(window), 1280, 720);
   gtk_window_set_title(GTK_WINDOW(window), "Drawing app");
