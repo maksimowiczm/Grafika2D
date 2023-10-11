@@ -48,7 +48,7 @@ bool no_action_state_handle_right_click_long(Context *context, Point mouse) {
 
   internal_context_load_shape_to_user_input(context, shape->shape);
 
-  internal_context_state_change(context, MovingShape);
+  internal_context_state_change(context, MovingShapeMouse);
   return TRUE;
 }
 

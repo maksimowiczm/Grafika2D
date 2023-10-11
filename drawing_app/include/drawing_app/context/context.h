@@ -14,7 +14,7 @@ enum StateEnum {
   NoAction,
   Drawing,
   MovingPoint,
-  MovingShape,
+  MovingShapeMouse,
   StateCount,
 };
 
@@ -54,7 +54,7 @@ struct context {
   // point which will be moved if action is MovingPoint
   Point *moving_point;
 
-  // shape which will be moving id action is MovingShape
+  // shape which will be moving id action is MovingShapeMouse
   DrawableShape **moving_shape;
   Point previous_moving_shape_position;
 

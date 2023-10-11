@@ -10,8 +10,8 @@ add_library(
         src/state/drawing_state.c
         src/state/state.c
         src/state/moving_point_state.c
-        src/state/moving_shape_state.c
         src/user_input_container.c
+        src/state/moving_shape_mouse_state.c
 )
 
 target_include_directories(drawing_app PUBLIC include)
