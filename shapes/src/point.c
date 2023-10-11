@@ -59,6 +59,13 @@ Point shapes_point_parse_from_string(const char *input) {
 
 char *shapes_point_to_string(Point point) {
   char *str = malloc(sizeof(char) * 100);
-  sprintf(str, "%lf,%lf", point.x, point.y);
+  sprintf(str, "%lf, %lf", point.x, point.y);
   return str;
 }
+
+char *shapes_point_to_string_int(Point point) {
+  char *str = malloc(sizeof(char) * 100);
+  sprintf(str, "%d, %d", (int) point.x, (int) point.y);
+  return str;
+}
+

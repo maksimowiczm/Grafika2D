@@ -13,3 +13,5 @@ void shapes_point_parse_from_string_to_reference(const char *input, Point **poin
 Point shapes_point_parse_from_string(const char *input);
 
 char *shapes_point_to_string(Point point);
+
+char *shapes_point_to_string_int(Point point);
