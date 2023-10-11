@@ -4,7 +4,7 @@
 #include "drawing_app/state/drawing_state.h"
 #include "drawing_app/state/moving_point_state.h"
 #include "drawing_app/state/moving_shape_mouse_state.h"
-
+#include "drawing_app/state/moving_shape_state.h"
 
 State *state_get_state(enum StateEnum type) {
   if (type == NoAction) {
@@ -15,6 +15,8 @@ State *state_get_state(enum StateEnum type) {
     return moving_point_state_get();
   } else if (type == MovingShapeMouse) {
     return moving_shape_mouse_state_get();
+  } else if (type == MovingShape) {
+    return moving_shape_state_get();
   }
 
   return NULL;

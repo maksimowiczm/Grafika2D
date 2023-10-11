@@ -15,6 +15,7 @@ enum StateEnum {
   Drawing,
   MovingPoint,
   MovingShapeMouse,
+  MovingShape,
   StateCount,
 };
 

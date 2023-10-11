@@ -23,6 +23,7 @@ bool moving_shape_mouse_state_handle_left_click(Context *context, Point mouse) {
 }
 
 inline bool moving_shape_mouse_state_handle_right_click(Context *context, Point mouse) {
+  internal_context_state_change(context, MovingShape);
   return FALSE;
 }
 
