@@ -128,6 +128,25 @@ void internal_context_state_change(Context *context, enum StateEnum newType) {
   context_redraw(context);
 }
 
-void internal_context_apply_user_input_move(Context *context) {
+gboolean internal_context_apply_user_inputs(Context *context) {
+  size_t input_size = shapes_point_count_to_create((*context->moving_shape)->shape->header.type);
+  Point *points = malloc(sizeof(Point) * input_size);
 
+  for (int i = 0; i < input_size; i++) {
+    GtkWidget *container = context->user_input.inputs[i];
+    GtkWidget *entry = gtk_widget_get_last_child(container);
+    GtkEntryBuffer *buffer = gtk_entry_get_buffer(GTK_ENTRY(entry));
+    const char *text = gtk_entry_buffer_get_text(buffer);
+    Point point = shapes_point_parse_from_string(text);
+    if (point.x == -1 || point.y == -1) {
+      return FALSE;
+    }
+    points[i] = point;
+  }
+
+  memcpy((*context->moving_shape)->shape->points, points, sizeof(Point) * input_size);
+  context_redraw(context);
+  free(points);
+
+  return TRUE;
 }

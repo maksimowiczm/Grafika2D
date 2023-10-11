@@ -1,5 +1,3 @@
-#pragma once
-
 #include "drawing_app/state/moving_shape_state.h"
 
 #include "drawing_app/context/context.h"
@@ -24,6 +22,7 @@ inline bool moving_shape_state_handle_left_click(Context *context, Point mouse) 
 }
 
 bool moving_shape_state_handle_right_click(Context *context, Point mouse) {
+  context->previous_moving_shape_position = mouse;
   internal_context_state_change(context, MovingShapeMouse);
   return FALSE;
 }
@@ -41,5 +40,5 @@ inline void moving_shape_state_draw(Context *context, cairo_t *cr) {
 }
 
 gboolean moving_shape_state_handle_draw_button_click(Context *context) {
-  return TRUE;
+  return internal_context_apply_user_inputs(context);
 }

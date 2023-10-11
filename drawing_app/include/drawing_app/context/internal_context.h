@@ -23,3 +23,5 @@ DrawableShape *internal_context_shapes_closest_to_point(Context *context, Point 
 void internal_context_shapes_add(Context *context);
 
 void internal_context_state_change(Context *context, enum StateEnum newType);
+
+gboolean internal_context_apply_user_inputs(Context *context);
