@@ -1,12 +1,10 @@
 #include "drawing_app/context/internal_context.h"
 #include "drawing_app/context.h"
 
-
 void internal_context_buffer_clear(Context *context) {
   context->buffer.buffer_current_size = 0;
   memset(context->buffer.buffer, 0, sizeof(Point) * context->buffer.buffer_size);
 }
-
 
 void internal_context_buffer_add(Context *context, Point point) {
   context->buffer.buffer[context->buffer.buffer_current_size] = point;
@@ -40,5 +38,17 @@ void internal_context_show_user_inputs(Context *context) {
   for (int i = 0; i < shapes_point_count_to_create(context->currentType); i++) {
     GtkWidget *input = context->user_input.inputs[i];
     gtk_widget_set_visible(input, true);
+  }
+}
+
+void internal_context_load_shape_to_user_input(Context *context, DrawableShape *shape) {
+  for (int i = 0; i < shapes_point_count_to_create(context->currentType); i++) {
+    GtkWidget *container = context->user_input.inputs[i];
+    GtkWidget *entry = gtk_widget_get_last_child(container);
+    GtkEntryBuffer *buffer = gtk_entry_get_buffer(GTK_ENTRY(entry));
+    Point point = shape->shape->points[i];
+    char *string = shapes_point_to_string(point);
+    gtk_entry_buffer_set_text(buffer, string, strlen(string));
+    free(string);
   }
 }

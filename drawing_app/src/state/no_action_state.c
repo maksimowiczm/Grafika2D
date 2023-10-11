@@ -3,7 +3,6 @@
 #include "drawing_app/context/internal_context.h"
 #include "drawing_app/context.h"
 
-
 State *no_action_state_get() {
   State *state = malloc(sizeof(*state));
   state->handle_left_click = no_action_state_handle_left_click;
@@ -47,6 +46,8 @@ bool no_action_state_handle_right_click_long(Context *context, Point mouse) {
   *context->moving_shape = shape;
   context->previous_moving_shape_position = mouse;
 
+  internal_context_load_shape_to_user_input(context, shape);
+
   context_state_change(context, MovingShape);
   return TRUE;
 }
@@ -82,7 +83,6 @@ void no_action_state_draw(Context *context, cairo_t *cr) {
     drawio_points_mark(cr, points, length, GREEN);
   }
 }
-
 
 static gboolean
 handle_draw_error(Context *context) {
