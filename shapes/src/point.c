@@ -31,14 +31,25 @@ inline double shapes_point_distance_between_points(Point from, Point to) {
   return sqrt((from.x - to.x) * (from.x - to.x) + (from.y - to.y) * (from.y - to.y));
 }
 
-Point shapes_point_parse_from_string(const char *input) {
-  double x = 0, y = 0;
+void shapes_point_parse_from_string_to_reference(const char *input, Point **point) {
+  char *end;
+  double x = strtod(input, &end);
+  if (input == end) {
+    *point = NULL;
+    return;
+  }
+  double y = strtod(end + 1, NULL);
 
-  sscanf(input, "%lf,%lf", &x, &y); // todo safe parsing
-
-  return (Point) {x, y};
+  (*point)->x = x;
+  (*point)->y = y;
 }
 
 inline double shapes_point_distance_to_point(Shape shape, Point point) {
   return shapes_point_distance_between_points(shape.points[0], point);
+}
+
+Point shapes_point_parse_from_string(const char *input) {
+  Point result, *ptr = &result;
+  shapes_point_parse_from_string_to_reference(input, &ptr);
+  return result;
 }
