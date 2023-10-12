@@ -9,7 +9,6 @@
 #include "shapes/quadrilateral/quadrilateral.h"
 #include "shapes/rectangle/rectangle.h"
 
-
 Shape *shapes_new_shape(enum ShapeType type, Point *points) {
   if (type == PointAsShape) {
     return shapes_new_point(points[0]);
@@ -39,17 +38,13 @@ inline double shapes_shape_distance(Shape shape, Point point) {
 
 size_t shapes_point_count_to_create(enum ShapeType type) {
   switch (type) {
-    case PointAsShape:
-      return 1;
+    case PointAsShape:return 1;
     case Line:
     case Circle:
-    case Rectangle:
-      return 2;
-    case Quadrilateral:
-      return 4;
+    case Rectangle:return 2;
+    case Quadrilateral:return 4;
     case NoShape:
-    case ShapesCount:
-      return SIZE_MAX;
+    case ShapesCount:return SIZE_MAX;
   }
 }
 
@@ -72,5 +67,17 @@ void shapes_shape_move(Shape *shape, Vector2D vector) {
   for (int i = 0; i < shape->points_length; i++) {
     shape->points[i].x += vector.x;
     shape->points[i].y += vector.y;
+  }
+}
+
+double (*shapes_get_distance_method(enum ShapeType type))(Shape, Point) {
+  switch (type) {
+    case Line:return shapes_line_distance_to_point;
+    case Quadrilateral:return shapes_quadrilateral_distance_to_point;
+    case Rectangle:return shapes_rectangle_distance_to_point;
+    case Circle:return shapes_circle_distance_to_point;
+    case PointAsShape:
+    case ShapesCount:
+    case NoShape:return NULL;
   }
 }
