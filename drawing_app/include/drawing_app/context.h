@@ -2,6 +2,8 @@
 
 #include "drawing_app/context/context.h"
 
+Context *context_replace_shapes(Context *context, DrawableShape *shapes, size_t shapes_max_length);
+
 Context *context_new(size_t shapes_max_count, size_t buffer_max_size);
 
 void context_free(Context *context, bool free_self);

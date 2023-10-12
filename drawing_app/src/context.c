@@ -47,6 +47,23 @@ Context *context_new(size_t shapes_max_count, size_t buffer_max_size) {
   return context;
 }
 
+Context *context_replace_shapes(Context *context, DrawableShape *shapes, size_t shapes_max_length) {
+  context_clear_all(context);
+  context_free(context, false);
+
+  context->shapes = malloc(sizeof(DrawableShape *) * shapes_max_length);
+  memset(context->shapes, 0, sizeof(DrawableShape *) * shapes_max_length);
+  for (int i = 0; i < shapes_max_length; i++) {
+    if ((shapes + i)->shape != NULL) {
+      *(context->shapes + i) = shapes + i;
+      (*context->shapes + i)->header.shouldBeDrawn = true;
+    } else {
+      *(context->shapes + i) = NULL;
+    }
+  }
+  context->shapes_length = shapes_max_length;
+}
+
 void context_free(Context *context, bool free_self) {
   for (int i = 0; i < context->shapes_length; i++) {
     DrawableShape *shape = context->shapes[i];
