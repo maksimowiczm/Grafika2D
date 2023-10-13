@@ -13,6 +13,7 @@ add_library(
         src/user_input_container.c
         src/state/moving_shape_mouse_state.c
         src/state/moving_shape_state.c
+        src/loader.c
 )
 
 target_include_directories(drawing_app PUBLIC include)

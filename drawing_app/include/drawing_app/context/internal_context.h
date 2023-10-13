@@ -25,3 +25,5 @@ void internal_context_shapes_add(Context *context);
 void internal_context_state_change(Context *context, enum StateEnum newType);
 
 gboolean internal_context_apply_user_inputs(Context *context);
+
+Context *internal_context_replace_shapes(Context *context, DrawableShape **shapes, size_t shapes_max_length);

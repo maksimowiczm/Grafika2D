@@ -150,3 +150,11 @@ gboolean internal_context_apply_user_inputs(Context *context) {
 
   return TRUE;
 }
+
+Context *internal_context_replace_shapes(Context *context, DrawableShape **shapes, size_t shapes_max_length) {
+  context_clear_all(context);
+  context_free(context, false);
+  free(context->shapes);
+  context->shapes = shapes;
+  context->shapes_length = shapes_max_length;
+}
