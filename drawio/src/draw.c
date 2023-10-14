@@ -4,7 +4,7 @@
 static void
 set_header(DrawableShapeHeader *header, DRAW_METHOD(draw_method)) {
   header->isDrawn = false;
-  header->shouldBeDrawn = false;
+  header->shouldBeDrawn = true;
   header->draw_method = draw_method;
 }
 
