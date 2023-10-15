@@ -74,4 +74,6 @@ void draw_pix_map_image(HWND hwnd, PixMapImage *image) {
                   SRCCOPY);
 
     EndPaint(hwnd, &ps);
+
+    DeleteObject(hBitmap);
 }
