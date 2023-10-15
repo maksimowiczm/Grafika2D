@@ -4,7 +4,8 @@ project(ImageReader C)
 set(CMAKE_C_STANDARD 11)
 
 add_executable(ImageReader src/main.c
-        src/draw.c)
+        src/draw.c
+        src/context.c)
 
 include_directories(src/include)
 
