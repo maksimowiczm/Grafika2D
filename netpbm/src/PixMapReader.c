@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "netpbm/PixMap3.h"
+#include "netpbm/PixMap6.h"
 
 PixMapImage *netpbm_PixMap_read_from_file(const char *file_path) {
   FILE *file;
@@ -25,6 +26,8 @@ PixMapImage *netpbm_PixMap_read_from_file(const char *file_path) {
   PixMapImage *image = NULL;
   if (strcmp(buffer, "P3") == 0) {
     image = netpbm_P3_read_from_file(file);
+  } else if (strcmp(buffer, "P6") == 0) {
+    image = netpbm_P6_read_from_file(file);
   }
 
   fclose(file);
