@@ -10,8 +10,8 @@
 static PixMap3Image *
 netpbm_read_buffer_from_file(FILE *file, PixMapImage *(*reader)(const char *input, size_t length)) {
   // file length
-  fseek(file, 0L, SEEK_END);
-  long length = ftell(file);
+  fseeko64(file, 0L, SEEK_END);
+  int64_t length = ftello64(file);
   rewind(file);
 
   // read to buffer

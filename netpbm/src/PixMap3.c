@@ -48,5 +48,6 @@ PixMap3Image *netpbm_P3_read_from_string(const char *input, size_t length) {
   PixMap3Image *map = (PixMap3Image *) pixels;
   map->header = header;
 
+  uint8_t *pix = map->pixels;
   return map;
 }
