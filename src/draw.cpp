@@ -1,5 +1,5 @@
-#include <stdio.h>
-#include "draw.h"
+#include <cstdio>
+#include "draw.hpp"
 
 static void set_up_bit_map(BITMAPINFOHEADER *bmih, BITMAPINFO *dbmi, PixMapHeader *header) {
   // set up bit map

@@ -1,7 +1,9 @@
-#include "context.h"
+#include "context.hpp"
 
+extern "C" {
 #include "netpbm/PixMapReader.h"
-#include "stdlib.h"
+}
+#include <cstdlib>
 
 bool context_load_image(Context *context, const char *file_path, enum ImageType type) {
   if (type == PPM) {
@@ -16,4 +18,6 @@ bool context_load_image(Context *context, const char *file_path, enum ImageType 
 
     return true;
   }
+
+  return false;
 }
