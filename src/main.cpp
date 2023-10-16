@@ -1,6 +1,5 @@
 #include <windows.h>
 #include <tchar.h>
-#include <cinttypes>
 #include "draw.hpp"
 #include "context.hpp"
 
@@ -38,7 +37,7 @@ handle_button_load_click(HWND hwnd) {
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   switch (msg) {
     case WM_PAINT: {
-      draw_pix_map_image(hwnd, (PixMapImage *) context->image);
+      draw_pix_map_image(hwnd, &(context->image));
       break;
     }
     case WM_DESTROY:PostQuitMessage(0);
@@ -64,8 +63,12 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, PTSTR cmdline, int nCmdShow) {
-  Context main_context{PPM, nullptr};
+  Context main_context{};
   context = &main_context;
+  context->image.pixels = new uint8_t *;
+  *context->image.pixels = nullptr;
+  context->image.to_free = new void *;
+  *context->image.to_free = nullptr;
 
   WNDCLASSW wc = {0};
   wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -99,6 +102,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, PTSTR cmdline, int 
     DispatchMessage(&msg);
   }
 
-  free(main_context.image);
+  free(*context->image.to_free);
+  delete context->image.pixels;
+  delete context->image.to_free;
   return (int) msg.wParam;
 }
