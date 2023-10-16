@@ -5,7 +5,7 @@
 
 enum ImageType {
   PPM,
-  JPG,
+  OPEN_CV,
 };
 
 typedef struct {

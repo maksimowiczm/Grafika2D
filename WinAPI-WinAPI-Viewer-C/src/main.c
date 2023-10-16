@@ -15,7 +15,7 @@ handle_button_load_click(HWND hwnd) {
   ofn.hwndOwner = hwnd;
   ofn.lpstrFile = szFile;
   ofn.nMaxFile = sizeof(szFile);
-  ofn.lpstrFilter = _T("PPM\0*.ppm\0All\0*.*\0");
+  ofn.lpstrFilter = _T("JPEG\0*.jpg\0PPM\0*.ppm\0All\0*.*\0");
   ofn.nFilterIndex = 1;
   ofn.lpstrFileTitle = NULL;
   ofn.nMaxFileTitle = 0;
@@ -24,7 +24,15 @@ handle_button_load_click(HWND hwnd) {
 
   if (GetOpenFileName(&ofn) == TRUE) {
     const char *file_path = ofn.lpstrFile;
-    return context_load_image(context, file_path, PPM);
+    if (strlen(file_path) < 3) {
+      return false;
+    }
+
+    if (strcmp(&file_path[strlen(file_path) - 3], "ppm") == 0) {
+      return context_load_image(context, file_path, PPM);
+    }
+
+    return context_load_image(context, file_path, OPEN_CV);
   }
 
   if (strlen(ofn.lpstrFile) > 0) {
