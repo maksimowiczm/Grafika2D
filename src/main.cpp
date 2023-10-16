@@ -1,9 +1,8 @@
 #include <windows.h>
-#include <stdio.h>
 #include <tchar.h>
-#include "inttypes.h"
-#include "draw.h"
-#include "context.h"
+#include <cinttypes>
+#include "draw.hpp"
+#include "context.hpp"
 
 Context *context;
 
@@ -38,8 +37,10 @@ handle_button_load_click(HWND hwnd) {
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   switch (msg) {
-    case WM_PAINT:draw_pix_map_image(hwnd, context->image);
+    case WM_PAINT: {
+      draw_pix_map_image(hwnd, (PixMapImage *) context->image);
       break;
+    }
     case WM_DESTROY:PostQuitMessage(0);
       return 0;
     case WM_COMMAND: {
@@ -63,7 +64,7 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, PTSTR cmdline, int nCmdShow) {
-  Context main_context = {0};
+  Context main_context{PPM, nullptr};
   context = &main_context;
 
   WNDCLASSW wc = {0};
