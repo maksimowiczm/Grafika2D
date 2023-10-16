@@ -59,6 +59,11 @@ void netpbm_pix_map_read_header(PixMapHeader *header, size_t *headerEnd, const c
     values_read++;
   }
 
+  // skip header if P6 💀💀💀💀
+  if (input[1] == '6') {
+    while (input[i++] != '\n');
+  }
+
   *headerEnd = i;
   *header = fileHeader;
 }
