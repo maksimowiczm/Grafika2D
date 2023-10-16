@@ -1,6 +1,10 @@
-#include "windows.h"
-#include "tchar.h"
-#include "imageViewer.hpp"
+#include <windows.h>
+#include <tchar.h>
+#include <cinttypes>
+#include "draw.hpp"
+#include "context.hpp"
+
+Context *context;
 
 static bool
 handle_button_load_click(HWND hwnd) {
@@ -12,24 +16,16 @@ handle_button_load_click(HWND hwnd) {
   ofn.hwndOwner = hwnd;
   ofn.lpstrFile = szFile;
   ofn.nMaxFile = sizeof(szFile);
-  ofn.lpstrFilter = _T("JPEG\0*.jpg\0PPM\0*.ppm\0All\0*.*\0");
+  ofn.lpstrFilter = _T("PPM\0*.ppm\0All\0*.*\0");
   ofn.nFilterIndex = 1;
-  ofn.lpstrFileTitle = nullptr;
+  ofn.lpstrFileTitle = NULL;
   ofn.nMaxFileTitle = 0;
-  ofn.lpstrInitialDir = nullptr;
+  ofn.lpstrInitialDir = NULL;
   ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 
   if (GetOpenFileName(&ofn) == TRUE) {
     const char *file_path = ofn.lpstrFile;
-    if (strlen(file_path) < 3) {
-      return false;
-    }
-
-    if (strcmp(&file_path[strlen(file_path) - 3], "ppm") == 0) {
-      return ImageViewer::load_image(file_path, ImageViewer::ImageType::PPM);
-    }
-
-    return ImageViewer::load_image(file_path, ImageViewer::ImageType::OPEN_CV);
+    return context_load_image(context, file_path, PPM);
   }
 
   if (strlen(ofn.lpstrFile) > 0) {
@@ -41,16 +37,26 @@ handle_button_load_click(HWND hwnd) {
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   switch (msg) {
+    case WM_PAINT: {
+      draw_pix_map_image(hwnd, (PixMapImage *) context->image);
+      break;
+    }
     case WM_DESTROY:PostQuitMessage(0);
       return 0;
     case WM_COMMAND: {
-      if (handle_button_load_click(hwnd)) {
+      bool loaded = handle_button_load_click(hwnd);
+
+      // redraw after load
+      if (loaded) {
+        RECT r;
+        GetClientRect(hwnd, &r);
+        InvalidateRect(hwnd, &r, TRUE);
         break;
       }
 
       MessageBox(hwnd, "File type is not supported or file is corrupted!", "Error", MB_ICONERROR | MB_OK);
-      break;
     }
+      break;
     default:return DefWindowProcW(hwnd, msg, wParam, lParam);
   }
 
@@ -58,35 +64,41 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, PTSTR cmdline, int nCmdShow) {
+  Context main_context{PPM, nullptr};
+  context = &main_context;
+
   WNDCLASSW wc = {0};
-  wc.style = CS_HREDRAW | CS_VREDRAW | CS_OWNDC;
+  wc.style = CS_HREDRAW | CS_VREDRAW;
   wc.lpszClassName = L"Draw Bitmap";
   wc.hInstance = hInstance;
   wc.hbrBackground = GetSysColorBrush(COLOR_3DFACE);
   wc.lpfnWndProc = WndProc;
-  wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+  wc.hCursor = LoadCursor(0, IDC_ARROW);
   RegisterClassW(&wc);
 
-  // Main window
-  constexpr int WIDTH = 200, HEIGHT = 200;
   HWND hMainWindow = CreateWindowW(wc.lpszClassName, (LPCWSTR) L"Images",
-                                   WS_VISIBLE | WS_OVERLAPPED  | WS_SYSMENU,
-                                   100, 100, WIDTH, HEIGHT,
-                                   nullptr, nullptr, hInstance, nullptr);
-
-  // Load image button
-  HWND hwndButton = CreateWindow("BUTTON", "Load file", WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-                                 0, 0, WIDTH - 15, HEIGHT - 39,
-                                 hMainWindow, nullptr,
-                                 (HINSTANCE) GetWindowLongPtr(hMainWindow, GWLP_HINSTANCE),
-                                 nullptr);
+                                   WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                                   100, 100, 1280, 720, NULL, NULL, hInstance, NULL);
+  HWND hwndButton = CreateWindow(
+      "BUTTON",  // Predefined class; Unicode assumed
+      "Load file",      // Button text
+      WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,  // Styles
+      0,         // x position
+      0,         // y position
+      100,        // Button width
+      50,        // Button height
+      hMainWindow,     // Parent window
+      (HMENU) 10000,       // No menu.
+      (HINSTANCE) GetWindowLongPtr(hMainWindow, GWLP_HINSTANCE),
+      NULL);      // Pointer not needed.
 
   UpdateWindow(hMainWindow);
   MSG msg;
-  while (GetMessage(&msg, nullptr, 0, 0)) {
+  while (GetMessage(&msg, NULL, 0, 0)) {
     TranslateMessage(&msg);
     DispatchMessage(&msg);
   }
 
+  free(main_context.image);
   return (int) msg.wParam;
 }
