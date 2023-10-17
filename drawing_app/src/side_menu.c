@@ -40,14 +40,14 @@ button_clear_click(GtkWidget *button, gpointer user_data) {
 static gboolean
 dump_context(GtkWidget *gesture, gpointer user_data) {
   Context *context = user_data;
-  loader_save_to_file(context, "shapes.txt");
+  loader_save_to_file(context, "shapes-save.bin");
   return TRUE;
 }
 
 static gboolean
 load_context(GtkWidget *button, gpointer user_data) {
   Context *context = user_data;
-  loader_load_from_file(context, "shapes.txt");
+  loader_load_from_file(context, "shapes-save.bin");
   context_redraw(context);
   return TRUE;
 }

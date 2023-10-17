@@ -21,8 +21,7 @@ new_point_input(Context *context, int index, gboolean visible) {
 
 inline static gboolean
 handle_draw_click(GtkWidget *button, gpointer user_data) {
-  Context *context = user_data;
-  return handle_draw_button_click(context);
+  return handle_draw_button_click(user_data);
 }
 
 GtkWidget *new_user_input_container(Context *context) {

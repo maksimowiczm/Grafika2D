@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.26)
-project(Project C)
+project(DrawingAop C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(Project src/main.c)
+add_executable(${PROJECT_NAME} src/main.c)
 
 add_subdirectory(shapes)
 add_subdirectory(drawio)

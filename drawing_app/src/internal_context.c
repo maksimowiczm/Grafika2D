@@ -26,7 +26,7 @@ void internal_context_initialize_user_inputs(Context *context, size_t length) {
   memset(context->user_input.inputs, 0, sizeof(GtkWidget *) * length);
 }
 
-void internal_context_free_user_inputs(Context *context) {
+inline void internal_context_free_user_inputs(Context *context) {
   free(context->user_input.inputs);
 }
 
@@ -151,7 +151,7 @@ gboolean internal_context_apply_user_inputs(Context *context) {
   return TRUE;
 }
 
-Context *internal_context_replace_shapes(Context *context, DrawableShape **shapes, size_t shapes_max_length) {
+void internal_context_replace_shapes(Context *context, DrawableShape **shapes, size_t shapes_max_length) {
   context_clear_all(context);
   context_free(context, false);
   free(context->shapes);

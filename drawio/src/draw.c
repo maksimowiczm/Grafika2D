@@ -1,6 +1,5 @@
 #include "drawio/draw.h"
 
-
 static void
 set_header(DrawableShapeHeader *header, DRAW_METHOD(draw_method)) {
   header->isDrawn = false;

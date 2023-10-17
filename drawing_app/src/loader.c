@@ -67,6 +67,6 @@ bool loader_load_from_file(Context *context, const char *file_path) {
 
   fclose(file);
 
-  context = internal_context_replace_shapes(context, drawables, length);
+  internal_context_replace_shapes(context, drawables, length);
   return true;
 }

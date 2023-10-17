@@ -6,18 +6,14 @@
 #include "drawing_app/state/moving_shape_mouse_state.h"
 #include "drawing_app/state/moving_shape_state.h"
 
-State *state_get_state(enum StateEnum type) {
-  if (type == NoAction) {
-    return no_action_state_get();
-  } else if (type == Drawing) {
-    return drawing_state_get();
-  } else if (type == MovingPoint) {
-    return moving_point_state_get();
-  } else if (type == MovingShapeMouse) {
-    return moving_shape_mouse_state_get();
-  } else if (type == MovingShape) {
-    return moving_shape_state_get();
+inline State *
+state_get_state(enum StateEnum type) {
+  switch (type) {
+    case NoAction:return no_action_state_get();
+    case Drawing:return drawing_state_get();
+    case MovingPoint:return moving_point_state_get();
+    case MovingShapeMouse:return moving_shape_mouse_state_get();
+    case MovingShape:return moving_shape_state_get();
+    default:return NULL;
   }
-
-  return NULL;
 }

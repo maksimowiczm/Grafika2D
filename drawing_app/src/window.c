@@ -5,10 +5,9 @@
 #include "drawing_app/context.h"
 
 
-static void
+inline static void
 destroy_handler(GtkWidget *widget, gpointer data) {
-  Context *context = data;
-  context_free(context, true);
+  return context_free(data, true);
 }
 
 void drawing_app_activate(GtkApplication *app) {
