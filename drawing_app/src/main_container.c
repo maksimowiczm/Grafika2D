@@ -13,6 +13,8 @@ GtkWidget *new_main_container(Context *context) {
 
   GtkWidget *side_menu = new_side_menu(context);
   gtk_box_append(GTK_BOX(container), side_menu);
+  gtk_widget_set_vexpand(side_menu, TRUE);
+  gtk_widget_set_hexpand(side_menu, TRUE);
 
   return container;
 }

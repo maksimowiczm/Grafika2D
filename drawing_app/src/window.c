@@ -23,4 +23,5 @@ void drawing_app_activate(GtkApplication *app) {
   g_signal_connect(window, "destroy", G_CALLBACK(destroy_handler), context);
 
   gtk_widget_set_visible(window, TRUE);
+  gtk_window_set_resizable(window, FALSE);
 }

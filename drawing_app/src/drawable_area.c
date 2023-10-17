@@ -39,7 +39,7 @@ GtkWidget *new_drawable_area(Context *context) {
   context->drawing_area = area;
 
   gtk_drawing_area_set_draw_func(GTK_DRAWING_AREA (area), (GtkDrawingAreaDrawFunc) do_drawing, context, NULL);
-  gtk_widget_set_size_request(area, 1000, 0); // todo
+  gtk_widget_set_size_request(area, 1100, 0); // todo
   gtk_widget_set_halign(area, GTK_ALIGN_FILL);
   gtk_widget_set_valign(area, GTK_ALIGN_FILL);
 
