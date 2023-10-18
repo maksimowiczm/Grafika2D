@@ -1,6 +1,6 @@
 #include "windows.h"
 #include "tchar.h"
-#include "imageViewer.hpp"
+#include "image_adapter/imageViewer.hpp"
 
 static bool
 handle_button_load_click(HWND hwnd) {
