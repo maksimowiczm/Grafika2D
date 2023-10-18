@@ -6,15 +6,14 @@
 #include "gtkmm/filechooserdialog.h"
 #include "gtkmm/button.h"
 #include "gtkmm/picture.h"
-#include "ImageWrapper.hpp"
 
 class ImageReaderApp : public Gtk::Window {
  public:
   ImageReaderApp();
-  ~ImageReaderApp() override;
+  ~ImageReaderApp() override = default;
 
  private:
-  ImageWrapper *imageWrapper_ = nullptr;
+  cv::Mat imageMat_{};
 
   Gtk::Button load_button;
   void handle_load_button_click();
@@ -22,5 +21,5 @@ class ImageReaderApp : public Gtk::Window {
   void on_file_dialog_response(int response_id, Gtk::FileChooserDialog *dialog);
 
   Gtk::Picture picture;
-  void image_draw(ImageWrapper *newImage);
+  void image_draw();
 };
