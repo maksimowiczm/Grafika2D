@@ -15,7 +15,7 @@ ELSE (UNIX)
 ENDIF ()
 
 add_subdirectory(netpbm)
-add_subdirectory(image_viewer_openCV)
+add_subdirectory(image_adapter)
 add_subdirectory(image_gui_gtk)
 
-target_link_libraries(${PROJECT_NAME} netpbm image_viewer image_gui_gtk)
+target_link_libraries(${PROJECT_NAME} netpbm image_adapter image_gui_gtk)
