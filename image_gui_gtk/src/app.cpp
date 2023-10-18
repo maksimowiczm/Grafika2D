@@ -1,3 +1,4 @@
+#include <gtkmm/messagedialog.h>
 #include "image_gui_gtk/app.hpp"
 
 #include "opencv2/core/mat.hpp"
@@ -15,6 +16,10 @@ ImageReaderApp::ImageReaderApp() {
   load_button = Gtk::Button{"Load image"};
   load_button.signal_clicked().connect(sigc::mem_fun(*this, &ImageReaderApp::handle_load_button_click));
   menu.append(load_button);
+
+  save_button = Gtk::Button{"Save image"};
+  save_button.signal_clicked().connect(sigc::mem_fun(*this, &ImageReaderApp::handle_save_button_click));
+  menu.append(save_button);
 
   picture = Gtk::Picture{};
   container.append(picture);
@@ -63,6 +68,19 @@ void ImageReaderApp::on_file_dialog_response(int response_id, Gtk::FileChooserDi
     imageMat_ = ImageLoader::load_image(file_path.c_str(), ImageLoader::PPM);
   } else {
     imageMat_ = ImageLoader::load_image(file_path.c_str(), ImageLoader::OPEN_CV);
+  }
+
+  if (imageMat_.empty()) {
+    delete dialog;
+    auto errorDialog = new Gtk::MessageDialog("Image format is not supported or file is corrupted!",
+                                              false,
+                                              Gtk::MessageType::ERROR,
+                                              Gtk::ButtonsType::OK,
+                                              true);
+    errorDialog->set_title("File error");
+    errorDialog->signal_response().connect(sigc::hide(sigc::mem_fun(*errorDialog, &Gtk::Widget::hide)));
+    errorDialog->show();
+    return;
   }
 
   image_draw();
