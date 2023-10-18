@@ -3,6 +3,16 @@
 #include "netpbm/PixMap3.h"
 #include "netpbm/PixMap6.h"
 
+#ifdef _fseeki64
+#define fseek64 _fseeki64
+#define ftell64 _ftelli64
+#endif
+
+#ifndef fseek64
+#define fseek64 fseeko
+#define ftell64 ftello
+#endif
+
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
@@ -10,8 +20,8 @@
 static PixMap3Image *
 netpbm_read_buffer_from_file(FILE *file, PixMapImage *(*reader)(const char *input, size_t length)) {
   // file length
-  fseek(file, 0L, SEEK_END);
-  long length = ftell(file);
+  fseek64(file, 0L, SEEK_END);
+  int64_t length = ftell64(file);
   rewind(file);
 
   // read to buffer
