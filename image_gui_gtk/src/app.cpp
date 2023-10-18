@@ -1,6 +1,7 @@
+#include "image_gui_gtk/app.hpp"
+
 #include "opencv2/core/mat.hpp"
 #include "opencv2/imgcodecs.hpp"
-#include "image_gui_gtk/app.hpp"
 #include "opencv2/imgproc.hpp"
 
 extern "C" {
@@ -8,30 +9,23 @@ extern "C" {
 }
 
 ImageReaderApp::ImageReaderApp() {
-  Gtk::Box container{};
+  Gtk::Box container{Gtk::Orientation::HORIZONTAL};
+  Gtk::Box menu{Gtk::Orientation::VERTICAL};
+  container.append(menu);
 
-  load_button = Gtk::Button{"Load imageMat"};
+  load_button = Gtk::Button{"Load image"};
   load_button.signal_clicked().connect(sigc::mem_fun(*this, &ImageReaderApp::handle_load_button_click));
-  container.append(load_button);
+  menu.append(load_button);
 
-  image = Gtk::Image{};
-  container.append(image);
-  image.set_vexpand();
-  image.set_vexpand_set();
+  picture = Gtk::Picture{};
+  container.append(picture);
 
-  set_size_request(1280, 720);
+//  set_size_request(1280, 720);
   set_child(container);
-
-  to_free = new void *;
-  *to_free = nullptr;
 }
 
 ImageReaderApp::~ImageReaderApp() {
-  delete imageMat;
-  if (*to_free != nullptr) {
-    free(*to_free);
-  }
-  delete to_free;
+  delete this->imageWrapper_;
 }
 
 void ImageReaderApp::handle_load_button_click() {
@@ -72,7 +66,7 @@ void ImageReaderApp::on_file_dialog_response(int response_id, Gtk::FileChooserDi
   }
 
   const auto file_path = dialog->get_file()->get_path();
-  cv::Mat newImage;
+  ImageWrapper *newImage;
   if (file_path.ends_with(".ppm")) {
     const auto read_image = netpbm_PixMap_read_from_file(file_path.c_str());
     if (read_image == nullptr) {
@@ -80,14 +74,10 @@ void ImageReaderApp::on_file_dialog_response(int response_id, Gtk::FileChooserDi
       return;
     }
 
-    if (*to_free != nullptr) {
-      free(*to_free);
-    }
+    newImage = new ImageWrapper{read_image->header.width, read_image->header.height, read_image->pixels, read_image};
 
-    *to_free = read_image;
-    newImage = cv::Mat{read_image->header.height, read_image->header.width, CV_8UC3, read_image->pixels};
   } else {
-    newImage = cv::Mat{cv::imread(file_path, cv::IMREAD_COLOR)};
+    newImage = new ImageWrapper{cv::Mat{cv::imread(file_path, cv::IMREAD_COLOR)}};
   }
 
   image_draw(newImage);
@@ -95,28 +85,31 @@ void ImageReaderApp::on_file_dialog_response(int response_id, Gtk::FileChooserDi
   delete dialog;
 }
 
-void ImageReaderApp::image_draw(const cv::Mat &newImage) {
+void ImageReaderApp::image_draw(ImageWrapper *newImage) {
   // scale to HD
   double scale = std::min(
-      (double) 1280 / newImage.size().width,
-      (double) 720 / newImage.size().height
+      (double) 1280 / newImage->GetImageMat().size().width,
+      (double) 720 / newImage->GetImageMat().size().height
   );
 
-  delete imageMat;
-  imageMat = new cv::Mat;
-  cv::resize(newImage, *imageMat, cv::Size(), scale, scale, cv::INTER_AREA);
+  delete imageWrapper_;
+  cv::Mat scaled;
+  cv::resize(newImage->GetImageMat(), scaled, cv::Size(), scale, scale, cv::INTER_AREA);
+  delete newImage;
+  imageWrapper_ = new ImageWrapper{scaled};
 
   const auto pixbuf =
       Gdk::Pixbuf::create_from_data(
-          imageMat->data,
+          imageWrapper_->GetImageMat().data,
           Gdk::Colorspace::RGB,
           false,
           8,
-          imageMat->size().width,
-          imageMat->size().height,
-          imageMat->size().width * sizeof(uint8_t) * 3
+          imageWrapper_->GetImageMat().size().width,
+          imageWrapper_->GetImageMat().size().height,
+          imageWrapper_->GetImageMat().size().width * sizeof(uint8_t) * 3
       );
 
-  this->image.set(pixbuf);
-  this->image.set_size_request(1000, 720);
+  picture.set_pixbuf(pixbuf);
+  picture.set_size_request(imageWrapper_->GetImageMat().size().width,
+                           imageWrapper_->GetImageMat().size().height);
 }
