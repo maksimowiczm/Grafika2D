@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.26)
 project(ImageReader C CXX)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 23)
 
 IF (WIN32)
     add_executable(${PROJECT_NAME}
