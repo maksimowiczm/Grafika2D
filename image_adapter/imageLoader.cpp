@@ -20,6 +20,9 @@ load_PixMap(PixMapImage **ptr, const char *file_path) {
 static cv::Mat
 load_OpenCV(const char *file_path) {
   const auto mat = cv::imread(file_path, cv::IMREAD_COLOR);
+  if (mat.empty()) {
+    return {};
+  }
   cv::cvtColor(mat, mat, cv::COLOR_BGR2RGB);
   return mat;
 }
