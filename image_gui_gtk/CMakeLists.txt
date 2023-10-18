@@ -1,6 +1,7 @@
 add_library(
         image_gui_gtk
         src/app.cpp
+        src/ImageWrapper.cpp
 )
 
 find_package(PkgConfig REQUIRED)
