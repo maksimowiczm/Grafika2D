@@ -1,6 +1,7 @@
 #pragma once
 
 #include "inttypes.h"
+#include "stdlib.h"
 
 struct pix_map_header {
   uint16_t width;
