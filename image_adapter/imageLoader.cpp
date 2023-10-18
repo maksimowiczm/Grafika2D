@@ -13,13 +13,15 @@ load_PixMap(PixMapImage **ptr, const char *file_path) {
   if (image == nullptr) {
     return {};
   }
-  
+
   return {image->header.height, image->header.width, CV_8UC3, image->pixels};
 }
 
-inline static cv::Mat
+static cv::Mat
 load_OpenCV(const char *file_path) {
-  return cv::imread(file_path, cv::IMREAD_COLOR);
+  const auto mat = cv::imread(file_path, cv::IMREAD_COLOR);
+  cv::cvtColor(mat, mat, cv::COLOR_BGR2RGB);
+  return mat;
 }
 
 cv::Mat ImageLoader::load_image(const char *file_path, ImageLoader::LoaderMethod type) {
