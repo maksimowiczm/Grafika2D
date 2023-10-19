@@ -1,4 +1,6 @@
 #include <gtkmm/messagedialog.h>
+#include <opencv2/imgcodecs.hpp>
+#include <opencv2/imgproc.hpp>
 #include "image_gui_gtk/app.hpp"
 
 #include "opencv2/core/mat.hpp"
@@ -101,4 +103,39 @@ void ImageReaderApp::image_draw() {
   picture.set_pixbuf(pixbuf);
   picture.set_size_request(imageMat_.size().width,
                            imageMat_.size().height);
+}
+
+void ImageReaderApp::handle_save_button_click() {
+  if (imageMat_.empty()) {
+    return;
+  }
+
+  auto dialog = new Gtk::FileChooserDialog("Please choose a file",
+                                           Gtk::FileChooser::Action::SAVE);
+  dialog->set_transient_for(*this);
+  dialog->set_modal(true);
+  dialog->signal_response().connect(sigc::bind(
+      sigc::mem_fun(*this, &ImageReaderApp::on_save_file_dialog_response), dialog));
+
+  dialog->add_button("_Cancel", Gtk::ResponseType::CANCEL);
+  dialog->add_button("_Save", Gtk::ResponseType::OK);
+
+  dialog->show();
+}
+
+void ImageReaderApp::on_save_file_dialog_response(int response_id, Gtk::FileChooserDialog *dialog) {
+  if (response_id != Gtk::ResponseType::OK) {
+    delete dialog;
+    return;
+  }
+
+  const auto file_path = dialog->get_file()->get_path();
+
+  std::vector<int> writeParams{};
+  writeParams.push_back(cv::IMWRITE_JPEG_QUALITY);
+  writeParams.push_back(jpegQuality);
+  cv::Mat out;
+  cv::cvtColor(imageMat_, out, cv::COLOR_BGR2RGB);
+  cv::imwrite(file_path, out, writeParams);
+  delete dialog;
 }
