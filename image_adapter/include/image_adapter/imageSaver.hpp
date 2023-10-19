@@ -4,5 +4,5 @@
 
 class ImageSaver {
  public:
-  static void save_jpeg(const char *file_path, const cv::Mat& image, int jpeg_quality);
+  static void save_jpeg(const std::string &file_path, const cv::Mat& image, int jpeg_quality);
 };
