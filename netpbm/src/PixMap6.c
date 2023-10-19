@@ -15,7 +15,7 @@ PixMap6Image *netpbm_P6_read_from_string(const char *input, size_t length) {
   void *pixels = malloc(sizeof(PixMapHeader) + sizeof(uint8_t) * pixels_count);
   memset(pixels, 0, sizeof(PixMapHeader) + sizeof(uint8_t) * pixels_count);
 
-  memcpy(pixels + sizeof(PixMapHeader), input + headerEnd, pixels_count);
+  memcpy((uint8_t *) pixels + sizeof(PixMapHeader), input + headerEnd, pixels_count);
 
   PixMap6Image *map = (PixMap6Image *) pixels;
   map->header = header;

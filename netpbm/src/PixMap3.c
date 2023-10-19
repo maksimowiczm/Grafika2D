@@ -42,7 +42,7 @@ PixMap3Image *netpbm_P3_read_from_string(const char *input, size_t length) {
     uint8_t normalized = (double) num / header.max_value * UINT8_MAX;
 
     i = end - input;
-    *(uint8_t *) (pixels + pixels_pos++) = normalized;
+    *(uint8_t *) ((uint8_t *) pixels + pixels_pos++) = normalized;
   }
 
   PixMap3Image *map = (PixMap3Image *) pixels;
