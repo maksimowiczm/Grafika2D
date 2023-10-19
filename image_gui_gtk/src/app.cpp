@@ -141,7 +141,7 @@ void ImageReaderApp::on_save_file_dialog_response(int response_id, Gtk::FileChoo
   }
 
   const auto file_path = dialog->get_file()->get_path();
-  ImageSaver::save_jpeg(file_path.c_str(), imageMat_, (int) jpeg_scale_.get_value());
+  ImageSaver::save_jpeg(file_path, imageMat_, (int) jpeg_scale_.get_value());
   delete dialog;
 }
 
