@@ -1,5 +1,6 @@
 add_library(image_adapter imageViewer.cpp
-        imageLoader.cpp)
+        imageLoader.cpp
+        imageSaver.cpp)
 
 IF(WIN32)
     set(ENV{OPENCV_DIR} "C:\\tools\\opencv\\build")
