@@ -1,9 +1,8 @@
-#include <gtkmm/messagedialog.h>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
 #include "image_gui_gtk/app.hpp"
 
-#include "opencv2/core/mat.hpp"
+#include "gtkmm/messagedialog.h"
+
+#include "image_adapter/imageSaver.hpp"
 #include "image_adapter/imageLoader.hpp"
 
 extern "C" {
@@ -22,6 +21,9 @@ ImageReaderApp::ImageReaderApp() {
   save_button = Gtk::Button{"Save image"};
   save_button.signal_clicked().connect(sigc::mem_fun(*this, &ImageReaderApp::handle_save_button_click));
   menu.append(save_button);
+
+  jpeg_scale_ = Gtk::Scale{Gtk::Adjustment::create(0, 0, 100)};
+  menu.append(jpeg_scale_);
 
   picture = Gtk::Picture{};
   container.append(picture);
@@ -130,12 +132,6 @@ void ImageReaderApp::on_save_file_dialog_response(int response_id, Gtk::FileChoo
   }
 
   const auto file_path = dialog->get_file()->get_path();
-
-  std::vector<int> writeParams{};
-  writeParams.push_back(cv::IMWRITE_JPEG_QUALITY);
-  writeParams.push_back(jpegQuality);
-  cv::Mat out;
-  cv::cvtColor(imageMat_, out, cv::COLOR_BGR2RGB);
-  cv::imwrite(file_path, out, writeParams);
+  ImageSaver::save_jpeg(file_path.c_str(), imageMat_, (int) jpeg_scale_.get_value());
   delete dialog;
 }
