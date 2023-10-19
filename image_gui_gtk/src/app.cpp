@@ -22,8 +22,17 @@ ImageReaderApp::ImageReaderApp() {
   save_button.signal_clicked().connect(sigc::mem_fun(*this, &ImageReaderApp::handle_save_button_click));
   menu.append(save_button);
 
-  jpeg_scale_ = Gtk::Scale{Gtk::Adjustment::create(0, 0, 100)};
-  menu.append(jpeg_scale_);
+  Gtk::Box jpegScaler{Gtk::Orientation::HORIZONTAL};
+  jpeg_scale_ = Gtk::Scale{Gtk::Adjustment::create(95, 0, 100)};
+  jpeg_scale_.signal_value_changed().connect(sigc::mem_fun(*this, &ImageReaderApp::on_scale_changed));
+  jpeg_scale_.set_size_request(80, -1);
+  jpegScaler.append(jpeg_scale_);
+  jpeg_scale_label_ = Gtk::Label{};
+  jpeg_scale_label_.set_text(std::to_string((int) jpeg_scale_.get_value()));
+  jpegScaler.append(jpeg_scale_label_);
+
+  menu.append(jpegScaler);
+  menu.set_size_request(100, -1);
 
   picture = Gtk::Picture{};
   container.append(picture);
@@ -134,4 +143,8 @@ void ImageReaderApp::on_save_file_dialog_response(int response_id, Gtk::FileChoo
   const auto file_path = dialog->get_file()->get_path();
   ImageSaver::save_jpeg(file_path.c_str(), imageMat_, (int) jpeg_scale_.get_value());
   delete dialog;
+}
+
+void ImageReaderApp::on_scale_changed() {
+  jpeg_scale_label_.set_text(std::to_string((int) jpeg_scale_.get_value()));
 }
