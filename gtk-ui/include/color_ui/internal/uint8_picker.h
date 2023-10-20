@@ -12,4 +12,4 @@ typedef struct {
   enum ColorMode mode;
 } onChangeWidgets;
 
-GtkWidget *gtk_ui_uint8_picker(const char *label, uint8_t *value, uint8_t max_value, enum ColorMode mode);
+GtkWidget *gtk_ui_uint8_picker(const char *label, uint8_t *value, uint8_t max_value, enum ColorMode mode, int index);

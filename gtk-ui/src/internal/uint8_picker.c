@@ -44,7 +44,7 @@ on_input_destroy(GtkWidget *widget, gpointer user_data) {
   free(user_data);
 }
 
-GtkWidget *gtk_ui_uint8_picker(const char *label, uint8_t *value, uint8_t max_value, enum ColorMode mode) {
+GtkWidget *gtk_ui_uint8_picker(const char *label, uint8_t *value, uint8_t max_value, enum ColorMode mode, int index) {
   GtkWidget *container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
   GtkWidget *text_container = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
   gtk_box_append(GTK_BOX(container), text_container);
@@ -57,6 +57,9 @@ GtkWidget *gtk_ui_uint8_picker(const char *label, uint8_t *value, uint8_t max_va
 
   GtkWidget *scale = gtk_scale_new_with_range(GTK_ORIENTATION_HORIZONTAL, 0, max_value, 1);
   gtk_box_append(GTK_BOX(container), scale);
+
+  GET_CONTEXT->inputs[index] = input;
+  GET_CONTEXT->scales[index] = scale;
 
   onChangeWidgets *widgets = malloc(sizeof(*widgets));
   widgets->value = value;

@@ -4,11 +4,25 @@
 #include "color_converter/rgb.h"
 #include "gtk/gtk.h"
 
+enum ColorIndex {
+  RED,
+  GREEN,
+  BLUE,
+  CYAN,
+  MAGENTA,
+  YELLOW,
+  KEY
+};
+
 typedef struct {
   ColorRgb **rgb;
   ColorCmyk **cmyk;
   GtkPicture **image;
   GdkPixbuf **pixbuf;
+
+  GtkWidget **scales;
+  GtkWidget **inputs;
+  bool RGB_MODE;
 } ColorsContext;
 
 ColorsContext *colors_context_new();
