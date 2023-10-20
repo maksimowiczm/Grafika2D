@@ -1,5 +1,6 @@
 #include "color_ui/internal/uint8_picker.h"
 #include "shared/uint8.h"
+#include "color_ui/internal/colors_context.h"
 
 static uint8_t
 get_number_from_input(GtkWidget *widget, uint8_t max_value) {
@@ -23,6 +24,7 @@ on_input_change(GtkWidget *widget, onChangeWidgets *widgets) {
   uint8_t value = get_number_from_input(widget, widgets->max_value);
   *widgets->value = value;
   gtk_range_set_value(GTK_RANGE(widgets->scale), value);
+  colors_context_color_update(GET_CONTEXT);
   return TRUE;
 }
 
@@ -33,6 +35,7 @@ on_scale_change(GtkWidget *scale, onChangeWidgets *widgets) {
       gtk_text_get_buffer(GTK_TEXT(widgets->input)),
       uint8_to_string(value),
       3);
+  colors_context_color_update(GET_CONTEXT);
   return TRUE;
 }
 
