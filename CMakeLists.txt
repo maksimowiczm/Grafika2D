@@ -5,9 +5,10 @@ set(CMAKE_C_STANDARD 11)
 
 add_executable(rgb2cmyk main.c)
 add_subdirectory(color_converter)
+add_subdirectory(shared)
 
 IF (UNIX)
     add_subdirectory(gtk-ui)
 ENDIF ()
 
-target_link_libraries(${PROJECT_NAME} color_converter color_ui)
+target_link_libraries(${PROJECT_NAME} color_converter color_ui shared)
