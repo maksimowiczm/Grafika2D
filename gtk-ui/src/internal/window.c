@@ -3,6 +3,7 @@
 #include "color_ui/internal/rgb_container.h"
 #include "color_ui/internal/cmyk_container.h"
 #include "color_ui/internal/colors_context.h"
+#include "color_ui/internal/color_container.h"
 
 static void
 on_destroy(GtkWidget *window, gpointer user_data) {
@@ -18,6 +19,9 @@ void window_activate(GtkApplication *app) {
   ColorsContext *colors = colors_context_new();
   GtkWidget *rgb_container = rgb_container_new(colors);
   gtk_box_append(GTK_BOX(app_container), rgb_container);
+
+  GtkWidget *color = color_container_new(colors);
+  gtk_box_append(GTK_BOX(app_container), color);
 
   GtkWidget *cmyk_container = cmyk_container_new(colors);
   gtk_box_append(GTK_BOX(app_container), cmyk_container);
