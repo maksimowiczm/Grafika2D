@@ -5,10 +5,10 @@ GtkWidget *cmyk_container_new(ColorsContext *context) {
   GtkWidget *container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
   ColorCmyk *cmyk = *context->cmyk;
-  gtk_box_append(GTK_BOX(container), gtk_ui_uint8_picker("cyan", &cmyk->cyan, 100));
-  gtk_box_append(GTK_BOX(container), gtk_ui_uint8_picker("magenta", &cmyk->magenta, 100));
-  gtk_box_append(GTK_BOX(container), gtk_ui_uint8_picker("yellow", &cmyk->yellow, 100));
-  gtk_box_append(GTK_BOX(container), gtk_ui_uint8_picker("black", &cmyk->key, 100));
+  gtk_box_append(GTK_BOX(container), gtk_ui_uint8_picker("cyan", &cmyk->cyan, 100, CMYK));
+  gtk_box_append(GTK_BOX(container), gtk_ui_uint8_picker("magenta", &cmyk->magenta, 100, CMYK));
+  gtk_box_append(GTK_BOX(container), gtk_ui_uint8_picker("yellow", &cmyk->yellow, 100, CMYK));
+  gtk_box_append(GTK_BOX(container), gtk_ui_uint8_picker("black", &cmyk->key, 100, CMYK));
 
   return container;
 }

@@ -24,7 +24,7 @@ on_input_change(GtkWidget *widget, onChangeWidgets *widgets) {
   uint8_t value = get_number_from_input(widget, widgets->max_value);
   *widgets->value = value;
   gtk_range_set_value(GTK_RANGE(widgets->scale), value);
-  colors_context_color_update(GET_CONTEXT);
+  colors_context_color_update(GET_CONTEXT, widgets->mode);
   return TRUE;
 }
 
@@ -35,7 +35,7 @@ on_scale_change(GtkWidget *scale, onChangeWidgets *widgets) {
       gtk_text_get_buffer(GTK_TEXT(widgets->input)),
       uint8_to_string(value),
       3);
-  colors_context_color_update(GET_CONTEXT);
+  colors_context_color_update(GET_CONTEXT, widgets->mode);
   return TRUE;
 }
 
@@ -44,7 +44,7 @@ on_input_destroy(GtkWidget *widget, gpointer user_data) {
   free(user_data);
 }
 
-GtkWidget *gtk_ui_uint8_picker(const char *label, uint8_t *value, uint8_t max_value) {
+GtkWidget *gtk_ui_uint8_picker(const char *label, uint8_t *value, uint8_t max_value, enum ColorMode mode) {
   GtkWidget *container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
   GtkWidget *text_container = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
   gtk_box_append(GTK_BOX(container), text_container);
@@ -63,6 +63,7 @@ GtkWidget *gtk_ui_uint8_picker(const char *label, uint8_t *value, uint8_t max_va
   widgets->scale = scale;
   widgets->input = input;
   widgets->max_value = max_value;
+  widgets->mode = mode;
 
   g_signal_connect(input, "changed", G_CALLBACK(on_input_change), widgets);
   g_signal_connect(scale, "value-changed", G_CALLBACK(on_scale_change), widgets);

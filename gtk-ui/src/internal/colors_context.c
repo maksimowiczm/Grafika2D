@@ -2,6 +2,7 @@
 
 #include "stdlib.h"
 #include "string.h"
+#include "color_converter/cmyk_converter.h"
 
 ColorsContext *singleton_context(ColorsContext *context) {
   static ColorsContext *singleton;
@@ -44,11 +45,23 @@ void colors_context_free(ColorsContext *context) {
   free(context);
 }
 
-void colors_context_color_update(ColorsContext *context) {
+void colors_context_color_update(ColorsContext *context, enum ColorMode mode) {
   if (context == NULL) {
     return;
   }
-  const guchar buffer[3] = {(*context->rgb)->red, (*context->rgb)->green, (*context->rgb)->blue};
+  guchar buffer[3];
+  if (mode == RGB) {
+    buffer[0] = (*context->rgb)->red;
+    buffer[1] = (*context->rgb)->green;
+    buffer[2] = (*context->rgb)->blue;
+  } else if (mode == CMYK) {
+    ColorCmyk *contextCmyk = *context->cmyk;
+    ColorRgb rgb = color_converter_cmyk2rgb(*contextCmyk);
+
+    buffer[0] = rgb.red;
+    buffer[1] = rgb.green;
+    buffer[2] = rgb.blue;
+  }
 
   GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data(
       buffer,
