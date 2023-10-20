@@ -34,7 +34,7 @@ ColorsContext *colors_context_new() {
 
   singleton_context(context);
 
-  context->RGB_MODE = false;
+  context->RGB_MODE = true;
 
   return context;
 }
