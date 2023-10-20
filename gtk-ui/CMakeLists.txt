@@ -4,6 +4,7 @@ add_library(
         src/internal/window.c
         src/internal/rgb_container.c
         src/internal/uint8_picker.c
+        src/internal/cmyk_container.c
 )
 
 target_include_directories(color_ui PUBLIC include)
