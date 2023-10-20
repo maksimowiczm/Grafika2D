@@ -3,6 +3,15 @@
 #include "stdlib.h"
 #include "string.h"
 
+ColorsContext *singleton_context(ColorsContext *context) {
+  static ColorsContext *singleton;
+  if (context == NULL) {
+    return singleton;
+  }
+
+  singleton = context;
+}
+
 ColorsContext *colors_context_new() {
   ColorsContext *context = malloc(sizeof(*context));
   memset(context, 0, sizeof(*context));
@@ -16,6 +25,8 @@ ColorsContext *colors_context_new() {
 
   context->image = malloc(sizeof(GtkImage *));
   context->pixbuf = malloc(sizeof(GdkPixbuf *));
+
+  singleton_context(context);
 
   return context;
 }
