@@ -1,21 +1,13 @@
 #include "color_ui/internal/window.h"
+
 #include "color_ui/internal/rgb_container.h"
-
-#include "color_converter/rgb.h"
-#include "color_converter/cmyk.h"
 #include "color_ui/internal/cmyk_container.h"
-
-typedef struct {
-  ColorRgb *rgb;
-  ColorCmyk *cmyk;
-} Colors;
+#include "color_ui/internal/colors_context.h"
 
 static void
 on_destroy(GtkWidget *window, gpointer user_data) {
-  Colors *colors = user_data;
-  free(colors->cmyk);
-  free(colors->rgb);
-  free(colors);
+  ColorsContext *colors = user_data;
+  colors_context_free(colors);
 }
 
 void window_activate(GtkApplication *app) {
@@ -23,19 +15,12 @@ void window_activate(GtkApplication *app) {
   GtkWidget *app_container = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
   gtk_window_set_child(GTK_WINDOW(window), app_container);
 
-  ColorRgb *rgb = malloc(sizeof(*rgb));
-  memset(rgb, 0, sizeof(*rgb));
-  GtkWidget *rgb_container = rgb_container_new(rgb);
+  ColorsContext *colors = colors_context_new();
+  GtkWidget *rgb_container = rgb_container_new(colors);
   gtk_box_append(GTK_BOX(app_container), rgb_container);
 
-  ColorCmyk *cmyk = malloc(sizeof(*cmyk));
-  memset(cmyk, 0, sizeof(*cmyk));
-  GtkWidget *cmyk_container = cmyk_container_new(cmyk);
+  GtkWidget *cmyk_container = cmyk_container_new(colors);
   gtk_box_append(GTK_BOX(app_container), cmyk_container);
-
-  Colors *colors = malloc(sizeof(*colors));
-  colors->rgb = rgb;
-  colors->cmyk = cmyk;
 
   gtk_window_set_default_size(GTK_WINDOW(window), 1280, 720);
   gtk_window_set_title(GTK_WINDOW(window), "Drawing app");
