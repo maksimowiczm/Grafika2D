@@ -15,8 +15,12 @@ ColorsContext *colors_context_new();
 
 void colors_context_free(ColorsContext *context);
 
-void colors_context_color_update(ColorsContext *context);
+enum ColorMode {
+  RGB, CMYK
+};
+void colors_context_color_update(ColorsContext *context, enum ColorMode);
 
 // 💀 brooooo
 #define GET_CONTEXT singleton_context(NULL)
+
 ColorsContext *singleton_context(ColorsContext *context);
