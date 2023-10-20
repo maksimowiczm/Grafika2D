@@ -2,6 +2,7 @@ add_library(
         color_ui
         src/internal/window.c
         src/app.c
+        src/internal/rgb_container.c
 )
 
 target_include_directories(color_ui PUBLIC include)
