@@ -9,6 +9,7 @@ add_executable(
         src/window.c
         src/cube.c
         src/cube_state/cube_state.c
+        src/cube_state/cube_context.c
 )
 
 find_package(PkgConfig REQUIRED)

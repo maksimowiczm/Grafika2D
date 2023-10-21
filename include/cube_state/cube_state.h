@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cube_context.h"
 #include "inttypes.h"
 
 enum CubeState {
@@ -15,6 +14,7 @@ enum CubeState {
 typedef struct cube_state ICubeState;
 
 struct cube_state {
+  enum CubeState name;
   ICubeState (*up)();
   ICubeState (*right)();
   ICubeState (*down)();

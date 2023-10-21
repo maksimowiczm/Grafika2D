@@ -12,18 +12,20 @@ ICubeState cube_state_get_cube_state(enum CubeState type) {
   }
 }
 
-#define STATE_NEW(NAME, UP, RIGHT, DOWN, LEFT, PIXELS) \
-ICubeState NAME() {                                    \
-  ICubeState state;                                    \
-  state.up = UP;                                       \
-  state.left = LEFT;                                   \
-  state.right = RIGHT;                                 \
-  state.down = DOWN;                                   \
-  state.get_pixels = PIXELS;                           \
-  return state;                                        \
+#define STATE_NEW(ENUM_NAME, NAME, UP, RIGHT, DOWN, LEFT, PIXELS) \
+ICubeState NAME() {                                               \
+  ICubeState state;                                               \
+  state.name = ENUM_NAME;                                         \
+  state.up = UP;                                                  \
+  state.left = LEFT;                                              \
+  state.right = RIGHT;                                            \
+  state.down = DOWN;                                              \
+  state.get_pixels = PIXELS;                                      \
+  return state;                                                   \
 }
 
 STATE_NEW(
+    Front,
     cube_state_front_get,
     cube_state_top_get,
     cube_state_side_get,
@@ -33,15 +35,17 @@ STATE_NEW(
 )
 
 STATE_NEW(
+    FrontPrime,
     cube_state_prime_front_get,
     cube_state_prime_top_get,
-    cube_state_side_get,
-    cube_state_top_get,
     cube_state_prime_side_get,
-    get_prime_top_wall
+    cube_state_top_get,
+    cube_state_side_get,
+    get_prime_front_wall
 )
 
 STATE_NEW(
+    Top,
     cube_state_top_get,
     cube_state_prime_front_get,
     cube_state_side_get,
@@ -51,6 +55,7 @@ STATE_NEW(
 )
 
 STATE_NEW(
+    TopPrime,
     cube_state_prime_top_get,
     cube_state_front_get,
     cube_state_side_get,
@@ -60,6 +65,7 @@ STATE_NEW(
 )
 
 STATE_NEW(
+    Side,
     cube_state_side_get,
     cube_state_top_get,
     cube_state_prime_front_get,
@@ -69,6 +75,7 @@ STATE_NEW(
 )
 
 STATE_NEW(
+    SidePrime,
     cube_state_prime_side_get,
     cube_state_top_get,
     cube_state_front_get,
