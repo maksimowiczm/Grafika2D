@@ -29,6 +29,7 @@ static void draw(CubeContext *context) {
       NULL,
       NULL
   );
+
   gtk_picture_set_pixbuf(GTK_PICTURE(*context->picture), pixbuf);
 }
 
