@@ -8,6 +8,7 @@ add_executable(
         src/main.c
         src/window.c
         src/cube.c
+        src/cube_state/cube_state.c
 )
 
 find_package(PkgConfig REQUIRED)
