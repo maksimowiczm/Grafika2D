@@ -37,9 +37,9 @@ STATE_NEW(
 STATE_NEW(
     FrontPrime,
     cube_state_prime_front_get,
-    cube_state_prime_top_get,
-    cube_state_prime_side_get,
     cube_state_top_get,
+    cube_state_prime_side_get,
+    cube_state_prime_top_get,
     cube_state_side_get,
     get_prime_front_wall
 )
