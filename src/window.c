@@ -15,18 +15,6 @@ on_right_button_click(GtkWidget *button, gpointer user_data) {
 }
 
 static void
-on_up_button_click(GtkWidget *button, gpointer user_data) {
-  CubeContext *context = user_data;
-  cube_context_up(context);
-}
-
-static void
-on_down_button_click(GtkWidget *button, gpointer user_data) {
-  CubeContext *context = user_data;
-  cube_context_down(context);
-}
-
-static void
 on_destroy(GtkWidget *widget, gpointer user_data) {
   cube_context_free(user_data);
 }
@@ -41,12 +29,6 @@ void window_activate(GtkApplication *app) {
   gtk_widget_set_hexpand(picture, TRUE);
   gtk_widget_set_vexpand(picture, TRUE);
 
-  GtkWidget *upper = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-  gtk_box_append(GTK_BOX(app_container), upper);
-  GtkWidget *up_button = gtk_button_new_with_label("up");
-  g_signal_connect(up_button, "clicked", G_CALLBACK(on_up_button_click), context);
-  gtk_box_append(GTK_BOX(upper), up_button);
-
   GtkWidget *middle = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
   gtk_box_append(GTK_BOX(app_container), middle);
 
@@ -59,12 +41,6 @@ void window_activate(GtkApplication *app) {
   GtkWidget *right_button = gtk_button_new_with_label("right");
   g_signal_connect(right_button, "clicked", G_CALLBACK(on_right_button_click), context);
   gtk_box_append(GTK_BOX(middle), right_button);
-
-  GtkWidget *lower = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-  gtk_box_append(GTK_BOX(app_container), lower);
-  GtkWidget *down_button = gtk_button_new_with_label("down");
-  g_signal_connect(down_button, "clicked", G_CALLBACK(on_down_button_click), context);
-  gtk_box_append(GTK_BOX(lower), down_button);
 
   gtk_window_set_default_size(GTK_WINDOW(window), 1280, 720);
   gtk_window_set_title(GTK_WINDOW(window), "Drawing app");
