@@ -103,6 +103,7 @@ uint8_t *get_prime_side_wall() {
 
 void rotate_90(uint8_t **pixels) {
   uint8_t rotated[SIDE_LENGTH];
+  memset(rotated, 255, SIDE_LENGTH);
 
   int xx = X_LENGTH - 1, yy = -1;
   for (int x = 0; x < X_LENGTH; x++) {
@@ -116,19 +117,5 @@ void rotate_90(uint8_t **pixels) {
     }
   }
 
-  *pixels = rotated;
-}
-
-void rotate_180(uint8_t **pixels) {
-  uint8_t rotated[SIDE_LENGTH];
-
-  for (int x = 0; x < X_LENGTH; x++) {
-    for (int y = 0; y < Y_LENGTH; y++) {
-      *RED(x, y, rotated, SIDE_LENGTH) = *RED(y, x, *pixels, SIDE_LENGTH);
-      *GREEN(x, y, rotated, SIDE_LENGTH) = *GREEN(y, x, *pixels, SIDE_LENGTH);
-      *BLUE(x, y, rotated, SIDE_LENGTH) = *BLUE(y, x, *pixels, SIDE_LENGTH);
-    }
-  }
-
-  *pixels = rotated;
+  memcpy(*pixels, rotated, SIDE_LENGTH);
 }
