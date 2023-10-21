@@ -7,6 +7,8 @@
 typedef struct cube_context CubeContext;
 
 struct cube_context {
+  bool right;
+  bool up;
   GtkPicture **picture;
   ICubeState state;
 };

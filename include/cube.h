@@ -25,5 +25,3 @@ uint8_t *get_side_wall();
 uint8_t *get_prime_side_wall();
 
 void rotate_90(uint8_t **pixels);
-
-void rotate_180(uint8_t **pixels);
