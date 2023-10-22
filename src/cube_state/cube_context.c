@@ -43,21 +43,23 @@ static void draw(CubeContext *context, bool init) {
     }
   }
 
-  const size_t BUFFER_SIZE = SIDE_LENGTH * 4;
+#define WIDTH (X_LENGTH * 3)
+#define HEIGHT (Y_LENGTH)
+
+  const size_t BUFFER_SIZE = SIDE_LENGTH * 4 + WIDTH * 2;
   uint8_t *buffer = malloc(BUFFER_SIZE);
   memset(buffer, 0, BUFFER_SIZE);
 
-#define WIDTH (X_LENGTH * 3)
-#define HEIGHT (Y_LENGTH)
+
 
   for (size_t y = 0; y < HEIGHT; y++) {
     memcpy(buffer + SIDE_LENGTH * 2 + WIDTH * 2 * y, front_pixels + WIDTH * y, WIDTH);
   }
 
   int step = WIDTH;
-  for (size_t y = 0; y < HEIGHT; y++) {
-    memcpy(buffer + WIDTH * 2 * y + step, upper + WIDTH * y, WIDTH);
-    step -= 3;
+  for (size_t y = 0; y < HEIGHT / 2 - 1; y++) {
+    memcpy(buffer + SIDE_LENGTH + WIDTH * 2 * y + step, upper + WIDTH * 2 * y, WIDTH);
+    step -= 6;
   }
 
   GdkPixbuf *pixbuf = gdk_pixbuf_new_from_data(
@@ -77,9 +79,11 @@ static void draw(CubeContext *context, bool init) {
 
   step = 0;
   rotate_90(&side);
-  for (size_t y = HEIGHT; y < HEIGHT * 2; y++) {
-    memcpy(rotated_buffer + WIDTH * 2 * y + step, side + WIDTH * (y - HEIGHT), WIDTH);
-    step += 3;
+  for (size_t y = 1; y < HEIGHT; y++) {
+    memcpy(rotated_buffer + SIDE_LENGTH * 2 + WIDTH * 2 * y + step, side + WIDTH * y, WIDTH);
+    if (y % 2 == 0) {
+      step += 3;
+    }
   }
 
   GdkPixbuf *out = gdk_pixbuf_rotate_simple(rotated, 90);
