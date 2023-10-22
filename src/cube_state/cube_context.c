@@ -3,7 +3,7 @@
 #include "stdlib.h"
 #include "cube.h"
 
-static void draw(CubeContext *context, bool init) {
+static void draw(CubeContext *context, bool init, bool flip) {
   uint8_t *upper;
   uint8_t *side;
   uint8_t *front_pixels = context->state.get_pixels();
@@ -24,23 +24,48 @@ static void draw(CubeContext *context, bool init) {
 
   if (!init) {
     static uint8_t rot;
-    if (context->right) {
-      rot++;
-    } else {
-      rot--;
-    }
-    rot = rot % 4;
+    if (!flip) {
+      if (context->up) {
+        if (context->right) {
+          rot++;
+        } else {
+          rot--;
+        }
+      } else {
+        if (context->right) {
+          rot--;
+        } else {
+          rot++;
+        }
+      }
 
-    if (rot == 1) {
-      rotate_90(&upper);
-    } else if (rot == 2) {
-      rotate_90(&upper);
-      rotate_90(&upper);
-    } else if (rot == 3) {
-      rotate_90(&upper);
-      rotate_90(&upper);
-      rotate_90(&upper);
+      rot = rot % 4;
     }
+
+    if (context->up) {
+      if (rot == 1) {
+        rotate_90(&upper);
+      } else if (rot == 2) {
+        rotate_90(&upper);
+        rotate_90(&upper);
+      } else if (rot == 3) {
+        rotate_90(&upper);
+        rotate_90(&upper);
+        rotate_90(&upper);
+      }
+    } else {
+      if (rot == 3) {
+        rotate_90(&upper);
+      } else if (rot == 2) {
+        rotate_90(&upper);
+        rotate_90(&upper);
+      } else if (rot == 1) {
+        rotate_90(&upper);
+        rotate_90(&upper);
+        rotate_90(&upper);
+      }
+    }
+
   }
 
 #define WIDTH (X_LENGTH * 3)
@@ -101,7 +126,7 @@ CubeContext *cube_context_new(GtkPicture *picture) {
   *context->picture = picture;
   context->right = true;
   context->up = true;
-  draw(context, true);
+  draw(context, true, false);
   return context;
 }
 
@@ -117,7 +142,7 @@ void cube_context_left(CubeContext *context) {
     context->state = context->state.right();
   }
   context->right = false;
-  draw(context, false);
+  draw(context, false, false);
 }
 
 void cube_context_right(CubeContext *context) {
@@ -127,5 +152,10 @@ void cube_context_right(CubeContext *context) {
     context->state = context->state.left();
   }
   context->right = true;
-  draw(context, false);
+  draw(context, false, false);
+}
+
+void cube_context_flip(CubeContext *context) {
+  context->up = !context->up;
+  draw(context, false, true);
 }
