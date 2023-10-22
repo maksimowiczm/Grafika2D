@@ -19,6 +19,11 @@ on_destroy(GtkWidget *widget, gpointer user_data) {
   cube_context_free(user_data);
 }
 
+static void
+on_flip_button_click(GtkWidget *widget, gpointer user_data) {
+  cube_context_flip(user_data);
+}
+
 void window_activate(GtkApplication *app) {
   GtkWidget *window = gtk_application_window_new(app);
   GtkWidget *app_container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 1);
@@ -41,6 +46,10 @@ void window_activate(GtkApplication *app) {
   GtkWidget *right_button = gtk_button_new_with_label("right");
   g_signal_connect(right_button, "clicked", G_CALLBACK(on_right_button_click), context);
   gtk_box_append(GTK_BOX(middle), right_button);
+
+  GtkWidget *flip_button = gtk_button_new_with_label("flip");
+  g_signal_connect(flip_button, "clicked", G_CALLBACK(on_flip_button_click), context);
+  gtk_box_append(GTK_BOX(app_container), flip_button);
 
   gtk_window_set_default_size(GTK_WINDOW(window), 1280, 720);
   gtk_window_set_title(GTK_WINDOW(window), "Drawing app");
