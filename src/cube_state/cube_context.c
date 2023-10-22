@@ -47,11 +47,16 @@ static void draw(CubeContext *context, bool init) {
   uint8_t *buffer = malloc(BUFFER_SIZE);
   memset(buffer, 0, BUFFER_SIZE);
 
-  int step = X_LENGTH * 3;
-  for (size_t y = 0; y < Y_LENGTH; y++) {
-    memcpy(buffer + Y_LENGTH * 3 * 2 * y + step, upper + Y_LENGTH * 3 * y, Y_LENGTH * 3);
-    memcpy(buffer + SIDE_LENGTH * 2 + Y_LENGTH * 3 * 2 * y, front_pixels + Y_LENGTH * 3 * y, Y_LENGTH * 3);
-    memcpy(buffer + SIDE_LENGTH * 2 + Y_LENGTH * 3 + Y_LENGTH * 3 * 2 * y, side + Y_LENGTH * 3 * y, Y_LENGTH * 3);
+#define WIDTH (X_LENGTH * 3)
+#define HEIGHT (Y_LENGTH)
+
+  for (size_t y = 0; y < HEIGHT; y++) {
+    memcpy(buffer + SIDE_LENGTH * 2 + WIDTH * 2 * y, front_pixels + WIDTH * y, WIDTH);
+  }
+
+  int step = WIDTH;
+  for (size_t y = 0; y < HEIGHT; y++) {
+    memcpy(buffer + WIDTH * 2 * y + step, upper + WIDTH * y, WIDTH);
     step -= 3;
   }
 
@@ -67,7 +72,19 @@ static void draw(CubeContext *context, bool init) {
       NULL
   );
 
-  gtk_picture_set_pixbuf(GTK_PICTURE(*context->picture), pixbuf);
+  GdkPixbuf *rotated = gdk_pixbuf_rotate_simple(pixbuf, 270);
+  uint8_t *rotated_buffer = gdk_pixbuf_get_pixels(rotated);
+
+  step = 0;
+  rotate_90(&side);
+  for (size_t y = HEIGHT; y < HEIGHT * 2; y++) {
+    memcpy(rotated_buffer + WIDTH * 2 * y + step, side + WIDTH * (y - HEIGHT), WIDTH);
+    step += 3;
+  }
+
+  GdkPixbuf *out = gdk_pixbuf_rotate_simple(rotated, 90);
+
+  gtk_picture_set_pixbuf(GTK_PICTURE(*context->picture), out);
 }
 
 CubeContext *cube_context_new(GtkPicture *picture) {
