@@ -1,4 +1,4 @@
-#include "image_gui_gtk/app.hpp"
+#include "image_gui_gtk/window.hpp"
 
 #include "gtkmm/messagedialog.h"
 
@@ -9,22 +9,22 @@ extern "C" {
 #include "netpbm/PixMapReader.h"
 }
 
-ImageReaderApp::ImageReaderApp() {
+ImageReaderWindow::ImageReaderWindow() {
   Gtk::Box container{Gtk::Orientation::HORIZONTAL};
   Gtk::Box menu{Gtk::Orientation::VERTICAL};
   container.append(menu);
 
   load_button = Gtk::Button{"Load image"};
-  load_button.signal_clicked().connect(sigc::mem_fun(*this, &ImageReaderApp::handle_load_button_click));
+  load_button.signal_clicked().connect(sigc::mem_fun(*this, &ImageReaderWindow::handle_load_button_click));
   menu.append(load_button);
 
   save_button = Gtk::Button{"Save image"};
-  save_button.signal_clicked().connect(sigc::mem_fun(*this, &ImageReaderApp::handle_save_button_click));
+  save_button.signal_clicked().connect(sigc::mem_fun(*this, &ImageReaderWindow::handle_save_button_click));
   menu.append(save_button);
 
   Gtk::Box jpegScaler{Gtk::Orientation::HORIZONTAL};
   jpeg_scale_ = Gtk::Scale{Gtk::Adjustment::create(95, 0, 100)};
-  jpeg_scale_.signal_value_changed().connect(sigc::mem_fun(*this, &ImageReaderApp::on_scale_changed));
+  jpeg_scale_.signal_value_changed().connect(sigc::mem_fun(*this, &ImageReaderWindow::on_scale_changed));
   jpeg_scale_.set_size_request(80, -1);
   jpegScaler.append(jpeg_scale_);
   jpeg_scale_label_ = Gtk::Label{};
@@ -40,13 +40,13 @@ ImageReaderApp::ImageReaderApp() {
   set_child(container);
 }
 
-void ImageReaderApp::handle_load_button_click() {
+void ImageReaderWindow::handle_load_button_click() {
   auto dialog = new Gtk::FileChooserDialog("Please choose a file",
                                            Gtk::FileChooser::Action::OPEN);
   dialog->set_transient_for(*this);
   dialog->set_modal(true);
   dialog->signal_response().connect(sigc::bind(
-      sigc::mem_fun(*this, &ImageReaderApp::on_file_dialog_response), dialog));
+      sigc::mem_fun(*this, &ImageReaderWindow::on_file_dialog_response), dialog));
 
   dialog->add_button("_Cancel", Gtk::ResponseType::CANCEL);
   dialog->add_button("_Open", Gtk::ResponseType::OK);
@@ -70,7 +70,7 @@ void ImageReaderApp::handle_load_button_click() {
   dialog->show();
 }
 
-void ImageReaderApp::on_file_dialog_response(int response_id, Gtk::FileChooserDialog *dialog) {
+void ImageReaderWindow::on_file_dialog_response(int response_id, Gtk::FileChooserDialog *dialog) {
   if (response_id != Gtk::ResponseType::OK) {
     delete dialog;
     return;
@@ -100,7 +100,7 @@ void ImageReaderApp::on_file_dialog_response(int response_id, Gtk::FileChooserDi
   delete dialog;
 }
 
-void ImageReaderApp::image_draw() {
+void ImageReaderWindow::image_draw() {
   const auto pixbuf = Gdk::Pixbuf::create_from_data(
       imageMat_.data,
       Gdk::Colorspace::RGB,
@@ -116,7 +116,7 @@ void ImageReaderApp::image_draw() {
                            imageMat_.size().height);
 }
 
-void ImageReaderApp::handle_save_button_click() {
+void ImageReaderWindow::handle_save_button_click() {
   if (imageMat_.empty()) {
     return;
   }
@@ -126,7 +126,7 @@ void ImageReaderApp::handle_save_button_click() {
   dialog->set_transient_for(*this);
   dialog->set_modal(true);
   dialog->signal_response().connect(sigc::bind(
-      sigc::mem_fun(*this, &ImageReaderApp::on_save_file_dialog_response), dialog));
+      sigc::mem_fun(*this, &ImageReaderWindow::on_save_file_dialog_response), dialog));
 
   dialog->add_button("_Cancel", Gtk::ResponseType::CANCEL);
   dialog->add_button("_Save", Gtk::ResponseType::OK);
@@ -134,7 +134,7 @@ void ImageReaderApp::handle_save_button_click() {
   dialog->show();
 }
 
-void ImageReaderApp::on_save_file_dialog_response(int response_id, Gtk::FileChooserDialog *dialog) {
+void ImageReaderWindow::on_save_file_dialog_response(int response_id, Gtk::FileChooserDialog *dialog) {
   if (response_id != Gtk::ResponseType::OK) {
     delete dialog;
     return;
@@ -145,6 +145,6 @@ void ImageReaderApp::on_save_file_dialog_response(int response_id, Gtk::FileChoo
   delete dialog;
 }
 
-void ImageReaderApp::on_scale_changed() {
+void ImageReaderWindow::on_scale_changed() {
   jpeg_scale_label_.set_text(std::to_string((int) jpeg_scale_.get_value()));
 }
