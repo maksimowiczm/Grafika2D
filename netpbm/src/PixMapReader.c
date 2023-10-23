@@ -3,12 +3,10 @@
 #include "netpbm/PixMap3.h"
 #include "netpbm/PixMap6.h"
 
-#ifdef _fseeki64
+#ifdef _WIN32
 #define fseek64 _fseeki64
 #define ftell64 _ftelli64
-#endif
-
-#ifndef fseek64
+#elif __linux__
 #define fseek64 fseeko
 #define ftell64 ftello
 #endif

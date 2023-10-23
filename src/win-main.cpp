@@ -26,10 +26,10 @@ handle_button_load_click(HWND hwnd) {
     }
 
     if (strcmp(&file_path[strlen(file_path) - 3], "ppm") == 0) {
-      return ImageViewer::load_image(file_path, ImageViewer::ImageType::PPM);
+      return ImageViewer::load_image(file_path, ImageLoader::LoaderMethod::PPM);
     }
 
-    return ImageViewer::load_image(file_path, ImageViewer::ImageType::OPEN_CV);
+    return ImageViewer::load_image(file_path, ImageLoader::LoaderMethod::OPEN_CV);
   }
 
   if (strlen(ofn.lpstrFile) > 0) {
