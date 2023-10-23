@@ -10,10 +10,10 @@
 
 #include "opencv2/core/mat.hpp"
 
-class ImageReaderApp : public Gtk::Window {
+class ImageReaderWindow : public Gtk::Window {
  public:
-  ImageReaderApp();
-  ~ImageReaderApp() override = default;
+  ImageReaderWindow();
+  ~ImageReaderWindow() override = default;
 
  private:
   cv::Mat imageMat_{};
