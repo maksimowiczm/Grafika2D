@@ -6,6 +6,12 @@ extern "C" {
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/imgproc.hpp"
 
+#ifdef WIN32
+#define BITMAP_COLORS(image) cv::cvtColor(image, image, cv::COLOR_BGR2RGB);
+#elif __linux__
+#define BITMAP_COLORS(image)
+#endif
+
 static cv::Mat
 load_PixMap(PixMapImage **ptr, const char *file_path) {
   *ptr = netpbm_PixMap_read_from_file(file_path);
@@ -50,6 +56,7 @@ cv::Mat ImageLoader::load_image(const char *file_path, ImageLoader::LoaderMethod
 
   cv::Mat out;
   cv::resize(image, out, cv::Size(), scale, scale, cv::INTER_AREA);
+  BITMAP_COLORS(out)
 
   if (*toFree != nullptr) {
     free(*toFree);
