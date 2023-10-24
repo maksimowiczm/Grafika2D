@@ -24,13 +24,13 @@ inline double *get_pixel_dd(size_t x,
          &pixels[width * y * pixel_size + x * pixel_size];
 }
 
-void filter(uint8_t *pixels,
-            size_t width,
-            size_t height,
-            size_t pixel_size,
-            double *mask,
-            size_t mask_width,
-            size_t mask_height) {
+void mask_filter(uint8_t *pixels,
+                 size_t width,
+                 size_t height,
+                 size_t pixel_size,
+                 double *mask,
+                 size_t mask_width,
+                 size_t mask_height) {
   const size_t startX = mask_width / 2;
   const size_t startY = mask_width / 2;
   const size_t pixels_length = width * height * pixel_size;
@@ -51,7 +51,7 @@ void filter(uint8_t *pixels,
 
       for (size_t y = 0; y < mask_height; y++) {
         for (size_t x = 0; x < mask_width; x++) {
-          const uint8_t *pixel = get_pixel_u8(j - startX + x, i - startY + y, pixels, pixels_length, width, 3);
+          const uint8_t *pixel = get_pixel_u8(j - startX + x, i - startY + y, pixels, pixels_length, width, pixel_size);
           const double mask_value = *get_pixel_dd(x, y, mask, mask_width * mask_height, mask_width, 1);
 
           for (size_t step = 0; step < pixel_size; step++) {

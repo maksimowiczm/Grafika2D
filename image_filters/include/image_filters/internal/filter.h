@@ -17,10 +17,10 @@ double *get_pixel_dd(size_t x,
                      size_t width,
                      size_t pixel_size);
 
-void filter(uint8_t *pixels,
-            size_t width,
-            size_t height,
-            size_t pixel_size,
-            double *mask,
-            size_t mask_width,
-            size_t mask_height);
+void mask_filter(uint8_t *pixels,
+                 size_t width,
+                 size_t height,
+                 size_t pixel_size,
+                 double *mask,
+                 size_t mask_width,
+                 size_t mask_height);
