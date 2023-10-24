@@ -3,8 +3,8 @@
 #include "inttypes.h"
 #include "stdlib.h"
 
-#define FILTER(name) void image_filters_##name##_filter(uint8_t *pixels, size_t width, size_t height, size_t pixel_length)
+void image_filters_mean3_filter(uint8_t *pixels, size_t width, size_t height, size_t pixel_size);
 
-FILTER(mean3);
+void image_filters_mean5_filter(uint8_t *pixels, size_t width, size_t height, size_t pixel_size);
 
-FILTER(mean5);
+void image_filters_median_filter(uint8_t *pixels, size_t width, size_t height, size_t pixel_length, size_t size);
