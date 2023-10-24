@@ -3,20 +3,13 @@
 #include "image_filters/internal/filter.h"
 #include "string.h"
 
-#define MEAN_MASK(mask, size) \
-double mask[size];            \
-for (size_t i = 0; i < size; i++) { \
-mask[i] = (double) 1 / (size);\
-}
-
-void image_filters_mean3_filter(uint8_t *pixels, size_t width, size_t height, size_t pixel_size) {
-  MEAN_MASK(mask, 3 * 3);
-  mask_filter(pixels, width, height, pixel_size, mask, 5, 5);
-}
-
-void image_filters_mean5_filter(uint8_t *pixels, size_t width, size_t height, size_t pixel_size) {
-  MEAN_MASK(mask, 5 * 5);
-  mask_filter(pixels, width, height, pixel_size, mask, 5, 5);
+void image_filters_mean_filter(uint8_t *pixels, size_t width, size_t height, size_t pixel_length, size_t size) {
+  double *mask = malloc(sizeof(double) * size * size);
+  for (size_t i = 0; i < size * size; i++) {
+    mask[i] = (double) 1 / (size * size);
+  }
+  mask_filter(pixels, width, height, pixel_length, mask, size, size);
+  free(mask);
 }
 
 static int greater(const void *first, const void *second) {
