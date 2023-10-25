@@ -21,6 +21,7 @@ void mask_filter(uint8_t *pixels,
                  size_t width,
                  size_t height,
                  size_t pixel_size,
+                 double multiplier,
                  double *mask,
                  size_t mask_width,
                  size_t mask_height);

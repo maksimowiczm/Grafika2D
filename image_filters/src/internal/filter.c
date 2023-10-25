@@ -28,6 +28,7 @@ void mask_filter(uint8_t *pixels,
                  size_t width,
                  size_t height,
                  size_t pixel_size,
+                 double multiplier,
                  double *mask,
                  size_t mask_width,
                  size_t mask_height) {
@@ -62,7 +63,7 @@ void mask_filter(uint8_t *pixels,
 
       for (size_t step = 0; step < pixel_size; step++) {
         uint8_t *outPixel = get_pixel_u8(j, i, out_pixels, pixels_length, width, pixel_size);
-        outPixel[step] = sums[step];
+        outPixel[step] = sums[step] * multiplier;
       }
     }
   }
