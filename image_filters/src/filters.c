@@ -28,3 +28,10 @@ median_filter(uint8_t *pixels, uint8_t *outPixel, size_t size) {
 void image_filters_median_filter(uint8_t *pixels, size_t width, size_t height, size_t pixel_length, size_t size) {
   filter(pixels, width, height, pixel_length, size, 10, median_filter);
 }
+
+void image_filters_sobel_filter(uint8_t *pixels, size_t width, size_t height, size_t pixel_length, size_t size) {
+  double mask[9] = {-1, 0, 1,
+                    -2, 0, 2,
+                    -1, 0, 1};
+  mask_filter(pixels, width, height, pixel_length, mask, 3, 3);
+}
