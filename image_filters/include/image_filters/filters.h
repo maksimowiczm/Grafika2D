@@ -12,3 +12,5 @@ void image_filters_median_filter(uint8_t *pixels, size_t width, size_t height, s
 void image_filters_sobel_filter(FILTER_ARGS);
 
 void image_filters_highpass_filter(FILTER_ARGS);
+
+void image_filters_gauss_filter(FILTER_ARGS);

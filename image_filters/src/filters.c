@@ -8,7 +8,7 @@ void image_filters_mean_filter(uint8_t *pixels, size_t width, size_t height, siz
   for (size_t i = 0; i < size * size; i++) {
     mask[i] = (double) 1 / (size * size);
   }
-  mask_filter(pixels, width, height, pixel_length, mask, size, size);
+  mask_filter(pixels, width, height, pixel_length, 1, mask, size, size);
   free(mask);
 }
 
@@ -33,12 +33,21 @@ void image_filters_sobel_filter(uint8_t *pixels, size_t width, size_t height, si
   double mask[9] = {-1, 0, 1,
                     -2, 0, 2,
                     -1, 0, 1};
-  mask_filter(pixels, width, height, pixel_length, mask, 3, 3);
+  mask_filter(pixels, width, height, pixel_length, 1, mask, 3, 3);
 }
 
 void image_filters_highpass_filter(uint8_t *pixels, size_t width, size_t height, size_t pixel_length, size_t size) {
   double mask[9] = {-1, -1, -1,
                     -1, 9, -1,
                     -1, -1, -1};
-  mask_filter(pixels, width, height, pixel_length, mask, 3, 3);
+  mask_filter(pixels, width, height, pixel_length, 1, mask, 3, 3);
+}
+
+void image_filters_gauss_filter(uint8_t *pixels, size_t width, size_t height, size_t pixel_length, size_t size) {
+  double mask[25] = {1, 4, 7, 4, 1,
+                     4, 16, 26, 16, 4,
+                     7, 26, 41, 26, 7,
+                     4, 16, 26, 16, 4,
+                     1, 4, 7, 4, 1};
+  mask_filter(pixels, width, height, pixel_length, 1./273.,mask, 5,5);
 }
