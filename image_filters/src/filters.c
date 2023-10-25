@@ -35,3 +35,10 @@ void image_filters_sobel_filter(uint8_t *pixels, size_t width, size_t height, si
                     -1, 0, 1};
   mask_filter(pixels, width, height, pixel_length, mask, 3, 3);
 }
+
+void image_filters_highpass_filter(uint8_t *pixels, size_t width, size_t height, size_t pixel_length, size_t size) {
+  double mask[9] = {-1, -1, -1,
+                    -1, 9, -1,
+                    -1, -1, -1};
+  mask_filter(pixels, width, height, pixel_length, mask, 3, 3);
+}
