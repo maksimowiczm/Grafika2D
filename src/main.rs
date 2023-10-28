@@ -1,92 +1,91 @@
 mod color_rgb;
 mod color;
 mod color_cmyk;
+mod scale_container;
 
 use std::cell::RefCell;
 use std::rc::Rc;
 use gtk::prelude::*;
-use gtk::{glib, Application, ApplicationWindow, Box as GBox, Orientation, Scale, Adjustment, Entry, Label, Picture};
+use gtk::{glib, Application, ApplicationWindow, Box as GBox, Orientation, Picture, Entry, Scale};
 use gtk::gdk_pixbuf::{Colorspace, Pixbuf};
-use gtk::glib::{Propagation};
-use crate::color::Color;
 use crate::color_cmyk::{CmykConverter, ColorCmyk};
 use crate::color_rgb::{ColorRgb, RgbConverter};
+use crate::scale_container::ScaleContainer;
 
 const APP_ID: &str = "org.grafika";
 
 #[derive(Debug)]
-struct Colors {
+pub struct Colors {
     rgb: ColorRgb,
     cmyk: ColorCmyk,
     picture: Rc<Picture>,
 
-    red: Option<GBox>,
-    green: Option<GBox>,
-    blue: Option<GBox>,
+    red: Option<ScaleContainer>,
+    green: Option<ScaleContainer>,
+    blue: Option<ScaleContainer>,
 
-    cyan: Option<GBox>,
-    magenta: Option<GBox>,
-    yellow: Option<GBox>,
-    key: Option<GBox>,
+    cyan: Option<ScaleContainer>,
+    magenta: Option<ScaleContainer>,
+    yellow: Option<ScaleContainer>,
+    key: Option<ScaleContainer>,
+}
+
+fn update_entry_scale(entry: Entry, scale: Scale, value: u8) {
+    entry.set_text(format!("{}", value).as_str());
+    scale.adjustment().set_value(value as f64);
 }
 
 impl Colors {
+    fn rgb_changed(&mut self) -> (u8, u8, u8) {
+        let cmyk = self.rgb.convert_cmyk();
+
+        update_entry_scale(self.cyan.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>().unwrap(),
+                           self.cyan.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>().unwrap(),
+                           cmyk.0);
+
+        update_entry_scale(self.magenta.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>().unwrap(),
+                           self.magenta.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>().unwrap(),
+                           cmyk.1);
+
+        update_entry_scale(self.yellow.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>().unwrap(),
+                           self.yellow.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>().unwrap(),
+                           cmyk.2);
+
+        update_entry_scale(self.key.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>().unwrap(),
+                           self.key.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>().unwrap(),
+                           cmyk.3);
+
+        *self.cmyk.cyan.borrow_mut() = cmyk.0;
+        *self.cmyk.magenta.borrow_mut() = cmyk.1;
+        *self.cmyk.yellow.borrow_mut() = cmyk.2;
+        *self.cmyk.key.borrow_mut() = cmyk.3;
+
+        (*self.rgb.red.borrow_mut(), *self.rgb.green.borrow_mut(), *self.rgb.blue.borrow_mut())
+    }
+    fn cmyk_changed(&mut self) -> (u8, u8, u8) {
+        let rgb = self.cmyk.convert_rgb();
+
+        update_entry_scale(self.red.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>().unwrap(),
+                           self.red.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>().unwrap(),
+                           rgb.0);
+
+        update_entry_scale(self.green.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>().unwrap(),
+                           self.green.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>().unwrap(),
+                           rgb.1);
+
+        update_entry_scale(self.blue.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>().unwrap(),
+                           self.blue.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>().unwrap(),
+                           rgb.2);
+
+        *self.rgb.red.borrow_mut() = rgb.0;
+        *self.rgb.green.borrow_mut() = rgb.1;
+        *self.rgb.blue.borrow_mut() = rgb.2;
+
+        rgb
+    }
     fn update(&mut self, rgb_input: bool) {
-        if rgb_input {
-            println!("rgb");
-            let cmyk = self.rgb.convert_cmyk();
-
-            let cyan_entry = self.cyan.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>();
-            cyan_entry.unwrap().set_text(format!("{}", cmyk.0).as_str());
-            let cyan_scale = self.cyan.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>();
-            cyan_scale.unwrap().adjustment().set_value(cmyk.0 as f64);
-
-            let magenta_entry = self.magenta.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>();
-            magenta_entry.unwrap().set_text(format!("{}", cmyk.1).as_str());
-            let magenta_scale = self.magenta.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>();
-            magenta_scale.unwrap().adjustment().set_value(cmyk.1 as f64);
-
-            let yellow_entry = self.yellow.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>();
-            yellow_entry.unwrap().set_text(format!("{}", cmyk.2).as_str());
-            let yellow_scale = self.yellow.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>();
-            yellow_scale.unwrap().adjustment().set_value(cmyk.2 as f64);
-
-            let key_entry = self.key.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>();
-            key_entry.unwrap().set_text(format!("{}", cmyk.3).as_str());
-            let key_scale = self.key.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>();
-            key_scale.unwrap().adjustment().set_value(cmyk.3 as f64);
-
-            let red = *self.rgb.red.borrow_mut();
-            let green = *self.rgb.green.borrow_mut();
-            let blue = *self.rgb.blue.borrow_mut();
-
-            self.update_color(red, green, blue);
-        } else {
-            println!("cmyk");
-
-            let rgb = self.cmyk.convert_rgb();
-
-            let red_entry = self.red.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>();
-            red_entry.unwrap().set_text(format!("{}", rgb.0).as_str());
-            let red_scale = self.red.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>();
-            red_scale.unwrap().adjustment().set_value(rgb.0 as f64);
-
-            let green_entry = self.green.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>();
-            green_entry.unwrap().set_text(format!("{}", rgb.1).as_str());
-            let green_scale = self.green.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>();
-            green_scale.unwrap().adjustment().set_value(rgb.1 as f64);
-
-            let blue_entry = self.blue.clone().unwrap().last_child().unwrap().dynamic_cast::<Entry>();
-            blue_entry.unwrap().set_text(format!("{}", rgb.2).as_str());
-            let blue_scale = self.blue.clone().unwrap().first_child().unwrap().dynamic_cast::<Scale>();
-            blue_scale.unwrap().adjustment().set_value(rgb.2 as f64);
-
-            *self.rgb.red.borrow_mut() = rgb.0;
-            *self.rgb.green.borrow_mut() = rgb.1;
-            *self.rgb.blue.borrow_mut() = rgb.2;
-
-            self.update_color(rgb.0, rgb.1, rgb.2);
-        }
+        let (red, green, blue) = if rgb_input { self.rgb_changed() } else { self.cmyk_changed() };
+        self.update_color(red, green, blue);
     }
 
     fn update_color(&mut self, red: u8, green: u8, blue: u8) {
@@ -102,68 +101,12 @@ fn main() -> glib::ExitCode {
     app.run()
 }
 
-fn color_scale_input<T: Color>(label_str: &str, colors: Rc<RefCell<Colors>>, r_value: Rc<RefCell<u8>>, rgb_input: bool) -> GBox {
-    // Create gtk widgets
-    let scale_container = GBox::new(Orientation::Horizontal, 0);
-    let label = Label::builder().label(label_str).width_request(100).build();
-    let adjustment = Adjustment::new(*r_value.borrow() as f64, 0., T::max_value() as f64 + 1., 1., 1., 1.);
-    let scale = Scale::builder()
-        .orientation(Orientation::Horizontal)
-        .hexpand(true)
-        .adjustment((&adjustment).into())
-        .build();
-    let buffer = Entry::builder().text(format!("{}", *r_value.borrow())).build();
-    scale_container.append(&scale);
-    scale_container.append(&label);
-    scale_container.append(&buffer);
-
-    // connect signals
-
-    // scale
-    let c_buffer = buffer.clone();
-    let c_colors = colors.clone();
-    let c_r_value = r_value.clone();
-    scale.connect_change_value(move |scale, _, _| {
-        let value = scale.adjustment().value() as u8;
-        c_buffer.set_text(value.to_string().as_str());
-        *c_r_value.borrow_mut() = value;
-        c_colors.borrow_mut().update(rgb_input);
-
-        Propagation::Proceed
-    });
-
-    // input
-    let c_scale = scale.clone();
-    buffer.connect_activate(move |entry| {
-        let input = entry.buffer().text();
-        let value_result = input.parse::<u32>();
-        if value_result.is_err() {
-            entry.buffer().set_text("0");
-            *r_value.borrow_mut() = 0;
-            colors.borrow_mut().update(rgb_input);
-            return;
-        }
-
-        let value = value_result.unwrap();
-        if value > T::max_value() as u32 {
-            entry.buffer().set_text(format!("{}", T::max_value()));
-        }
-
-        *r_value.borrow_mut() = value as u8;
-        c_scale.adjustment().set_value(value as f64);
-        colors.borrow_mut().update(rgb_input);
-    });
-
-    scale_container
-}
-
 fn build_ui(app: &Application) {
     let main_container = GBox::builder()
         .orientation(Orientation::Vertical)
         .width_request(1280)
         .height_request(720)
         .build();
-
 
     let picture = Picture::new();
     let pixbuf = Pixbuf::new(Colorspace::Rgb, false, 8, 1, 1);
@@ -192,39 +135,65 @@ fn build_ui(app: &Application) {
         key: None,
     }));
 
-    {
-        let red = color_scale_input::<ColorRgb>("red", Rc::clone(&colors), Rc::clone(&colors.borrow().rgb.red), true);
-        colors.borrow_mut().red = Some(red.clone());
-        main_container.append(&red);
+    let red =
+        ScaleContainer::new::<ColorRgb>("red",
+                                        Rc::clone(&colors),
+                                        Rc::clone(&colors.borrow().rgb.red),
+                                        true);
+    colors.borrow_mut().red = Some(red.clone());
 
-        let green = color_scale_input::<ColorRgb>("green", Rc::clone(&colors), Rc::clone(&colors.borrow().rgb.green), true);
-        colors.borrow_mut().green = Some(green.clone());
-        main_container.append(&green);
+    let green =
+        ScaleContainer::new::<ColorRgb>("green",
+                                        Rc::clone(&colors),
+                                        Rc::clone(&colors.borrow().rgb.green),
+                                        true);
+    colors.borrow_mut().green = Some(green.clone());
 
-        let blue = color_scale_input::<ColorRgb>("blue", Rc::clone(&colors), Rc::clone(&colors.borrow().rgb.blue), true);
-        colors.borrow_mut().blue = Some(blue.clone());
-        main_container.append(&blue);
-    }
+    let blue =
+        ScaleContainer::new::<ColorRgb>("blue",
+                                        Rc::clone(&colors),
+                                        Rc::clone(&colors.borrow().rgb.blue),
+                                        true);
+    colors.borrow_mut().blue = Some(blue.clone());
+
+    main_container.append(&red);
+    main_container.append(&green);
+    main_container.append(&blue);
 
     main_container.append(&picture);
 
-    {
-        let cyan = color_scale_input::<ColorCmyk>("cyan", Rc::clone(&colors), Rc::clone(&colors.borrow().cmyk.cyan), false);
-        colors.borrow_mut().cyan = Some(cyan.clone());
-        main_container.append(&cyan);
+    let cyan =
+        ScaleContainer::new::<ColorCmyk>("cyan",
+                                         Rc::clone(&colors),
+                                         Rc::clone(&colors.borrow().cmyk.cyan),
+                                         false);
+    colors.borrow_mut().cyan = Some(cyan.clone());
 
-        let magenta = color_scale_input::<ColorCmyk>("magenta", Rc::clone(&colors), Rc::clone(&colors.borrow().cmyk.magenta), false);
-        colors.borrow_mut().magenta = Some(magenta.clone());
-        main_container.append(&magenta);
+    let magenta =
+        ScaleContainer::new::<ColorCmyk>("magenta",
+                                         Rc::clone(&colors),
+                                         Rc::clone(&colors.borrow().cmyk.magenta),
+                                         false);
+    colors.borrow_mut().magenta = Some(magenta.clone());
 
-        let yellow = color_scale_input::<ColorCmyk>("yellow", Rc::clone(&colors), Rc::clone(&colors.borrow().cmyk.yellow), false);
-        colors.borrow_mut().yellow = Some(yellow.clone());
-        main_container.append(&yellow);
+    let yellow =
+        ScaleContainer::new::<ColorCmyk>("yellow",
+                                         Rc::clone(&colors),
+                                         Rc::clone(&colors.borrow().cmyk.yellow),
+                                         false);
+    colors.borrow_mut().yellow = Some(yellow.clone());
 
-        let key = color_scale_input::<ColorCmyk>("key", Rc::clone(&colors), Rc::clone(&colors.borrow().cmyk.key), false);
-        colors.borrow_mut().key = Some(key.clone());
-        main_container.append(&key);
-    }
+    let key =
+        ScaleContainer::new::<ColorCmyk>("key",
+                                         Rc::clone(&colors),
+                                         Rc::clone(&colors.borrow().cmyk.key),
+                                         false);
+    colors.borrow_mut().key = Some(key.clone());
+
+    main_container.append(&cyan);
+    main_container.append(&magenta);
+    main_container.append(&yellow);
+    main_container.append(&key);
 
     let window = ApplicationWindow::builder()
         .application(app)
