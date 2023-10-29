@@ -6,8 +6,8 @@ use glib::Object;
 use gtk::{glib};
 use gtk::traits::RangeExt;
 use crate::color::Color;
-use crate::{Colors};
 use gtk::prelude::*;
+use crate::colors::Colors;
 
 
 glib::wrapper! {
@@ -17,6 +17,12 @@ glib::wrapper! {
 }
 
 impl ScaleContainer {
+    pub fn update(&self, value: u8) {
+        let entry = self.last_child().unwrap().dynamic_cast::<gtk::Entry>().unwrap();
+        let scale = self.first_child().unwrap().dynamic_cast::<gtk::Scale>().unwrap();
+        entry.set_text(format!("{}", value).as_str());
+        scale.adjustment().set_value(value as f64);
+    }
     pub fn new<T: Color>(label_str: &str, colors: Rc<RefCell<Colors>>, r_value: Rc<RefCell<u8>>, rgb_input: bool) -> Self {
         let scale_container: ScaleContainer = Object::builder().build();
         let scale_box = scale_container.clone().dynamic_cast::<gtk::Box>().unwrap();
