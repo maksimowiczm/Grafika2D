@@ -33,6 +33,14 @@ class ImageReaderWindow : public Gtk::Window {
 
   void on_file_dialog_response(int response_id, Gtk::FileChooserDialog *dialog);
 
+  Gtk::Box menu_;
+  Gtk::Box filters_menu_;
+  std::vector<Gtk::Button> filters_;
+  void setup_filter_button(const std::string &text, ImageContainer::Filter filter);
+  void handle_filter_click(enum ImageContainer::Filter filter);
+  void handle_reset_filters_click();
+  void setup_filters();
+
   Gtk::Picture picture;
   void image_draw();
 };

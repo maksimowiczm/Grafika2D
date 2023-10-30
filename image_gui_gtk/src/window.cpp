@@ -12,16 +12,16 @@ extern "C" {
 
 ImageReaderWindow::ImageReaderWindow() {
   Gtk::Box container{Gtk::Orientation::HORIZONTAL};
-  Gtk::Box menu{Gtk::Orientation::VERTICAL};
-  container.append(menu);
+  menu_ = Gtk::Box{Gtk::Orientation::VERTICAL, 5};
+  container.append(menu_);
 
   load_button = Gtk::Button{"Load image"};
   load_button.signal_clicked().connect(sigc::mem_fun(*this, &ImageReaderWindow::handle_load_button_click));
-  menu.append(load_button);
+  menu_.append(load_button);
 
   save_button = Gtk::Button{"Save image"};
   save_button.signal_clicked().connect(sigc::mem_fun(*this, &ImageReaderWindow::handle_save_button_click));
-  menu.append(save_button);
+  menu_.append(save_button);
 
   Gtk::Box jpegScaler{Gtk::Orientation::HORIZONTAL};
   jpeg_scale_ = Gtk::Scale{Gtk::Adjustment::create(95, 0, 100)};
@@ -32,11 +32,15 @@ ImageReaderWindow::ImageReaderWindow() {
   jpeg_scale_label_.set_text(std::to_string((int) jpeg_scale_.get_value()));
   jpegScaler.append(jpeg_scale_label_);
 
-  menu.append(jpegScaler);
-  menu.set_size_request(100, -1);
+  menu_.append(jpegScaler);
+  menu_.set_size_request(100, -1);
 
   picture = Gtk::Picture{};
   container.append(picture);
+
+  filters_menu_ = Gtk::Box{Gtk::Orientation::VERTICAL};
+  menu_.append(filters_menu_);
+  setup_filters();
 
   set_child(container);
 }
@@ -153,4 +157,42 @@ void ImageReaderWindow::on_save_file_dialog_response(int response_id, Gtk::FileC
 
 void ImageReaderWindow::on_scale_changed() {
   jpeg_scale_label_.set_text(std::to_string((int) jpeg_scale_.get_value()));
+}
+
+void ImageReaderWindow::handle_reset_filters_click() {
+  if (imageContainer_ == nullptr) {
+    return;
+  }
+
+  imageMat_ = imageContainer_->Get_image();
+  image_draw();
+}
+
+void ImageReaderWindow::handle_filter_click(ImageContainer::Filter filter) {
+  if (imageContainer_ == nullptr) {
+    return;
+  }
+
+  imageMat_ = imageContainer_->Get_Filtered(filter);
+  image_draw();
+}
+
+void ImageReaderWindow::setup_filter_button(const std::string &text, ImageContainer::Filter filter) {
+  filters_.emplace_back(text);
+  filters_[filters_.size() - 1]
+      .signal_clicked().connect(sigc::bind(sigc::mem_fun(*this, &ImageReaderWindow::handle_filter_click), filter));
+  filters_menu_.append(filters_[filters_.size() - 1]);
+}
+
+void ImageReaderWindow::setup_filters() {
+  filters_.emplace_back("reset filter");
+  filters_[filters_.size() - 1]
+      .signal_clicked().connect(sigc::mem_fun(*this, &ImageReaderWindow::handle_reset_filters_click));
+  filters_menu_.append(filters_[filters_.size() - 1]);
+
+  setup_filter_button("Mean filter", ImageContainer::Mean);
+  setup_filter_button("Median filter", ImageContainer::Median);
+  setup_filter_button("Sobel filter", ImageContainer::Sobel);
+  setup_filter_button("HighPass filter", ImageContainer::HighPass);
+  setup_filter_button("Gauss filter", ImageContainer::Gauss);
 }
