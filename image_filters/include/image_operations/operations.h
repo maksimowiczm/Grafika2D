@@ -16,3 +16,5 @@ void image_operations_add(uint8_t *pixels,
                           size_t channels_count,
                           size_t channel,
                           int16_t value);
+
+void image_operations_brightness(uint8_t *pixels, size_t pixels_length, int16_t value);

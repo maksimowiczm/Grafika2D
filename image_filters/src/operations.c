@@ -21,3 +21,11 @@ void image_operations_add(uint8_t *pixels,
     }
   }
 }
+
+inline void image_operations_brightness(uint8_t *pixels, size_t pixels_length, int16_t value) {
+  return image_operations_add(pixels,
+                              pixels_length,
+                              IMAGE_OPERATIONS_CHANNELS_ALL,
+                              IMAGE_OPERATIONS_CHANNEL_ALL,
+                              value);
+}
