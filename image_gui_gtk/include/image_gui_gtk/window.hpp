@@ -1,5 +1,7 @@
 #pragma once
 
+#include "image_container.hpp"
+
 #include "gtkmm/scale.h"
 #include "gtkmm/window.h"
 #include "gtkmm/filechooserdialog.h"
@@ -17,6 +19,7 @@ class ImageReaderWindow : public Gtk::Window {
 
  private:
   cv::Mat imageMat_{};
+  ImageContainer *imageContainer_ = nullptr;
 
   Gtk::Button load_button;
   void handle_load_button_click();

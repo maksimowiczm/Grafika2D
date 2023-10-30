@@ -7,6 +7,7 @@
 
 extern "C" {
 #include "netpbm/PixMapReader.h"
+#include "image_operations/operations.h"
 }
 
 ImageReaderWindow::ImageReaderWindow() {
@@ -77,13 +78,14 @@ void ImageReaderWindow::on_file_dialog_response(int response_id, Gtk::FileChoose
   }
 
   const auto file_path = dialog->get_file()->get_path();
+  cv::Mat image;
   if (file_path.ends_with(".ppm")) {
-    imageMat_ = ImageLoader::load_image(file_path.c_str(), ImageLoader::PPM);
+    image = ImageLoader::load_image(file_path.c_str(), ImageLoader::PPM);
   } else {
-    imageMat_ = ImageLoader::load_image(file_path.c_str(), ImageLoader::OPEN_CV);
+    image = ImageLoader::load_image(file_path.c_str(), ImageLoader::OPEN_CV);
   }
 
-  if (imageMat_.empty()) {
+  if (image.empty()) {
     delete dialog;
     auto errorDialog = new Gtk::MessageDialog("Image format is not supported or file is corrupted!",
                                               false,
@@ -96,7 +98,11 @@ void ImageReaderWindow::on_file_dialog_response(int response_id, Gtk::FileChoose
     return;
   }
 
+  delete imageContainer_;
+  imageContainer_ = new ImageContainer(image);
+  imageMat_ = image;
   image_draw();
+
   delete dialog;
 }
 

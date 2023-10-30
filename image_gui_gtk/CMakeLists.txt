@@ -1,6 +1,7 @@
 add_library(
         image_gui_gtk
         src/window.cpp
+        src/image_container.cpp
 )
 
 find_package(PkgConfig REQUIRED)
@@ -11,4 +12,4 @@ link_directories(${GTKMM_LIBRARY_DIRS})
 
 target_include_directories(image_gui_gtk PUBLIC include ${GTKMM_INCLUDE_DIRS})
 
-target_link_libraries(image_gui_gtk PUBLIC PkgConfig::GTK4 ${GTKMM_LIBRARIES} netpbm image_adapter)
+target_link_libraries(image_gui_gtk PUBLIC PkgConfig::GTK4 ${GTKMM_LIBRARIES} netpbm image_adapter image_filters)
