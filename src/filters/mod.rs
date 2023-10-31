@@ -4,6 +4,7 @@ use opencv::{prelude::*};
 pub trait Filters {
     fn mean_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>>;
     fn sobel_filter(&mut self) -> Result<(), Box<dyn Error>>;
+    fn high_pass_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>>;
 }
 
 fn get_pixel(x: usize, y: usize, width: usize, channels: usize, channel: usize) -> usize {
@@ -78,6 +79,15 @@ impl Filters for Mat {
             vec!(2., 0., -2.),
             vec!(1., 0., -1.),
         );
+
+        let (width, height, channels, pixels) = destruct_mat(self)?;
+        mask_filter(pixels, width, height, channels, 1., mask);
+        Ok(())
+    }
+
+    fn high_pass_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>> {
+        let mut mask = vec![vec![-1.; size]; size];
+        mask[size / 2][size / 2] = size.pow(2) as f64;
 
         let (width, height, channels, pixels) = destruct_mat(self)?;
         mask_filter(pixels, width, height, channels, 1., mask);
