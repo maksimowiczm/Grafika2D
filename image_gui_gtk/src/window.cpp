@@ -42,6 +42,12 @@ ImageReaderWindow::ImageReaderWindow() {
   menu_.append(filters_menu_);
   setup_filters();
 
+  operations_menu_ = Gtk::Box{Gtk::Orientation::VERTICAL};
+  operation_entry = Gtk::Entry{};
+  operations_menu_.append(operation_entry);
+  menu_.append(operations_menu_);
+  setup_operations();
+
   set_child(container);
 }
 
@@ -185,7 +191,7 @@ void ImageReaderWindow::setup_filter_button(const std::string &text, ImageContai
 }
 
 void ImageReaderWindow::setup_filters() {
-  filters_.emplace_back("reset filter");
+  filters_.emplace_back("Reset");
   filters_[filters_.size() - 1]
       .signal_clicked().connect(sigc::mem_fun(*this, &ImageReaderWindow::handle_reset_filters_click));
   filters_menu_.append(filters_[filters_.size() - 1]);
@@ -195,4 +201,47 @@ void ImageReaderWindow::setup_filters() {
   setup_filter_button("Sobel filter", ImageContainer::Sobel);
   setup_filter_button("HighPass filter", ImageContainer::HighPass);
   setup_filter_button("Gauss filter", ImageContainer::Gauss);
+}
+
+void ImageReaderWindow::setup_operations() {
+  setup_operation_button("Brightness", ImageContainer::Brightness, operations_menu_);
+
+  Gtk::Box add{Gtk::Orientation::HORIZONTAL};
+  setup_operation_button("Add red", ImageContainer::Add, add, 0);
+  setup_operation_button("Add green", ImageContainer::Add, add, 1);
+  setup_operation_button("Add blue", ImageContainer::Add, add, 2);
+  operations_menu_.append(add);
+
+  Gtk::Box sub{Gtk::Orientation::HORIZONTAL};
+  setup_operation_button("Subtract red", ImageContainer::Sub, sub, 0);
+  setup_operation_button("Subtract green", ImageContainer::Sub, sub, 1);
+  setup_operation_button("Subtract blue", ImageContainer::Sub, sub, 2);
+  operations_menu_.append(sub);
+
+  setup_operation_button("Multiply", ImageContainer::Multiply, operations_menu_);
+  setup_operation_button("Divide", ImageContainer::Divide, operations_menu_);
+  setup_operation_button("Gray mode", ImageContainer::GrayScale, operations_menu_);
+}
+
+void ImageReaderWindow::setup_operation_button(const std::string &text,
+                                               ImageContainer::Operation operation,
+                                               Gtk::Box &parent,
+                                               size_t channel) {
+  operations_.emplace_back(text);
+  operations_[operations_.size() - 1]
+      .signal_clicked().connect(
+      sigc::bind(sigc::mem_fun(*this, &ImageReaderWindow::handle_operation_click), operation, channel));
+  parent.append(operations_[operations_.size() - 1]);
+}
+
+void ImageReaderWindow::handle_operation_click(ImageContainer::Operation operation, size_t channel) {
+  if (imageContainer_ == nullptr) {
+    return;
+  }
+
+  try {
+    auto text = std::stoi(operation_entry.get_buffer()->get_text());
+    imageMat_ = imageContainer_->Get_Operated(imageMat_, operation, text, channel);
+    image_draw();
+  } catch (std::exception &e) {}
 }

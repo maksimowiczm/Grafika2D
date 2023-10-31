@@ -9,6 +9,7 @@
 #include "gtkmm/picture.h"
 #include "gtkmm/adjustment.h"
 #include "gtkmm/label.h"
+#include "gtkmm/entry.h"
 
 #include "opencv2/core/mat.hpp"
 
@@ -37,9 +38,19 @@ class ImageReaderWindow : public Gtk::Window {
   Gtk::Box filters_menu_;
   std::vector<Gtk::Button> filters_;
   void setup_filter_button(const std::string &text, ImageContainer::Filter filter);
-  void handle_filter_click(enum ImageContainer::Filter filter);
+  void handle_filter_click(ImageContainer::Filter filter);
   void handle_reset_filters_click();
   void setup_filters();
+
+  Gtk::Entry operation_entry;
+  std::vector<Gtk::Button> operations_;
+  Gtk::Box operations_menu_;
+  void handle_operation_click(ImageContainer::Operation operation, size_t channel);
+  void setup_operation_button(const std::string &text,
+                              ImageContainer::Operation operation,
+                              Gtk::Box &parent,
+                              size_t channel = 0);
+  void setup_operations();
 
   Gtk::Picture picture;
   void image_draw();
