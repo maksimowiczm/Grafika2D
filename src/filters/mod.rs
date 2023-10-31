@@ -1,5 +1,6 @@
 use std::error::Error;
 use opencv::{prelude::*};
+use crate::image::Image;
 
 pub trait Filters {
     fn mean_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>>;
@@ -58,14 +59,6 @@ fn mask_filter(pixels: &mut [u8],
     }
 }
 
-fn destruct_mat(mat: &mut Mat) -> Result<(usize, usize, usize, &mut [u8]), Box<dyn Error>> {
-    let width = mat.size()?.width as usize;
-    let height = mat.size()?.height as usize;
-    let channels = mat.channels() as usize;
-    let pixels = mat.data_bytes_mut()?;
-
-    Ok((width, height, channels, pixels))
-}
 
 impl Filters for Mat {
     fn mean_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>> {
@@ -73,7 +66,7 @@ impl Filters for Mat {
         let row = vec![avg; size];
         let mask = vec!(row; size);
 
-        let (width, height, channels, pixels) = destruct_mat(self)?;
+        let (width, height, channels, pixels) = self.destruct_mut_mat()?;
         mask_filter(pixels, width, height, channels, 1., mask);
         Ok(())
     }
@@ -85,7 +78,7 @@ impl Filters for Mat {
             vec!(1., 0., -1.),
         );
 
-        let (width, height, channels, pixels) = destruct_mat(self)?;
+        let (width, height, channels, pixels) = self.destruct_mut_mat()?;
         mask_filter(pixels, width, height, channels, 1., mask);
         Ok(())
     }
@@ -94,7 +87,7 @@ impl Filters for Mat {
         let mut mask = vec![vec![-1.; size]; size];
         mask[size / 2][size / 2] = size.pow(2) as f64;
 
-        let (width, height, channels, pixels) = destruct_mat(self)?;
+        let (width, height, channels, pixels) = self.destruct_mut_mat()?;
         mask_filter(pixels, width, height, channels, 1., mask);
         Ok(())
     }
@@ -108,7 +101,7 @@ impl Filters for Mat {
             vec!(1., 4., 7., 4., 1.)
         );
 
-        let (width, height, channels, pixels) = destruct_mat(self)?;
+        let (width, height, channels, pixels) = self.destruct_mut_mat()?;
         mask_filter(pixels, width, height, channels, 1. / 273., mask);
         Ok(())
     }
