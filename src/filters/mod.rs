@@ -48,7 +48,11 @@ fn mask_filter(pixels: &mut [u8],
 
             for channel in 0..channels {
                 let index = get_pixel(j, i, width, channels, channel);
-                pixels[index] = (sums[channel] * multiplier) as u8;
+                let mut sum = sums[channel] * multiplier;
+                if sum > u8::MAX as f64 {
+                    sum = u8::MAX as f64;
+                }
+                pixels[index] = sum as u8;
             }
         }
     }
