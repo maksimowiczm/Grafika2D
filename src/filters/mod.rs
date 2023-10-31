@@ -1,7 +1,9 @@
+use std::error::Error;
 use opencv::{prelude::*};
 
 pub trait Filters {
-    fn mean_filter(&mut self, size: usize) -> Result<(), Box<dyn std::error::Error>>;
+    fn mean_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>>;
+    fn sobel_filter(&mut self) -> Result<(), Box<dyn Error>>;
 }
 
 fn get_pixel(x: usize, y: usize, width: usize, channels: usize, channel: usize) -> usize {
@@ -50,23 +52,35 @@ fn mask_filter(pixels: &mut [u8],
     }
 }
 
+fn destruct_mat(mat: &mut Mat) -> Result<(usize, usize, usize, &mut [u8]), Box<dyn Error>> {
+    let width = mat.size()?.width as usize;
+    let height = mat.size()?.height as usize;
+    let channels = mat.channels() as usize;
+    let pixels = mat.data_bytes_mut()?;
+
+    Ok((width, height, channels, pixels))
+}
+
 impl Filters for Mat {
-    fn mean_filter(&mut self, size: usize) -> Result<(), Box<dyn std::error::Error>> {
+    fn mean_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>> {
         let avg = 1. / size.pow(2) as f64;
         let row = vec![avg; size];
         let mask = vec!(row; size);
 
-        let width = self.size()?.width;
-        let height = self.size()?.height;
-        let mut pixels = self.data_bytes_mut()?;
+        let (width, height, channels, pixels) = destruct_mat(self)?;
+        mask_filter(pixels, width, height, channels, 1., mask);
+        Ok(())
+    }
 
-        mask_filter(&mut pixels,
-                    width as usize,
-                    height as usize,
-                    3,
-                    1.,
-                    mask);
+    fn sobel_filter(&mut self) -> Result<(), Box<dyn Error>> {
+        let mask = vec!(
+            vec!(1., 0., -1.),
+            vec!(2., 0., -2.),
+            vec!(1., 0., -1.),
+        );
 
+        let (width, height, channels, pixels) = destruct_mat(self)?;
+        mask_filter(pixels, width, height, channels, 1., mask);
         Ok(())
     }
 }
