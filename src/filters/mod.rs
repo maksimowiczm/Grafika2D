@@ -1,6 +1,8 @@
 use opencv::{prelude::*};
 
-trait Filters {}
+pub trait Filters {
+    fn mean_filter(&mut self, size: usize) -> Result<(), Box<dyn std::error::Error>>;
+}
 
 fn get_pixel(x: usize, y: usize, width: usize, channels: usize, channel: usize) -> usize {
     width * y * channels + x * channels + channel
@@ -48,4 +50,23 @@ fn mask_filter(pixels: &mut [u8],
     }
 }
 
-impl Filters for Mat {}
+impl Filters for Mat {
+    fn mean_filter(&mut self, size: usize) -> Result<(), Box<dyn std::error::Error>> {
+        let avg = 1. / size.pow(2) as f64;
+        let row = vec![avg; size];
+        let mask = vec!(row; size);
+
+        let width = self.size()?.width;
+        let height = self.size()?.height;
+        let mut pixels = self.data_bytes_mut()?;
+
+        mask_filter(&mut pixels,
+                    width as usize,
+                    height as usize,
+                    3,
+                    1.,
+                    mask);
+
+        Ok(())
+    }
+}
