@@ -5,6 +5,7 @@ pub trait Filters {
     fn mean_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>>;
     fn sobel_filter(&mut self) -> Result<(), Box<dyn Error>>;
     fn high_pass_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>>;
+    fn gauss_filter(&mut self) -> Result<(), Box<dyn Error>>;
 }
 
 fn get_pixel(x: usize, y: usize, width: usize, channels: usize, channel: usize) -> usize {
@@ -91,6 +92,20 @@ impl Filters for Mat {
 
         let (width, height, channels, pixels) = destruct_mat(self)?;
         mask_filter(pixels, width, height, channels, 1., mask);
+        Ok(())
+    }
+
+    fn gauss_filter(&mut self) -> Result<(), Box<dyn Error>> {
+        let mask = vec!(
+            vec!(1., 4., 7., 4., 1.),
+            vec!(4., 16., 26., 16., 4.),
+            vec!(7., 26., 41., 26., 7.),
+            vec!(4., 16., 26., 16., 4.),
+            vec!(1., 4., 7., 4., 1.)
+        );
+
+        let (width, height, channels, pixels) = destruct_mat(self)?;
+        mask_filter(pixels, width, height, channels, 1. / 273., mask);
         Ok(())
     }
 }
