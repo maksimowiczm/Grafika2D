@@ -7,6 +7,7 @@ pub trait Filters {
     fn sobel_filter(&mut self) -> Result<(), Box<dyn Error>>;
     fn high_pass_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>>;
     fn gauss_filter(&mut self) -> Result<(), Box<dyn Error>>;
+    fn mask_filter(&mut self, multiplier: f64, mask: Vec<Vec<f64>>) -> Result<(), Box<dyn Error>>;
 }
 
 fn get_pixel(x: usize, y: usize, width: usize, channels: usize, channel: usize) -> usize {
@@ -19,7 +20,7 @@ fn mask_filter(pixels: &mut [u8],
                channels: usize,
                multiplier: f64,
                mask: Vec<Vec<f64>>,
-) {
+) -> Result<(), Box<dyn Error>> {
     let mask_height = mask.len();
     let mask_width = mask.first().unwrap().len();
 
@@ -57,6 +58,8 @@ fn mask_filter(pixels: &mut [u8],
             }
         }
     }
+
+    Ok(())
 }
 
 
@@ -66,9 +69,7 @@ impl Filters for Mat {
         let row = vec![avg; size];
         let mask = vec!(row; size);
 
-        let (width, height, channels, pixels) = self.destruct_mut_mat()?;
-        mask_filter(pixels, width, height, channels, 1., mask);
-        Ok(())
+        self.mask_filter(1., mask)
     }
 
     fn sobel_filter(&mut self) -> Result<(), Box<dyn Error>> {
@@ -78,18 +79,14 @@ impl Filters for Mat {
             vec!(1., 0., -1.),
         );
 
-        let (width, height, channels, pixels) = self.destruct_mut_mat()?;
-        mask_filter(pixels, width, height, channels, 1., mask);
-        Ok(())
+        self.mask_filter(1., mask)
     }
 
     fn high_pass_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>> {
         let mut mask = vec![vec![-1.; size]; size];
         mask[size / 2][size / 2] = size.pow(2) as f64;
 
-        let (width, height, channels, pixels) = self.destruct_mut_mat()?;
-        mask_filter(pixels, width, height, channels, 1., mask);
-        Ok(())
+        self.mask_filter(1., mask)
     }
 
     fn gauss_filter(&mut self) -> Result<(), Box<dyn Error>> {
@@ -101,8 +98,11 @@ impl Filters for Mat {
             vec!(1., 4., 7., 4., 1.)
         );
 
+        self.mask_filter(1. / 273., mask)
+    }
+
+    fn mask_filter(&mut self, multiplier: f64, mask: Vec<Vec<f64>>) -> Result<(), Box<dyn Error>> {
         let (width, height, channels, pixels) = self.destruct_mut_mat()?;
-        mask_filter(pixels, width, height, channels, 1. / 273., mask);
-        Ok(())
+        mask_filter(pixels, width, height, channels, multiplier, mask)
     }
 }
