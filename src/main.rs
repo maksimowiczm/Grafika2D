@@ -16,6 +16,7 @@ use crate::filters::Filters;
 use crate::image::Image;
 
 struct Context {
+    starting: Option<Mat>,
     mat: Option<Mat>,
 }
 
@@ -38,7 +39,7 @@ fn build_ui(app: &Application) {
         .build();
 
     let picture = gtk::Picture::new();
-    let context = Rc::new(RefCell::new(Context { mat: None }));
+    let context = Rc::new(RefCell::new(Context { starting: None, mat: None }));
 
     main_container.append(&build_actions_container(&window, picture.clone(), Rc::clone(&context)));
     main_container.append(&picture);
@@ -49,8 +50,21 @@ fn build_ui(app: &Application) {
 fn build_actions_container(window: &ApplicationWindow, picture: gtk::Picture, context: Rc<RefCell<Context>>) -> gtk::Box {
     let actions_container = gtk::Box::new(gtk::Orientation::Vertical, 10);
     actions_container.append(&build_load_button(window.clone(), picture.clone(), Rc::clone(&context)));
+    actions_container.append(&build_reset_button(picture.clone(), Rc::clone(&context)));
     actions_container.append(&build_filters_container(picture.clone(), Rc::clone(&context)));
     actions_container
+}
+
+fn build_reset_button(picture: gtk::Picture, context: Rc<RefCell<Context>>) -> gtk::Button {
+    let button = gtk::Button::with_label("Reset image");
+    button.connect_clicked(move |_| {
+        let mut c_context = context.borrow_mut();
+        if let Some(mat) = &c_context.starting {
+            picture_update_pixbuf(&picture, &mat);
+            c_context.mat = Some(mat.clone());
+        }
+    });
+    button
 }
 
 fn build_load_button(window: ApplicationWindow, picture: gtk::Picture, context: Rc<RefCell<Context>>) -> gtk::Button {
@@ -88,6 +102,7 @@ fn build_file_chooser(window: &ApplicationWindow, picture: gtk::Picture, context
             if let Some(path) = file.path() {
                 if let Ok(out) = image::load_image(path.to_str().unwrap()) {
                     context.borrow_mut().mat = Some(out.clone());
+                    context.borrow_mut().starting = Some(out.clone());
                     picture_update_pixbuf(&picture, &out);
                     dialog.destroy();
                 } else {
