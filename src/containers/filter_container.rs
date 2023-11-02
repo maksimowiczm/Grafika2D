@@ -78,9 +78,9 @@ fn build_custom_filter_window(picture: gtk::Picture, context: Rc<RefCell<Context
         let buffer = entry.buffer();
         let (start, end) = buffer.bounds();
         let text = String::from(buffer.text(&start, &end, false));
-        if let Some(mask) = parse_mask(text.as_str()) {
+        if let Some((mask, multiplier)) = parse_mask(text.as_str()) {
             if let Some(mat) = &mut context.borrow_mut().mat {
-                mat.mask_filter(1., mask).unwrap();
+                mat.mask_filter(multiplier, mask).unwrap();
                 crate::context::picture_update_pixbuf(&picture, &mat);
             }
         }
@@ -96,7 +96,7 @@ fn build_custom_filter_window(picture: gtk::Picture, context: Rc<RefCell<Context
     window
 }
 
-fn parse_mask(input: &str) -> Option<Vec<Vec<f64>>> {
+fn parse_mask(input: &str) -> Option<(Vec<Vec<f64>>, f64)> {
     let buff: Vec<f64> = input
         .split(",")
         .map(|val| val
@@ -109,8 +109,16 @@ fn parse_mask(input: &str) -> Option<Vec<Vec<f64>>> {
         .collect();
 
     let size = buff.len() as f64;
-    let sqrt = size.sqrt();
-    if sqrt.fract() == 0. && sqrt % 2. == 1. {
+
+    let sqrt = if size.sqrt().fract() == 0. {
+        Some(size.sqrt())
+    } else if (size - 1.).sqrt().fract() == 0. {
+        Some((size - 1.).sqrt())
+    } else {
+        None
+    }?;
+
+    if sqrt % 2. == 1. {
         let mut out = Vec::new();
         let size = sqrt as usize;
         for i in 0..size {
@@ -123,7 +131,13 @@ fn parse_mask(input: &str) -> Option<Vec<Vec<f64>>> {
             out.push(row);
         }
 
-        Some(out)
+        let multiplier = if buff.len() > size * size {
+            buff[size * size]
+        } else {
+            1.
+        };
+
+        Some((out, multiplier))
     } else {
         None
     }
