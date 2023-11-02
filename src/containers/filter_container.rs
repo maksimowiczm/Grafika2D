@@ -12,6 +12,12 @@ use crate::filters::Filters;
 pub(crate) fn build_filters_container(picture: gtk::Picture, context: Rc<RefCell<Context>>) -> gtk::Box {
     let filters_container = gtk::Box::new(gtk::Orientation::Vertical, 5);
 
+    let label = gtk::Label::builder()
+        .label("Filters")
+        .build();
+
+    filters_container.append(&label);
+
     let filters: Vec<(&str, fn(&mut Mat) -> Result<(), Box<dyn Error>>)> = vec!(
         ("Mean", |mat| mat.mean_filter(3)),
         ("High pass", |mat| mat.high_pass_filter(3)),
