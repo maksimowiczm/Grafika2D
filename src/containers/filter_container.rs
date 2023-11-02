@@ -20,6 +20,7 @@ pub(crate) fn build_filters_container(picture: gtk::Picture, context: Rc<RefCell
 
     let filters: Vec<(&str, fn(&mut Mat) -> Result<(), Box<dyn Error>>)> = vec!(
         ("Mean", |mat| mat.mean_filter(3)),
+        ("Median", |mat| mat.median_filter(3)),
         ("High pass", |mat| mat.high_pass_filter(3)),
         ("Sobel", Filters::sobel_filter),
         ("Gauss", Filters::gauss_filter),

@@ -4,6 +4,7 @@ use crate::image::Image;
 
 pub trait Filters {
     fn mean_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>>;
+    fn median_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>>;
     fn sobel_filter(&mut self) -> Result<(), Box<dyn Error>>;
     fn high_pass_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>>;
     fn gauss_filter(&mut self) -> Result<(), Box<dyn Error>>;
@@ -62,6 +63,44 @@ fn mask_filter(pixels: &mut [u8],
     Ok(())
 }
 
+fn method_filter(pixels: &mut [u8],
+                 width: usize,
+                 height: usize,
+                 channels: usize,
+                 filter_height: usize,
+                 filter_width: usize,
+                 filter_method: impl Fn(Vec<u8>) -> u8,
+) -> Result<(), Box<dyn Error>> {
+    let start_x = filter_width / 2;
+    let start_y = filter_height / 2;
+
+    let pixels_length = pixels.len();
+    let mut image = vec![0; pixels_length];
+    image[..pixels_length].clone_from_slice(pixels);
+
+
+    for i in start_y..height - start_y {
+        for j in start_x..width - start_x {
+            for channel in 0..channels {
+                let mut to_filter = Vec::new();
+
+                for y in 0..filter_height {
+                    for x in 0..filter_width {
+                        let index = get_pixel(j - start_x + x, i - start_y + y, width, channels, channel);
+                        let pixel = image[index];
+                        to_filter.push(pixel);
+                    }
+                }
+
+                let index = get_pixel(j, i, width, channels, channel);
+                pixels[index] = filter_method(to_filter);
+            }
+        }
+    }
+
+    Ok(())
+}
+
 
 impl Filters for Mat {
     fn mean_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>> {
@@ -70,6 +109,18 @@ impl Filters for Mat {
         let mask = vec!(row; size);
 
         self.mask_filter(1., mask)
+    }
+
+    fn median_filter(&mut self, size: usize) -> Result<(), Box<dyn Error>> {
+        let c_size = size * size;
+        let method = |pixels: Vec<u8>| {
+            let mut sorted = pixels.clone();
+            sorted.sort();
+            sorted[c_size / 2]
+        };
+
+        let (width, height, channels, pixels) = self.destruct_mut_mat()?;
+        method_filter(pixels, width, height, channels, size, size, method)
     }
 
     fn sobel_filter(&mut self) -> Result<(), Box<dyn Error>> {
