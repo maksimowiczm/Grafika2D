@@ -12,6 +12,7 @@ pub fn build_actions_container(window: &ApplicationWindow, picture: gtk::Picture
     actions_container.append(&build_load_button(window.clone(), picture.clone(), Rc::clone(&context)));
     actions_container.append(&build_reset_button(picture.clone(), Rc::clone(&context)));
     actions_container.append(&containers::filter_container::build_filters_container(picture.clone(), Rc::clone(&context)));
+    actions_container.append(&containers::operations_container::build_operations_container(picture.clone(), Rc::clone(&context)));
     actions_container
 }
 
