@@ -21,6 +21,41 @@ pub fn build_operations_container(picture: gtk::Picture, context: Rc<RefCell<Con
                                                         Rc::clone(&context),
                                                         Operations::add_to_channel));
 
+    container.append(&build_operation_container("Brightness",
+                                                picture.clone(),
+                                                Rc::clone(&context),
+                                                Operations::add_brightness));
+
+    container
+}
+
+fn build_operation_container(label: &str,
+                             picture: gtk::Picture,
+                             context: Rc<RefCell<Context>>,
+                             method: fn(&mut Mat, i16) -> Result<(), opencv::Error>) -> gtk::Box {
+    let container = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(1)
+        .margin_start(5)
+        .margin_end(5)
+        .build();
+    let entry = gtk::Entry::new();
+    let btn = gtk::Button::with_label("Set");
+
+    let c_entry = entry.clone();
+    btn.connect_clicked(move |_| {
+        if let Some(mat) = &mut context.borrow_mut().mat {
+            if let Ok(value) = c_entry.buffer().text().parse::<i16>() {
+                method(mat, value).unwrap();
+                crate::context::picture_update_pixbuf(&picture, &mat);
+            }
+        }
+    });
+
+    container.append(&gtk::Label::builder().label(label).build());
+    container.append(&entry.clone());
+    container.append(&btn.clone());
+
     container
 }
 
@@ -28,7 +63,12 @@ fn build_channel_operation_container(label: &str,
                                      picture: gtk::Picture,
                                      context: Rc<RefCell<Context>>,
                                      method: fn(&mut Mat, i16, usize) -> Result<(), opencv::Error>) -> gtk::Box {
-    let container = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    let container = gtk::Box::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .spacing(1)
+        .margin_start(5)
+        .margin_end(5)
+        .build();
 
     let entries = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     entries.append(&gtk::Label::builder()
