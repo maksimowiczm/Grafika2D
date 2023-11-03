@@ -11,7 +11,7 @@ pub trait Filters {
     fn mask_filter(&mut self, multiplier: f64, mask: Vec<Vec<f64>>) -> Result<(), Box<dyn Error>>;
 }
 
-fn get_pixel(x: usize, y: usize, width: usize, channels: usize, channel: usize) -> usize {
+pub fn get_pixel(x: usize, y: usize, width: usize, channels: usize, channel: usize) -> usize {
     width * y * channels + x * channels + channel
 }
 

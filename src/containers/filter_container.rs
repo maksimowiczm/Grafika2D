@@ -8,6 +8,7 @@ use std::error::Error;
 
 use crate::context::Context;
 use crate::filters::Filters;
+use crate::operations::Operations;
 
 pub(crate) fn build_filters_container(picture: gtk::Picture, context: Rc<RefCell<Context>>) -> gtk::Box {
     let filters_container = gtk::Box::new(gtk::Orientation::Vertical, 5);
@@ -24,6 +25,8 @@ pub(crate) fn build_filters_container(picture: gtk::Picture, context: Rc<RefCell
         ("High pass", |mat| mat.high_pass_filter(3)),
         ("Sobel", Filters::sobel_filter),
         ("Gauss", Filters::gauss_filter),
+        ("Gray scale 1", Operations::gray_scale_mask),
+        ("Gray scale 2", Operations::gray_scale_mask)
     );
 
     filters.iter().for_each(|(label, func)| {
