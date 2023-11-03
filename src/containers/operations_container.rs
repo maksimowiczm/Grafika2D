@@ -4,6 +4,7 @@ use gtk::prelude::*;
 
 use std::cell::RefCell;
 use std::rc::Rc;
+use std::error::Error;
 
 use crate::context::{Context};
 use crate::operations::Operations;
@@ -32,7 +33,7 @@ pub fn build_operations_container(picture: gtk::Picture, context: Rc<RefCell<Con
 fn build_operation_container(label: &str,
                              picture: gtk::Picture,
                              context: Rc<RefCell<Context>>,
-                             method: fn(&mut Mat, i16) -> Result<(), opencv::Error>) -> gtk::Box {
+                             method: fn(&mut Mat, i16) -> Result<(), Box<dyn Error>>) -> gtk::Box {
     let container = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .spacing(1)
@@ -62,7 +63,7 @@ fn build_operation_container(label: &str,
 fn build_channel_operation_container(label: &str,
                                      picture: gtk::Picture,
                                      context: Rc<RefCell<Context>>,
-                                     method: fn(&mut Mat, i16, usize) -> Result<(), opencv::Error>) -> gtk::Box {
+                                     method: fn(&mut Mat, i16, usize) -> Result<(), Box<dyn Error>>) -> gtk::Box {
     let container = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .spacing(1)
@@ -96,7 +97,7 @@ fn build_channel_operation_button(label: &str,
                                   entry: gtk::Entry,
                                   picture: gtk::Picture,
                                   context: Rc<RefCell<Context>>,
-                                  method: fn(&mut Mat, i16, usize) -> Result<(), opencv::Error>,
+                                  method: fn(&mut Mat, i16, usize) -> Result<(), Box<dyn Error>>,
                                   channel: usize) -> gtk::Button {
     let btn = gtk::Button::with_label(label);
     btn.connect_clicked(move |_| {
