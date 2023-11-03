@@ -22,6 +22,16 @@ pub fn build_operations_container(picture: gtk::Picture, context: Rc<RefCell<Con
                                                         Rc::clone(&context),
                                                         Operations::add_to_channel));
 
+    container.append(&build_channel_operation_container("Multi",
+                                                        picture.clone(),
+                                                        Rc::clone(&context),
+                                                        Operations::multiply_channel));
+
+    container.append(&build_channel_operation_container("Divide",
+                                                        picture.clone(),
+                                                        Rc::clone(&context),
+                                                        Operations::divide_channel));
+
     container.append(&build_operation_container("Brightness",
                                                 picture.clone(),
                                                 Rc::clone(&context),
@@ -63,7 +73,7 @@ fn build_operation_container(label: &str,
 fn build_channel_operation_container(label: &str,
                                      picture: gtk::Picture,
                                      context: Rc<RefCell<Context>>,
-                                     method: fn(&mut Mat, i16, usize) -> Result<(), Box<dyn Error>>) -> gtk::Box {
+                                     method: fn(&mut Mat, f64, usize) -> Result<(), Box<dyn Error>>) -> gtk::Box {
     let container = gtk::Box::builder()
         .orientation(gtk::Orientation::Vertical)
         .spacing(1)
@@ -97,12 +107,12 @@ fn build_channel_operation_button(label: &str,
                                   entry: gtk::Entry,
                                   picture: gtk::Picture,
                                   context: Rc<RefCell<Context>>,
-                                  method: fn(&mut Mat, i16, usize) -> Result<(), Box<dyn Error>>,
+                                  method: fn(&mut Mat, f64, usize) -> Result<(), Box<dyn Error>>,
                                   channel: usize) -> gtk::Button {
     let btn = gtk::Button::with_label(label);
     btn.connect_clicked(move |_| {
         if let Some(mat) = &mut context.borrow_mut().mat {
-            if let Ok(value) = entry.buffer().text().parse::<i16>() {
+            if let Ok(value) = entry.buffer().text().parse::<f64>() {
                 method(mat, value, channel).unwrap();
                 crate::context::picture_update_pixbuf(&picture, &mat);
             }

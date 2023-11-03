@@ -6,7 +6,9 @@ use crate::filters::get_pixel;
 
 pub trait Operations {
     fn add_brightness(&mut self, value: i16) -> Result<(), Box<dyn Error>>;
-    fn add_to_channel(&mut self, value: i16, channel: usize) -> Result<(), Box<dyn Error>>;
+    fn add_to_channel(&mut self, value: f64, channel: usize) -> Result<(), Box<dyn Error>>;
+    fn multiply_channel(&mut self, value: f64, channel: usize) -> Result<(), Box<dyn Error>>;
+    fn divide_channel(&mut self, value: f64, channel: usize) -> Result<(), Box<dyn Error>>;
     fn gray_scale_mask(&mut self) -> Result<(), Box<dyn Error>>;
     fn gray_scale_average(&mut self) -> Result<(), Box<dyn Error>>;
 }
@@ -21,6 +23,16 @@ fn no_overflow_add_u8(number: u8, to_add: i16) -> u8 {
     return new as u8;
 }
 
+fn no_overflow_multiply_u8(number: u8, multiplier: f64) -> u8 {
+    let mut new = number as f64 * multiplier;
+    if new > u8::MAX as f64 {
+        new = u8::MAX as f64;
+    } else if new < u8::MIN as f64 {
+        new = u8::MIN as f64;
+    }
+    return new as u8;
+}
+
 impl Operations for Mat {
     fn add_brightness(&mut self, value: i16) -> Result<(), Box<dyn Error>> {
         self
@@ -31,12 +43,32 @@ impl Operations for Mat {
         Ok(())
     }
 
-    fn add_to_channel(&mut self, value: i16, channel: usize) -> Result<(), Box<dyn Error>> {
+    fn add_to_channel(&mut self, value: f64, channel: usize) -> Result<(), Box<dyn Error>> {
         let channels = self.channels();
         self
             .data_bytes_mut()?
             .get_channel(channels as usize, channel)
-            .for_each(|b| *b = no_overflow_add_u8(*b, value));
+            .for_each(|b| *b = no_overflow_add_u8(*b, value as i16));
+
+        Ok(())
+    }
+
+    fn multiply_channel(&mut self, value: f64, channel: usize) -> Result<(), Box<dyn Error>> {
+        let channels = self.channels();
+        self
+            .data_bytes_mut()?
+            .get_channel(channels as usize, channel)
+            .for_each(|b| *b = no_overflow_multiply_u8(*b, value));
+
+        Ok(())
+    }
+
+    fn divide_channel(&mut self, value: f64, channel: usize) -> Result<(), Box<dyn Error>> {
+        let channels = self.channels();
+        self
+            .data_bytes_mut()?
+            .get_channel(channels as usize, channel)
+            .for_each(|b| *b = no_overflow_multiply_u8(*b, 1. / value));
 
         Ok(())
     }
