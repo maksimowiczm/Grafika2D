@@ -1,9 +1,10 @@
-use opencv::{self as cv, prelude::*};
+use std::error::Error;
+use opencv::prelude::*;
 use crate::channels::Channels;
 
 pub trait Operations {
-    fn add_brightness(&mut self, value: i16) -> Result<(), opencv::Error>;
-    fn add_to_channel(&mut self, value: i16, channel: usize) -> Result<(), opencv::Error>;
+    fn add_brightness(&mut self, value: i16) -> Result<(), Box<dyn Error>>;
+    fn add_to_channel(&mut self, value: i16, channel: usize) -> Result<(), Box<dyn Error>>;
 }
 
 fn no_overflow_add_u8(number: u8, to_add: i16) -> u8 {
@@ -17,7 +18,7 @@ fn no_overflow_add_u8(number: u8, to_add: i16) -> u8 {
 }
 
 impl Operations for Mat {
-    fn add_brightness(&mut self, value: i16) -> Result<(), opencv::Error> {
+    fn add_brightness(&mut self, value: i16) -> Result<(), Box<dyn Error>> {
         self
             .data_bytes_mut()?
             .into_iter()
@@ -26,7 +27,7 @@ impl Operations for Mat {
         Ok(())
     }
 
-    fn add_to_channel(&mut self, value: i16, channel: usize) -> Result<(), cv::Error> {
+    fn add_to_channel(&mut self, value: i16, channel: usize) -> Result<(), Box<dyn Error>> {
         let channels = self.channels();
         self
             .data_bytes_mut()?
