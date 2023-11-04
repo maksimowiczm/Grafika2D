@@ -9,7 +9,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use gtk::prelude::*;
 use gtk::{glib, Application, ApplicationWindow};
-use crate::containers::actions_container::build_actions_container;
+use crate::containers::main_container::build_main_container;
 use crate::context::Context;
 
 const APP_ID: &str = "org.grafika.rust.obrazy";
@@ -22,7 +22,6 @@ fn main() -> glib::ExitCode {
 
 fn build_ui(app: &Application) {
     let main_container = gtk::Box::new(gtk::Orientation::Horizontal, 10);
-    main_container.set_size_request(800, 600);
 
     let window = ApplicationWindow::builder()
         .application(app)
@@ -31,10 +30,13 @@ fn build_ui(app: &Application) {
         .build();
 
     let picture = gtk::Picture::new();
-    let context = Rc::new(RefCell::new(Context { starting: None, mat: None }));
+    let picture_window = gtk::Window::builder()
+        .child(&picture)
+        .build();
 
-    main_container.append(&build_actions_container(&window, picture.clone(), Rc::clone(&context)));
-    main_container.append(&picture);
+    let context = Rc::new(RefCell::new(Context { starting: None, mat: None, picture_window }));
+
+    main_container.append(&build_main_container(&window.clone(), picture.clone(), Rc::clone(&context)));
 
     window.present();
 }
