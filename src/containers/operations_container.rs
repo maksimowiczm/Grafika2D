@@ -50,6 +50,9 @@ fn build_operation_container(label: &str,
         .margin_start(5)
         .margin_end(5)
         .build();
+    let entries = gtk::Box::builder()
+        .orientation(gtk::Orientation::Horizontal)
+        .build();
     let entry = gtk::Entry::new();
     let btn = gtk::Button::with_label("Set");
 
@@ -63,8 +66,9 @@ fn build_operation_container(label: &str,
         }
     });
 
-    container.append(&gtk::Label::builder().label(label).build());
-    container.append(&entry.clone());
+    entries.append(&gtk::Label::builder().label(label).build());
+    entries.append(&entry.clone());
+    container.append(&entries);
     container.append(&btn.clone());
 
     container

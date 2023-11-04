@@ -9,6 +9,7 @@ use crate::image::Image;
 pub struct Context {
     pub(crate) starting: Option<Mat>,
     pub(crate) mat: Option<Mat>,
+    pub(crate) picture_window: gtk::Window,
 }
 
 pub fn picture_update_pixbuf(picture: &gtk::Picture, mat: &Mat) {
