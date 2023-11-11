@@ -2,10 +2,11 @@ use std::error::Error;
 use opencv::core::Mat;
 use opencv::prelude::*;
 use crate::histogram::Histogram;
-use crate::operations::Operations;
+use crate::operations::{no_overflow_add_u8, Operations};
 
 pub trait Binarization {
     fn threshold_binarization(&mut self, threshold: u8) -> Result<(), Box<dyn Error>>;
+    fn percent_black_selection(&mut self, percent: f64) -> Result<(), Box<dyn Error>>;
 }
 
 impl Binarization for Mat {
@@ -25,5 +26,31 @@ impl Binarization for Mat {
             });
 
         Ok(())
+    }
+    fn percent_black_selection(&mut self, percent: f64) -> Result<(), Box<dyn Error>> {
+        if percent > 1. {
+            return Err("Not a percent 💀".into());
+        }
+
+        let total = self.total() * self.channels() as usize;
+        let mut sum = 0;
+
+        let threshold = self
+            .get_histogram()
+            .iter_mut()
+            .map(|row| {
+                sum += row.len();
+                let current = sum as f64 / total as f64;
+                if current < percent {
+                    Some(current)
+                } else {
+                    None
+                }
+            })
+            .flatten()
+            .collect::<Vec<_>>()
+            .len();
+
+        self.threshold_binarization(no_overflow_add_u8(threshold as u8, 1))
     }
 }

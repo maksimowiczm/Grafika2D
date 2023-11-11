@@ -13,14 +13,17 @@ pub trait Operations {
     fn gray_scale_average(&mut self) -> Result<(), Box<dyn Error>>;
 }
 
-fn no_overflow_add_u8(number: u8, to_add: i16) -> u8 {
-    let mut new = number as i16 + to_add;
-    if new > u8::MAX as i16 {
-        new = u8::MAX as i16;
-    } else if new < u8::MIN as i16 {
-        new = u8::MIN as i16;
+pub fn no_overflow_add_u8(number: u8, to_add: i16) -> u8 {
+    let (res, overflow) = number.overflowing_add_signed(to_add as i8);
+    if overflow {
+        if to_add > 0 {
+            u8::MAX
+        } else {
+            u8::MIN
+        }
+    } else {
+        res
     }
-    return new as u8;
 }
 
 fn no_overflow_multiply_u8(number: u8, multiplier: f64) -> u8 {
