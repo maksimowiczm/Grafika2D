@@ -39,7 +39,7 @@ pub(crate) fn build_filters_container(picture: gtk::Picture, context: Rc<RefCell
     filters_container
 }
 
-fn build_filter_button(label: &str, picture: gtk::Picture, context: Rc<RefCell<Context>>, method: fn(&mut Mat) -> Result<(), Box<dyn Error>>) -> gtk::Button {
+pub fn build_filter_button(label: &str, picture: gtk::Picture, context: Rc<RefCell<Context>>, method: fn(&mut Mat) -> Result<(), Box<dyn Error>>) -> gtk::Button {
     let button = gtk::Button::with_label(label);
     button.connect_clicked(move |_| {
         if let Some(mat) = &mut context.borrow_mut().mat {
