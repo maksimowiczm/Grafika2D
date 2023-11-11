@@ -5,6 +5,7 @@ mod image;
 mod containers;
 mod context;
 mod histogram;
+mod binarization;
 
 use std::cell::RefCell;
 use std::rc::Rc;
