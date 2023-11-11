@@ -25,8 +25,8 @@ pub(crate) fn build_filters_container(picture: gtk::Picture, context: Rc<RefCell
         ("High pass", |mat| mat.high_pass_filter(3)),
         ("Sobel", Filters::sobel_filter),
         ("Gauss", Filters::gauss_filter),
-        ("Gray scale 1", Operations::gray_scale_mask),
-        ("Gray scale 2", Operations::gray_scale_mask)
+        ("Gray scale", Operations::gray_scale_mask),
+        ("Gray scale avg", Operations::gray_scale_average)
     );
 
     filters.iter().for_each(|(label, func)| {

@@ -118,7 +118,7 @@ impl Operations for Mat {
                     pixels[get_pixel(j, i, width, 3, 2)],
                 ];
 
-                let result = (rgb[0] + rgb[1] + rgb[2]) / 3;
+                let result = no_overflow_add_u8(no_overflow_add_u8(rgb[0], rgb[1] as i16), rgb[2] as i16) / 3;
 
                 pixels[get_pixel(j, i, width, 3, 0)] = result;
                 pixels[get_pixel(j, i, width, 3, 1)] = result;
