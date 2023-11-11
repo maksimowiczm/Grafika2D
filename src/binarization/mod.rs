@@ -6,7 +6,7 @@ use crate::operations::{no_overflow_add_u8, Operations};
 
 pub trait Binarization {
     fn threshold_binarization(&mut self, threshold: u8) -> Result<(), Box<dyn Error>>;
-    fn percent_black_selection(&mut self, percent: f64) -> Result<(), Box<dyn Error>>;
+    fn percent_black_selection(&mut self, percent: f64) -> Result<u8, Box<dyn Error>>;
 }
 
 impl Binarization for Mat {
@@ -27,7 +27,7 @@ impl Binarization for Mat {
 
         Ok(())
     }
-    fn percent_black_selection(&mut self, percent: f64) -> Result<(), Box<dyn Error>> {
+    fn percent_black_selection(&mut self, percent: f64) -> Result<u8, Box<dyn Error>> {
         if percent > 1. {
             return Err("Not a percent 💀".into());
         }
@@ -51,6 +51,6 @@ impl Binarization for Mat {
             .collect::<Vec<_>>()
             .len();
 
-        self.threshold_binarization(no_overflow_add_u8(threshold as u8, 1))
+        Ok(no_overflow_add_u8(threshold as u8, 1))
     }
 }
