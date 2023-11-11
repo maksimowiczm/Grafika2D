@@ -4,6 +4,7 @@ mod channels;
 mod image;
 mod containers;
 mod context;
+mod histogram;
 
 use std::cell::RefCell;
 use std::rc::Rc;
