@@ -5,6 +5,7 @@ use gtk::{ApplicationWindow};
 use std::cell::RefCell;
 use std::rc::Rc;
 use crate::containers::actions_container::build_actions_container;
+use crate::containers::binarization_container::build_binarization_container;
 use crate::containers::histogram_container::build_histogram_container;
 
 use crate::context::{Context, picture_update_pixbuf};
@@ -18,6 +19,7 @@ pub fn build_main_container(window: &ApplicationWindow, picture: gtk::Picture, c
     let _actions_container = build_actions_container(picture.clone(), Rc::clone(&context));
     // main_container.append(&_actions_container);
     main_container.append(&build_histogram_container(picture.clone(), Rc::clone(&context)));
+    main_container.append(&build_binarization_container(picture.clone(), Rc::clone(&context)));
 
     main_container
 }
