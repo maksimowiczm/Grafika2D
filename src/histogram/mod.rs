@@ -1,5 +1,5 @@
 use std::error::Error;
-use opencv::prelude::{*};
+use opencv::prelude::*;
 use crate::image::Image;
 use crate::operations::Operations;
 
@@ -82,7 +82,7 @@ impl Histogram for Mat {
         let length = *cumulative.last().unwrap();
 
         for i in min..max {
-            let pos = (cumulative[i] as f64 - min_probability as f64) / (length as f64 - min_probability as f64) * u8::MAX as f64;
+            let pos = (cumulative[i] as f64) / (length as f64) * u8::MAX as f64;
             histogram[i]
                 .iter_mut()
                 .for_each(|v| **v = pos as u8);
