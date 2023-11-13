@@ -21,7 +21,8 @@ pub fn build_binarization_container(picture: gtk::Picture, context: Rc<RefCell<C
     container.append(&binarize_container);
 
     container.append(&build_binarize_button(picture, Rc::clone(&context), threshold_entry.clone()));
-    container.append(&build_percent_black_selection_button(context, threshold_entry));
+    container.append(&build_percent_black_selection_button(Rc::clone(&context), threshold_entry.clone()));
+    container.append(&build_mean_iterative_selection_button(context, threshold_entry));
 
     container
 }
@@ -66,6 +67,24 @@ fn build_percent_black_selection_button(context: Rc<RefCell<Context>>, threshold
                 let threshold = mat.percent_black_selection(percent / 100.).unwrap();
                 threshold_entry.buffer().set_text(format!("{threshold}"));
             }
+        }
+    });
+
+    container
+}
+
+fn build_mean_iterative_selection_button(context: Rc<RefCell<Context>>, threshold_entry: gtk::Entry) -> gtk::Box {
+    let container = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    let label = gtk::Label::with_mnemonic("Mean iterative selection");
+    container.append(&label);
+
+    let button = gtk::Button::with_label("Get threshold");
+    container.append(&button);
+
+    button.connect_clicked(move |_| {
+        if let Some(mat) = &mut context.borrow_mut().mat {
+            let threshold = mat.mean_iterative_selection().unwrap();
+            threshold_entry.buffer().set_text(format!("{threshold}"));
         }
     });
 

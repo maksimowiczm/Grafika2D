@@ -10,7 +10,7 @@ pub trait Histogram {
     fn histogram_equalize(&mut self) -> Result<(), Box<dyn Error>>;
 }
 
-fn get_histogram_min_max(histogram: &Vec<Vec<&mut u8>>) -> (usize, usize) {
+pub fn get_histogram_min_max(histogram: &Vec<Vec<&mut u8>>) -> (usize, usize) {
     let mut min = 0;
     while histogram[min].len() == 0 {
         min += 1;
