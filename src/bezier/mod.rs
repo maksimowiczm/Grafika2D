@@ -24,9 +24,9 @@ impl BezierCurve {
             return None;
         }
 
-        let length = self.points.len() - 1;
+        let length = self.points.len();
 
-        if length < 1 {
+        if length < 2 {
             return None;
         }
 
@@ -35,7 +35,7 @@ impl BezierCurve {
         let res = self.points.iter().enumerate().filter(|(i, _)| *i > 0).fold(
             Point::default(),
             |current_point, (i, point)| {
-                current_point + &point.set_base(first).bezier(length, i - 1, t).unwrap()
+                current_point + &point.set_base(first).bezier(length - 1, i - 1, t).unwrap()
             },
         );
 
