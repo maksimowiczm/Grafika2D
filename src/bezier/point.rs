@@ -15,7 +15,10 @@ pub trait BezierPoint<T> {
 impl BezierPoint<Point> for Point {
     fn bezier(&self, n: usize, i: usize, t: f64) -> Option<Point> {
         let bezier_self = |v: i32| {
-            binomial(n, i) as f64 * (1. - t).powf((n - i) as f64) * t.powf(i as f64) * v as f64
+            binomial(n as i128, i as i128) as f64
+                * (1. - t).powf((n - i) as f64)
+                * t.powf(i as f64)
+                * v as f64
         };
 
         Some(Point::from((bezier_self(self.x), bezier_self(self.y))))

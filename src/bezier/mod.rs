@@ -5,7 +5,7 @@ use crate::bezier::point::Point;
 
 #[derive(Debug)]
 pub struct BezierCurve {
-    points: Vec<Point>,
+    pub points: Vec<Point>,
 }
 
 impl Default for BezierCurve {
