@@ -1,6 +1,7 @@
 use crate::bezier::BezierCurve;
 use gtk::{prelude::*, DrawingArea};
 use std::cell::RefCell;
+use std::f64::consts::PI;
 use std::rc::Rc;
 
 fn build_drawing_area_gesture(
@@ -55,5 +56,10 @@ fn draw_function(
             .for_each(|point| cr.line_to(point.x as f64, point.y as f64));
 
         cr.stroke().unwrap();
+
+        bezier.borrow().points.iter().for_each(|point| {
+            cr.arc(point.x as f64, point.y as f64, 1., 0., 2. * PI);
+            cr.stroke().unwrap();
+        });
     }
 }
