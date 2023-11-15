@@ -7,6 +7,12 @@ pub struct Point {
     pub y: i32,
 }
 
+impl Point {
+    pub fn distance(&self, point: &Point) -> f64 {
+        ((self.x as f64 - point.x as f64).powi(2) + (self.y as f64 - point.y as f64).powi(2)).sqrt()
+    }
+}
+
 pub trait BezierPoint<T> {
     fn bezier(&self, n: usize, i: usize, t: f64) -> Option<Point>;
     fn set_base(&self, base: &T) -> T;
