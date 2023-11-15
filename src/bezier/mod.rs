@@ -1,20 +1,44 @@
+use crate::bezier::point::BezierPoint;
 pub mod point;
 
 use crate::bezier::point::Point;
 
 #[derive(Debug)]
-pub struct Bezier {
+pub struct BezierCurve {
     points: Vec<Point>,
 }
 
-impl Default for Bezier {
+impl Default for BezierCurve {
     fn default() -> Self {
-        Bezier { points: vec![] }
+        BezierCurve { points: vec![] }
     }
 }
 
-impl Bezier {
+impl BezierCurve {
     pub(crate) fn add_point(&mut self, point: Point) {
         self.points.push(point)
+    }
+
+    pub(crate) fn bezier(&self, t: f64) -> Option<Point> {
+        if t < 0. || t > 1. {
+            return None;
+        }
+
+        let length = self.points.len() - 1;
+
+        if length < 1 {
+            return None;
+        }
+
+        let first = self.points.first()?;
+
+        let res = self.points.iter().enumerate().filter(|(i, _)| *i > 0).fold(
+            Point::default(),
+            |current_point, (i, point)| {
+                current_point + &point.set_base(first).bezier(length, i - 1, t).unwrap()
+            },
+        );
+
+        Some(res + first)
     }
 }
