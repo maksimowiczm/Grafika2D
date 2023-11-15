@@ -5,12 +5,16 @@ use crate::bezier::point::Point;
 
 #[derive(Debug)]
 pub struct BezierCurve {
+    pub selected: Option<usize>,
     pub points: Vec<Point>,
 }
 
 impl Default for BezierCurve {
     fn default() -> Self {
-        BezierCurve { points: vec![] }
+        BezierCurve {
+            points: vec![],
+            selected: None,
+        }
     }
 }
 
