@@ -7,7 +7,6 @@ use std::rc::Rc;
 
 fn move_point(bezier: &mut BezierCurve, selected: usize, x: f64, y: f64) {
     bezier.points[selected] = Point::from((x, y));
-    bezier.selected = None;
 }
 
 fn build_drawing_area_left_click_gesture(
@@ -19,6 +18,7 @@ fn build_drawing_area_left_click_gesture(
         let mut bezier = bezier.borrow_mut();
         if let Some(selected) = bezier.selected {
             move_point(&mut bezier, selected, x, y);
+            bezier.selected = None;
         } else {
             bezier.add_point(From::from((x, y)));
         }
@@ -61,6 +61,23 @@ fn build_drawing_area_right_click_gesture(
     gesture
 }
 
+fn build_drawing_area_motion(
+    bezier: Rc<RefCell<BezierCurve>>,
+    area: DrawingArea,
+) -> gtk::EventControllerMotion {
+    let motion_gesture = gtk::EventControllerMotion::new();
+
+    motion_gesture.connect_motion(move |_, x, y| {
+        let mut bezier = bezier.borrow_mut();
+        if let Some(selected) = bezier.selected {
+            move_point(&mut bezier, selected, x, y);
+            area.queue_draw();
+        }
+    });
+
+    motion_gesture
+}
+
 pub fn build_drawing_area(bezier: Rc<RefCell<BezierCurve>>) -> gtk::DrawingArea {
     let drawing_area = gtk::DrawingArea::builder()
         .height_request(500)
@@ -73,6 +90,11 @@ pub fn build_drawing_area(bezier: Rc<RefCell<BezierCurve>>) -> gtk::DrawingArea 
     ));
 
     drawing_area.add_controller(build_drawing_area_right_click_gesture(
+        Rc::clone(&bezier),
+        drawing_area.clone(),
+    ));
+
+    drawing_area.add_controller(build_drawing_area_motion(
         Rc::clone(&bezier),
         drawing_area.clone(),
     ));
