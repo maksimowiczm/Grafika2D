@@ -28,5 +28,17 @@ fn build_ui(app: &Application) {
     let drawing_area = drawing_area::build_drawing_area(Rc::clone(&bezier));
     container.append(&drawing_area);
 
+    let key_controller = gtk::EventControllerKey::new();
+    key_controller.connect_key_pressed(move |_, _, key, _| match key {
+        27 | 9 => {
+            bezier.borrow_mut().selected = None;
+            bezier.borrow_mut().points.clear();
+            drawing_area.queue_draw();
+            return glib::Propagation::Stop;
+        }
+        _ => glib::Propagation::Stop,
+    });
+    window.add_controller(key_controller);
+
     window.present();
 }
