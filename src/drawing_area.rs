@@ -80,8 +80,8 @@ fn build_drawing_area_motion(
 
 pub fn build_drawing_area(bezier: Rc<RefCell<BezierCurve>>) -> gtk::DrawingArea {
     let drawing_area = gtk::DrawingArea::builder()
-        .height_request(500)
-        .width_request(500)
+        .vexpand(true)
+        .hexpand(true)
         .build();
 
     drawing_area.add_controller(build_drawing_area_left_click_gesture(
@@ -112,32 +112,36 @@ fn draw_function(
     _: i32,
     bezier: Rc<RefCell<BezierCurve>>,
 ) {
-    let accuracy = 100;
-    let points: Vec<_> = (0..accuracy + 1)
-        .map(|x| x as f64 / accuracy as f64)
-        .map(|i| bezier.borrow().bezier(i))
-        .flatten()
-        .collect();
-
-    if let Some(first) = points.first() {
-        cr.set_source_rgb(255., 255., 255.);
-        cr.move_to(first.x as f64, first.y as f64);
-        points
-            .iter()
-            .for_each(|point| cr.line_to(point.x as f64, point.y as f64));
-
-        cr.stroke().unwrap();
-
-        let bezier = bezier.borrow();
-        bezier.points.iter().enumerate().for_each(|(i, point)| {
-            if let Some(selected) = bezier.selected {
+    // Draw points
+    bezier
+        .borrow()
+        .points
+        .iter()
+        .enumerate()
+        .for_each(|(i, point)| {
+            cr.set_source_rgb(255., 255., 255.);
+            if let Some(selected) = bezier.borrow().selected {
                 if selected == i {
                     cr.set_source_rgb(255., 0., 0.);
                 }
             }
             cr.arc(point.x as f64, point.y as f64, 1., 0., 2. * PI);
             cr.stroke().unwrap();
-            cr.set_source_rgb(255., 255., 255.);
         });
+
+    // Draw curve
+    let accuracy = 100;
+    let points: Vec<_> = (0..accuracy + 1)
+        .map(|x| x as f64 / accuracy as f64)
+        .map(|i| bezier.borrow().bezier(i))
+        .flatten()
+        .collect();
+    if let Some(first) = points.first() {
+        cr.set_source_rgb(255., 255., 255.);
+        cr.move_to(first.x as f64, first.y as f64);
+        points
+            .iter()
+            .for_each(|point| cr.line_to(point.x as f64, point.y as f64));
+        cr.stroke().unwrap();
     }
 }
