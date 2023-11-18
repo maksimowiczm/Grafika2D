@@ -14,39 +14,43 @@ fn draw(
     _: i32,
     context: Rc<RefCell<DrawingContext>>,
 ) {
-    let borrowed = context.borrow();
-    let polygons: Vec<_> = borrowed
+    cr.set_source_rgb(255., 255., 255.);
+
+    // draw shapes
+    context
+        .borrow()
         .polygons
         .iter()
-        .map(|polygon| polygon.get_vertexes())
-        .flatten()
-        .collect();
+        .map(|polygon| polygon.get_lines())
+        .for_each(|lines| {
+            if let Some((first, _)) = lines.first() {
+                let (x, y) = first.get_coordinates();
+                cr.line_to(*x as f64, *y as f64);
+            }
 
-    // connect vertexes
-    cr.set_source_rgb(255., 255., 255.);
-    polygons.iter().for_each(|vertexes| {
-        // draw point if figure has one vertex
-        if vertexes.len() == 1 {
-            let (x, y) = vertexes[0].get_coordinates();
-            cr.arc(*x as f64, *y as f64, 1.5, 0., 2. * PI);
+            lines.iter().for_each(|(_, to)| {
+                let (x, y) = to.get_coordinates();
+                cr.line_to(*x as f64, *y as f64);
+            });
+
             cr.stroke().unwrap();
-            return;
-        }
-
-        // draw edges
-        vertexes.iter().for_each(|vertex| {
-            let (x, y) = vertex.get_coordinates();
-            cr.line_to(*x as f64, *y as f64)
         });
 
-        // close polygon
-        if let Some(first) = vertexes.first() {
-            let (x, y) = first.get_coordinates();
-            cr.line_to(*x as f64, *y as f64);
-        }
-
-        cr.stroke().unwrap();
-    });
+    // draw points
+    context
+        .borrow()
+        .polygons
+        .iter()
+        .filter(|polygon| polygon.is_point())
+        .map(|polygon| polygon.get_vertexes())
+        .flatten()
+        .map(|vertexes| vertexes.first())
+        .flatten()
+        .for_each(|point| {
+            let (x, y) = point.get_coordinates();
+            cr.arc(*x as f64, *y as f64, 1.5, 0., 2. * PI);
+            cr.stroke().unwrap();
+        })
 }
 
 fn build_left_click(
