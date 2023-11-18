@@ -16,6 +16,7 @@ pub struct DrawingContext {
 pub fn build_drawing_area_container() -> gtk::Box {
     let container = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     let context = Rc::new(RefCell::new(DrawingContext { polygons: vec![] }));
+    context.borrow_mut().polygons.push(Figure::default());
     container.append(&build_area(Rc::clone(&context)));
     container
 }
