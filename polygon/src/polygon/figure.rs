@@ -20,6 +20,32 @@ where
         }
     }
 
+    fn is_point(&self) -> bool {
+        self.points.len() == 1
+    }
+
+    fn get_lines(&self) -> Vec<(&Point<T>, &Point<T>)> {
+        if self.points.len() <= 1 {
+            return vec![];
+        }
+
+        let line = (&self.points[0], &self.points[1]);
+        let mut lines = self
+            .points
+            .iter()
+            .skip(2)
+            .fold(vec![line], |mut lines, point| {
+                lines.push((lines.last().unwrap().1, &point));
+                lines
+            });
+
+        if lines.len() > 1 {
+            lines.push((&self.points.last().unwrap(), &self.points.first().unwrap()));
+        }
+
+        lines
+    }
+
     fn add_vertex(&mut self, vertex: Point<T>) -> Result<(), Box<dyn std::error::Error>> {
         self.points.push(vertex);
         Ok(())
