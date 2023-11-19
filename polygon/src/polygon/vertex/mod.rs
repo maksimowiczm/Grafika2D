@@ -5,5 +5,5 @@ where
     T: std::ops::AddAssign,
 {
     fn get_coordinates(&self) -> (&T, &T);
-    fn move_vertex(&mut self, vector: (T, T)) -> Result<(), Box<dyn std::error::Error>>;
+    fn move_vertex(&mut self, vector: &(T, T));
 }

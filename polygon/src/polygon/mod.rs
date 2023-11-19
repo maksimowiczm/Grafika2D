@@ -16,4 +16,5 @@ where
     fn get_vertex(&mut self, index: usize) -> Option<&mut TVertex>;
     fn rotate(&mut self, angle: f64);
     fn scale(&mut self, reference: (TCoord, TCoord), scale: f64);
+    fn move_polygon(&mut self, vector: &(TCoord, TCoord));
 }
