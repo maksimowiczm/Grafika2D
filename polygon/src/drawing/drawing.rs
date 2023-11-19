@@ -58,11 +58,23 @@ fn draw_polygons<'a>(
 }
 
 pub(crate) fn draw_context(context: &DrawingContext, cr: &gtk::cairo::Context) {
-    let iter = context.polygons.iter().rev();
+    if let Some(index) = context.selected {
+        let selected = [&context.polygons[index]];
+        draw_polygons(cr, selected, (0., 0., 255.));
 
-    // draw current
-    draw_polygons(cr, iter.clone().take(1), (255., 0., 0.));
-
-    // draw rest
-    draw_polygons(cr, iter.clone().skip(1), (255., 255., 255.));
+        draw_polygons(
+            cr,
+            context
+                .polygons
+                .iter()
+                .enumerate()
+                .filter(|(i, _)| *i != index)
+                .map(|(_, p)| p),
+            (255., 255., 255.),
+        );
+    } else {
+        let iter = context.polygons.iter().rev();
+        draw_polygons(cr, iter.clone().take(1), (255., 0., 0.));
+        draw_polygons(cr, iter.clone().skip(1), (255., 255., 255.));
+    }
 }

@@ -26,6 +26,12 @@ fn build_left_click(
 
     gesture.connect_pressed(move |_, _, x, y| {
         let borrowed = &mut context.borrow_mut();
+        if borrowed.selected.is_some() {
+            borrowed.selected = None;
+            area.queue_draw();
+            return;
+        }
+
         if let Some(polygon) = &mut borrowed.polygons.last_mut() {
             polygon
                 .add_vertex(Point::from((x as u16, y as u16)))
@@ -45,6 +51,10 @@ fn build_right_click(
 
     gesture.connect_pressed(move |_, _, x, y| {
         let mut borrowed = context.borrow_mut();
+        if borrowed.selected.is_some() {
+            borrowed.selected = None;
+        }
+
         if let Some(_) = borrowed.polygons.first() {
             let closest = borrowed
                 .polygons
