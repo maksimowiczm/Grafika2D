@@ -8,17 +8,15 @@ pub struct Point<T> {
 
 impl<T> Vertex<T> for Point<T>
 where
-    T: std::ops::AddAssign,
+    T: std::ops::AddAssign + Copy,
 {
     fn get_coordinates(&self) -> (&T, &T) {
         (&self.x, &self.y)
     }
 
-    fn move_vertex(&mut self, vector: (T, T)) -> Result<(), Box<dyn std::error::Error>> {
+    fn move_vertex(&mut self, vector: &(T, T)) {
         self.x += vector.0;
         self.y += vector.1;
-
-        Ok(())
     }
 }
 

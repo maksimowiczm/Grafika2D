@@ -11,17 +11,17 @@ pub struct Figure<T> {
 impl<T> Polygon<Point<T>, T> for Figure<T>
 where
     Point<T>: Vertex<T>,
-    T: AddAssign,
+    T: AddAssign + Copy,
 {
+    fn is_point(&self) -> bool {
+        self.points.len() == 1
+    }
+
     fn get_vertexes(&self) -> Option<&[Point<T>]> {
         match self.points.as_slice() {
             [] => None,
             _ => Some(self.points.as_slice()),
         }
-    }
-
-    fn is_point(&self) -> bool {
-        self.points.len() == 1
     }
 
     fn get_lines(&self) -> Vec<(&Point<T>, &Point<T>)> {
@@ -61,6 +61,12 @@ where
 
     fn scale(&mut self, reference: (T, T), scale: f64) {
         todo!()
+    }
+
+    fn move_polygon(&mut self, vector: &(T, T)) {
+        self.points.iter_mut().for_each(|p| {
+            p.move_vertex(vector);
+        })
     }
 }
 
