@@ -16,13 +16,13 @@ fn main() -> glib::ExitCode {
 fn build_ui(app: &Application) {
     let container = gtk::Box::new(gtk::Orientation::Vertical, 0);
 
-    container.append(&build_drawing_area_container());
-
     let window = ApplicationWindow::builder()
         .application(app)
         .title("Polygon")
         .child(&container)
         .build();
+
+    container.append(&build_drawing_area_container(&window));
 
     window.present();
 }
