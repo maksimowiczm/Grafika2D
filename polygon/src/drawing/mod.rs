@@ -1,4 +1,5 @@
 mod area;
+mod drawing;
 
 use std::cell::RefCell;
 use std::rc::Rc;
@@ -40,6 +41,7 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
                 }
             }
             context.borrow_mut().polygons.push(Figure::default());
+            area.queue_draw();
             gtk::glib::Propagation::Stop
         }
         27 => {
