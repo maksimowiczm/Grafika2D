@@ -22,6 +22,17 @@ where
     }
 }
 
+impl Point<u16> {
+    pub fn distance(&self, point: &Point<u16>) -> f64 {
+        let (x, y) = point.get_coordinates();
+
+        f64::sqrt(
+            (self.x as f64 - *x as f64) * (self.x as f64 - *x as f64)
+                + (self.y as f64 - *y as f64) * (self.y as f64 - *y as f64),
+        )
+    }
+}
+
 impl<T> From<(T, T)> for Point<T> {
     fn from(value: (T, T)) -> Self {
         Point {

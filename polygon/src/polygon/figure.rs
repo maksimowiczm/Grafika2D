@@ -64,6 +64,21 @@ where
     }
 }
 
+impl Figure<u16> {
+    pub(crate) fn distance(&self, point: Point<u16>) -> Option<f64> {
+        if self.points.is_empty() {
+            None
+        } else {
+            Some(
+                self.points
+                    .iter()
+                    .map(|p| p.distance(&point))
+                    .fold(f64::MAX, |acc, v| if v < acc { v } else { acc }),
+            )
+        }
+    }
+}
+
 impl<T> Default for Figure<T> {
     fn default() -> Self {
         Figure { points: vec![] }
