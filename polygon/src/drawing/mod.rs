@@ -29,7 +29,6 @@ impl Default for DrawingContext {
 pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> gtk::Box {
     let container = gtk::Box::new(gtk::Orientation::Horizontal, 0);
     let context = Rc::new(RefCell::new(DrawingContext::default()));
-    context.borrow_mut().polygons.push(Figure::default());
     let area = build_area(Rc::clone(&context));
     container.append(&area);
 
@@ -37,7 +36,11 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
     key_controller.connect_key_pressed(move |_, key, _, _| match key {
         gtk::gdk::Key::space => {
             if let Some(polygon) = context.borrow().polygons.last() {
-                if let None = polygon.get_vertexes() {
+                if let Some(vertexes) = polygon.get_vertexes() {
+                    if vertexes.is_empty() {
+                        return gtk::glib::Propagation::Stop;
+                    }
+                } else {
                     return gtk::glib::Propagation::Stop;
                 }
             }
