@@ -14,12 +14,14 @@ use self::area::build_area;
 
 pub struct DrawingContext {
     polygons: Vec<Figure<u16>>,
+    selected: Option<usize>,
 }
 
 impl Default for DrawingContext {
     fn default() -> Self {
         DrawingContext {
             polygons: vec![Figure::default()],
+            selected: None,
         }
     }
 }
@@ -32,9 +34,8 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
     container.append(&area);
 
     let key_controller = gtk::EventControllerKey::new();
-    key_controller.connect_key_pressed(move |_, _, key, _| match key {
-        65 => {
-            // space - draw next shape
+    key_controller.connect_key_pressed(move |_, key, _, _| match key {
+        gtk::gdk::Key::space => {
             if let Some(polygon) = context.borrow().polygons.last() {
                 if let None = polygon.get_vertexes() {
                     return gtk::glib::Propagation::Stop;
@@ -44,8 +45,7 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
             area.queue_draw();
             gtk::glib::Propagation::Stop
         }
-        27 => {
-            // r - reset context
+        gtk::gdk::Key::Escape => {
             *context.borrow_mut() = Default::default();
             area.queue_draw();
             gtk::glib::Propagation::Stop

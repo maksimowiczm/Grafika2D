@@ -1,6 +1,7 @@
 use crate::polygon::vertex::point::Point;
 use std::{cell::RefCell, rc::Rc};
 
+use core::option::Option;
 use gtk::{prelude::DrawingAreaExtManual, traits::WidgetExt};
 
 use crate::polygon::Polygon;
@@ -36,6 +37,49 @@ fn build_left_click(
     gesture
 }
 
+fn build_right_click(
+    area: gtk::DrawingArea,
+    context: Rc<RefCell<DrawingContext>>,
+) -> gtk::GestureClick {
+    let gesture = gtk::GestureClick::builder().button(3).build();
+
+    gesture.connect_pressed(move |_, _, x, y| {
+        let mut borrowed = context.borrow_mut();
+        if let Some(_) = borrowed.polygons.first() {
+            let closest = borrowed
+                .polygons
+                .iter()
+                .enumerate()
+                .map(
+                    |(i, p)| match p.distance(Point::from((x as u16, y as u16))) {
+                        Some(distance) => Some((i, distance)),
+                        None => None,
+                    },
+                )
+                .flatten()
+                .fold::<Option<(usize, f64)>, _>(None, |acc, (i, distance)| match acc {
+                    Some((_, current)) => {
+                        if distance < current {
+                            Some((i, distance))
+                        } else {
+                            acc
+                        }
+                    }
+                    None => Some((i, distance)),
+                });
+
+            if let Some((index, distance)) = closest {
+                if distance < 10. {
+                    borrowed.selected = Some(index);
+                }
+            }
+        };
+        area.queue_draw();
+    });
+
+    gesture
+}
+
 pub fn build_area(context: Rc<RefCell<DrawingContext>>) -> gtk::DrawingArea {
     let area = gtk::DrawingArea::builder()
         .vexpand(true)
@@ -43,6 +87,7 @@ pub fn build_area(context: Rc<RefCell<DrawingContext>>) -> gtk::DrawingArea {
         .build();
 
     area.add_controller(build_left_click(area.clone(), Rc::clone(&context)));
+    area.add_controller(build_right_click(area.clone(), Rc::clone(&context)));
     area.set_draw_func(move |area, cr, w, h| draw(area, cr, w, h, Rc::clone(&context)));
 
     area
