@@ -25,8 +25,8 @@ where
     }
 }
 
-impl Point<u16> {
-    pub fn distance(&self, point: &Point<u16>) -> f64 {
+impl Point<i16> {
+    pub fn distance(&self, point: &Point<i16>) -> f64 {
         let (x, y) = point.get_coordinates();
 
         f64::sqrt(

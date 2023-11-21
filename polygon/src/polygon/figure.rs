@@ -62,8 +62,8 @@ where
     }
 }
 
-impl Figure<u16> {
-    pub(crate) fn distance(&self, point: Point<u16>) -> Option<f64> {
+impl Figure<i16> {
+    pub(crate) fn distance(&self, point: Point<i16>) -> Option<f64> {
         if self.points.is_empty() {
             None
         } else {
@@ -76,7 +76,7 @@ impl Figure<u16> {
         }
     }
 
-    pub fn rotate(&mut self, reference: Point<u16>, angle: f64) {
+    pub fn rotate(&mut self, reference: Point<i16>, angle: f64) {
         let (&rx, &ry) = reference.get_coordinates();
         let sin = angle.sin();
         let cos = angle.cos();
@@ -110,10 +110,10 @@ impl Figure<u16> {
 
         new_points
             .iter_mut()
-            .for_each(|(point, (x, y))| point.set_coordinates((*x as u16, *y as u16)));
+            .for_each(|(point, (x, y))| point.set_coordinates((*x as i16, *y as i16)));
     }
 
-    pub fn scale(&mut self, reference: Point<u16>, scale: f64) {
+    pub fn scale(&mut self, reference: Point<i16>, scale: f64) {
         let (&rx, &ry) = reference.get_coordinates();
 
         let mut new_points: Vec<_> = self
@@ -145,7 +145,7 @@ impl Figure<u16> {
 
         new_points
             .iter_mut()
-            .for_each(|(point, (x, y))| point.set_coordinates((*x as u16, *y as u16)));
+            .for_each(|(point, (x, y))| point.set_coordinates((*x as i16, *y as i16)));
     }
 }
 

@@ -26,15 +26,25 @@ fn build_left_click(
 
     gesture.connect_pressed(move |_, _, x, y| {
         let borrowed = &mut context.borrow_mut();
-        if borrowed.selected.is_some() {
+        if let Some(index) = borrowed.selected {
+            match borrowed.action {
+                super::Action::Move { from, to } => {
+                    let vec = (to.0 - from.0, to.1 - from.1);
+                    let figure = &mut borrowed.polygons[index];
+                    figure.move_polygon(&vec);
+                }
+                _ => (),
+            }
+
             borrowed.selected = None;
+            borrowed.action = super::Action::None;
             area.queue_draw();
             return;
         }
 
         if let Some(polygon) = &mut borrowed.polygons.last_mut() {
             polygon
-                .add_vertex(Point::from((x as u16, y as u16)))
+                .add_vertex(Point::from((x as i16, y as i16)))
                 .unwrap();
             area.queue_draw();
         }
@@ -53,6 +63,7 @@ fn build_right_click(
         let mut borrowed = context.borrow_mut();
         if borrowed.selected.is_some() {
             borrowed.selected = None;
+            borrowed.action = super::Action::None;
         }
 
         if let Some(_) = borrowed.polygons.first() {
@@ -61,7 +72,7 @@ fn build_right_click(
                 .iter()
                 .enumerate()
                 .map(
-                    |(i, p)| match p.distance(Point::from((x as u16, y as u16))) {
+                    |(i, p)| match p.distance(Point::from((x as i16, y as i16))) {
                         Some(distance) => Some((i, distance)),
                         None => None,
                     },
@@ -90,6 +101,31 @@ fn build_right_click(
     gesture
 }
 
+fn build_drawing_area_motion(
+    area: gtk::DrawingArea,
+    context: Rc<RefCell<DrawingContext>>,
+) -> gtk::EventControllerMotion {
+    let motion_gesture = gtk::EventControllerMotion::new();
+
+    motion_gesture.connect_motion(move |_, x, y| {
+        let borrowed = &mut context.borrow_mut();
+
+        match borrowed.action {
+            super::Action::Move { from, .. } => {
+                borrowed.action = super::Action::Move {
+                    from,
+                    to: (x as i16, y as i16),
+                }
+            }
+            _ => (),
+        }
+
+        area.queue_draw();
+    });
+
+    motion_gesture
+}
+
 pub fn build_area(context: Rc<RefCell<DrawingContext>>) -> gtk::DrawingArea {
     let area = gtk::DrawingArea::builder()
         .vexpand(true)
@@ -98,6 +134,7 @@ pub fn build_area(context: Rc<RefCell<DrawingContext>>) -> gtk::DrawingArea {
 
     area.add_controller(build_left_click(area.clone(), Rc::clone(&context)));
     area.add_controller(build_right_click(area.clone(), Rc::clone(&context)));
+    area.add_controller(build_drawing_area_motion(area.clone(), Rc::clone(&context)));
     area.set_draw_func(move |area, cr, w, h| draw(area, cr, w, h, Rc::clone(&context)));
 
     area
