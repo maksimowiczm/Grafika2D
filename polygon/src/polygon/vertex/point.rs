@@ -18,6 +18,11 @@ where
         self.x += vector.0;
         self.y += vector.1;
     }
+
+    fn set_coordinates(&mut self, coordinates: (T, T)) {
+        self.x = coordinates.0;
+        self.y = coordinates.1;
+    }
 }
 
 impl Point<u16> {
