@@ -14,6 +14,5 @@ where
     fn get_lines(&self) -> Vec<(&TVertex, &TVertex)>;
     fn add_vertex(&mut self, vertex: TVertex) -> Result<(), Box<dyn std::error::Error>>;
     fn get_vertex(&mut self, index: usize) -> Option<&mut TVertex>;
-    fn scale(&mut self, reference: (TCoord, TCoord), scale: f64);
     fn move_polygon(&mut self, vector: &(TCoord, TCoord));
 }
