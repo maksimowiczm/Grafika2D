@@ -8,13 +8,22 @@ use gtk::prelude::*;
 use gtk::traits::BoxExt;
 
 use crate::polygon::figure::Figure;
+use crate::polygon::vertex::Vertex;
 use crate::polygon::Polygon;
 
 use self::area::build_area;
 
+pub enum Action {
+    None,
+    Move { from: (i16, i16), to: (i16, i16) },
+    Rotate { from: (i16, i16) },
+    Scale { from: (i16, i16) },
+}
+
 pub struct DrawingContext {
-    polygons: Vec<Figure<u16>>,
+    polygons: Vec<Figure<i16>>,
     selected: Option<usize>,
+    action: Action,
 }
 
 impl Default for DrawingContext {
@@ -22,6 +31,7 @@ impl Default for DrawingContext {
         DrawingContext {
             polygons: vec![Figure::default()],
             selected: None,
+            action: Action::None,
         }
     }
 }
@@ -51,6 +61,19 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
         gtk::gdk::Key::Escape => {
             *context.borrow_mut() = Default::default();
             area.queue_draw();
+            gtk::glib::Propagation::Stop
+        }
+        gtk::gdk::Key::m => {
+            let mut borrowed = context.borrow_mut();
+            if let Some(index) = borrowed.selected {
+                let figure = &mut borrowed.polygons[index];
+                let (&x, &y) = figure.get_vertex(0).unwrap().get_coordinates();
+                borrowed.action = Action::Move {
+                    from: (x, y),
+                    to: (x, y),
+                };
+                area.queue_draw();
+            }
             gtk::glib::Propagation::Stop
         }
         _ => gtk::glib::Propagation::Stop,

@@ -6,7 +6,7 @@ use std::f64::consts::PI;
 
 fn draw_shapes<'a>(
     cr: &gtk::cairo::Context,
-    iter: impl IntoIterator<Item = &'a Figure<u16>>,
+    iter: impl IntoIterator<Item = &'a Figure<i16>>,
     color: (f64, f64, f64),
 ) {
     cr.set_source_rgb(color.0, color.1, color.2);
@@ -30,7 +30,7 @@ fn draw_shapes<'a>(
 
 fn draw_points<'a>(
     cr: &gtk::cairo::Context,
-    iter: impl IntoIterator<Item = &'a Figure<u16>>,
+    iter: impl IntoIterator<Item = &'a Figure<i16>>,
     color: (f64, f64, f64),
 ) {
     cr.set_source_rgb(color.0, color.1, color.2);
@@ -50,7 +50,7 @@ fn draw_points<'a>(
 
 fn draw_polygons<'a>(
     cr: &gtk::cairo::Context,
-    iter: impl IntoIterator<Item = &'a Figure<u16>> + Clone,
+    iter: impl IntoIterator<Item = &'a Figure<i16>> + Clone,
     color: (f64, f64, f64),
 ) {
     draw_shapes(cr, iter.clone(), color);
@@ -72,6 +72,16 @@ pub(crate) fn draw_context(context: &DrawingContext, cr: &gtk::cairo::Context) {
                 .map(|(_, p)| p),
             (255., 255., 255.),
         );
+
+        match context.action {
+            super::Action::Move { from, to } => {
+                cr.line_to(from.0 as f64, from.1 as f64);
+                cr.line_to(to.0 as f64, to.1 as f64);
+                cr.set_source_rgb(0., 255., 0.);
+                cr.stroke().unwrap();
+            }
+            _ => (),
+        }
     } else {
         let iter = context.polygons.iter().rev();
         draw_polygons(cr, iter.clone().take(1), (255., 0., 0.));
