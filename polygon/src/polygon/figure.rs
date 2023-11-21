@@ -55,10 +55,6 @@ where
         self.points.get_mut(index)
     }
 
-    fn scale(&mut self, reference: (T, T), scale: f64) {
-        todo!()
-    }
-
     fn move_polygon(&mut self, vector: &(T, T)) {
         self.points.iter_mut().for_each(|p| {
             p.move_vertex(vector);
@@ -93,6 +89,41 @@ impl Figure<u16> {
 
                 let x = (rx + (px - rx)) as f64 * cos - (py - ry) as f64 * sin;
                 let y = (ry + (px - rx)) as f64 * sin + (py - ry) as f64 * cos;
+
+                (point, (x, y))
+            })
+            .collect();
+
+        // make sure it fits inside area
+        if new_points.iter().fold(
+            false,
+            |acc, (_, (x, y))| {
+                if *x < 0. || *y < 0. {
+                    true
+                } else {
+                    acc
+                }
+            },
+        ) {
+            return;
+        }
+
+        new_points
+            .iter_mut()
+            .for_each(|(point, (x, y))| point.set_coordinates((*x as u16, *y as u16)));
+    }
+
+    pub fn scale(&mut self, reference: Point<u16>, scale: f64) {
+        let (&rx, &ry) = reference.get_coordinates();
+
+        let mut new_points: Vec<_> = self
+            .points
+            .iter_mut()
+            .map(|point| {
+                let (&px, &py) = point.get_coordinates();
+
+                let x = (rx + (px - rx)) as f64 * scale;
+                let y = (ry + (py - ry)) as f64 * scale;
 
                 (point, (x, y))
             })
