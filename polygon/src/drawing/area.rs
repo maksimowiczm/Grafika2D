@@ -6,7 +6,7 @@ use gtk::{prelude::DrawingAreaExtManual, traits::WidgetExt};
 
 use crate::polygon::Polygon;
 
-use super::{drawing, scale, DrawingContext};
+use super::{angle, drawing, scale, DrawingContext};
 
 fn draw(
     _: &gtk::DrawingArea,
@@ -27,21 +27,25 @@ fn build_left_click(
     gesture.connect_pressed(move |_, _, x, y| {
         let borrowed = &mut context.borrow_mut();
         if let Some(index) = borrowed.selected {
-            match borrowed.action {
-                super::Action::Move { from, to } => {
+            match &mut borrowed.action {
+                super::Action::Move { from, to, info } => {
                     let vec = (to.0 - from.0, to.1 - from.1);
                     let figure = &mut borrowed.polygons[index];
                     figure.move_polygon(&vec);
                 }
-                super::Action::Rotate { from, .. } => {
-                    let angle = super::angle(&borrowed.action);
+                super::Action::Rotate { from, info, to } => {
+                    info.clone().set_text("Drawing");
+                    let reference = (from.0, from.1).into();
+                    let angle = super::angle(*from, *to);
                     let figure = &mut borrowed.polygons[index];
-                    figure.rotate(from.into(), angle.unwrap());
+                    figure.rotate(reference, angle);
                 }
-                super::Action::Scale { from, to } => {
-                    let scale = scale(from, to);
+                super::Action::Scale { from, to, info } => {
+                    info.clone().set_text("Drawing");
+                    let reference = (from.0, from.1).into();
+                    let scale = scale(*from, *to);
                     let figure = &mut borrowed.polygons[index];
-                    figure.scale(from.into(), scale);
+                    figure.scale(reference, scale);
                 }
                 _ => (),
             }
@@ -121,10 +125,19 @@ fn build_drawing_area_motion(
         let borrowed = &mut context.borrow_mut();
 
         match &mut borrowed.action {
-            super::Action::Move { to, .. }
-            | super::Action::Rotate { to, .. }
-            | super::Action::Scale { to, .. } => {
+            super::Action::Move { from, to, info, .. } => {
                 *to = (x as i16, y as i16);
+                info.set_text(format!("{:?} -> {:?}", from, to).as_str());
+            }
+            super::Action::Rotate { from, to, info, .. } => {
+                *to = (x as i16, y as i16);
+                let angle = angle(*from, *to);
+                info.set_text(format!("angle = {:?}", angle).as_str());
+            }
+            super::Action::Scale { from, to, info, .. } => {
+                *to = (x as i16, y as i16);
+                let scale = scale(*from, *to);
+                info.set_text(format!("scale = {:?}", scale).as_str());
             }
             _ => (),
         }
