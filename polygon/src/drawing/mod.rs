@@ -25,6 +25,10 @@ fn distance(from: (i16, i16), to: (i16, i16)) -> f64 {
     (((from.0 - to.0) as f64).powi(2) + ((from.1 - to.1) as f64).powi(2)).sqrt()
 }
 
+pub fn scale(from: (i16, i16), to: (i16, i16)) -> f64 {
+    distance(from, to) / 100.
+}
+
 pub fn angle(action: &Action) -> Option<f64> {
     match action {
         Action::Rotate { from, to } => {
@@ -109,6 +113,19 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
                 let figure = &mut borrowed.polygons[index];
                 let (&x, &y) = figure.get_vertex(0).unwrap().get_coordinates();
                 borrowed.action = Action::Rotate {
+                    from: (x, y),
+                    to: (x, y),
+                };
+                area.queue_draw();
+            }
+            gtk::glib::Propagation::Stop
+        }
+        gtk::gdk::Key::s => {
+            let mut borrowed = context.borrow_mut();
+            if let Some(index) = borrowed.selected {
+                let figure = &mut borrowed.polygons[index];
+                let (&x, &y) = figure.get_vertex(0).unwrap().get_coordinates();
+                borrowed.action = Action::Scale {
                     from: (x, y),
                     to: (x, y),
                 };
