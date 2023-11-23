@@ -77,7 +77,7 @@ pub(crate) fn draw_context(context: &DrawingContext, cr: &gtk::cairo::Context) {
 
         cr.set_source_rgb(0., 255., 0.);
         match context.action {
-            super::Action::Move { from, to } => {
+            super::Action::Move { from, to } | super::Action::Scale { from, to } => {
                 cr.line_to(from.0 as f64, from.1 as f64);
                 cr.line_to(to.0 as f64, to.1 as f64);
                 cr.stroke().unwrap();

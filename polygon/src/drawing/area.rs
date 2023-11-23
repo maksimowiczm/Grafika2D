@@ -6,7 +6,7 @@ use gtk::{prelude::DrawingAreaExtManual, traits::WidgetExt};
 
 use crate::polygon::Polygon;
 
-use super::{drawing, DrawingContext};
+use super::{drawing, scale, DrawingContext};
 
 fn draw(
     _: &gtk::DrawingArea,
@@ -37,6 +37,11 @@ fn build_left_click(
                     let angle = super::angle(&borrowed.action);
                     let figure = &mut borrowed.polygons[index];
                     figure.rotate(from.into(), angle.unwrap());
+                }
+                super::Action::Scale { from, to } => {
+                    let scale = scale(from, to);
+                    let figure = &mut borrowed.polygons[index];
+                    figure.scale(from.into(), scale);
                 }
                 _ => (),
             }
@@ -115,18 +120,11 @@ fn build_drawing_area_motion(
     motion_gesture.connect_motion(move |_, x, y| {
         let borrowed = &mut context.borrow_mut();
 
-        match borrowed.action {
-            super::Action::Move { from, .. } => {
-                borrowed.action = super::Action::Move {
-                    from,
-                    to: (x as i16, y as i16),
-                }
-            }
-            super::Action::Rotate { from, .. } => {
-                borrowed.action = super::Action::Rotate {
-                    from,
-                    to: (x as i16, y as i16),
-                }
+        match &mut borrowed.action {
+            super::Action::Move { to, .. }
+            | super::Action::Rotate { to, .. }
+            | super::Action::Scale { to, .. } => {
+                *to = (x as i16, y as i16);
             }
             _ => (),
         }
