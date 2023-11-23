@@ -16,9 +16,21 @@ use self::area::build_area;
 
 pub enum Action {
     None,
-    Move { from: (i16, i16), to: (i16, i16) },
-    Rotate { from: (i16, i16), to: (i16, i16) },
-    Scale { from: (i16, i16), to: (i16, i16) },
+    Move {
+        from: (i16, i16),
+        to: (i16, i16),
+        info: gtk::Label,
+    },
+    Rotate {
+        from: (i16, i16),
+        to: (i16, i16),
+        info: gtk::Label,
+    },
+    Scale {
+        from: (i16, i16),
+        to: (i16, i16),
+        info: gtk::Label,
+    },
 }
 
 fn distance(from: (i16, i16), to: (i16, i16)) -> f64 {
@@ -29,26 +41,21 @@ pub fn scale(from: (i16, i16), to: (i16, i16)) -> f64 {
     distance(from, to) / 100.
 }
 
-pub fn angle(action: &Action) -> Option<f64> {
-    match action {
-        Action::Rotate { from, to } => {
-            let arccos = (distance(*from, (to.0, from.1)) / distance(*from, *to)).acos();
-            let x = to.0 - from.0;
-            let y = to.1 - from.1;
-            let angle = if x > 0 && y > 0 {
-                arccos
-            } else if x < 0 && y > 0 {
-                PI - arccos
-            } else if x < 0 && y < 0 {
-                PI + arccos
-            } else {
-                PI * 2. - arccos
-            };
+pub fn angle(from: (i16, i16), to: (i16, i16)) -> f64 {
+    let arccos = (distance(from, (to.0, from.1)) / distance(from, to)).acos();
+    let x = to.0 - from.0;
+    let y = to.1 - from.1;
+    let angle = if x > 0 && y > 0 {
+        arccos
+    } else if x < 0 && y > 0 {
+        PI - arccos
+    } else if x < 0 && y < 0 {
+        PI + arccos
+    } else {
+        PI * 2. - arccos
+    };
 
-            Some(angle)
-        }
-        _ => None,
-    }
+    angle
 }
 
 pub struct DrawingContext {
@@ -68,8 +75,10 @@ impl Default for DrawingContext {
 }
 
 pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> gtk::Box {
-    let container = gtk::Box::new(gtk::Orientation::Horizontal, 0);
+    let container = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let context = Rc::new(RefCell::new(DrawingContext::default()));
+    let info = gtk::Label::builder().label("Drawing").build();
+    container.append(&info);
     let area = build_area(Rc::clone(&context));
     container.append(&area);
 
@@ -77,6 +86,9 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
     key_controller.connect_key_pressed(move |_, key, _, _| match key {
         gtk::gdk::Key::space => {
             if let Some(polygon) = context.borrow().polygons.last() {
+                if let None = context.borrow().selected {
+                    info.set_text("Drawing");
+                }
                 if let Some(vertexes) = polygon.get_vertexes() {
                     if vertexes.is_empty() {
                         return gtk::glib::Propagation::Stop;
@@ -97,11 +109,13 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
         gtk::gdk::Key::m => {
             let mut borrowed = context.borrow_mut();
             if let Some(index) = borrowed.selected {
+                info.set_text("Moving");
                 let figure = &mut borrowed.polygons[index];
                 let (&x, &y) = figure.get_vertex(0).unwrap().get_coordinates();
                 borrowed.action = Action::Move {
                     from: (x, y),
                     to: (x, y),
+                    info: info.clone(),
                 };
                 area.queue_draw();
             }
@@ -110,11 +124,13 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
         gtk::gdk::Key::r => {
             let mut borrowed = context.borrow_mut();
             if let Some(index) = borrowed.selected {
+                info.set_text("Rotating");
                 let figure = &mut borrowed.polygons[index];
                 let (&x, &y) = figure.get_vertex(0).unwrap().get_coordinates();
                 borrowed.action = Action::Rotate {
                     from: (x, y),
                     to: (x, y),
+                    info: info.clone(),
                 };
                 area.queue_draw();
             }
@@ -123,11 +139,13 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
         gtk::gdk::Key::s => {
             let mut borrowed = context.borrow_mut();
             if let Some(index) = borrowed.selected {
+                info.set_text("Scaling");
                 let figure = &mut borrowed.polygons[index];
                 let (&x, &y) = figure.get_vertex(0).unwrap().get_coordinates();
                 borrowed.action = Action::Scale {
                     from: (x, y),
                     to: (x, y),
+                    info: info.clone(),
                 };
                 area.queue_draw();
             }
