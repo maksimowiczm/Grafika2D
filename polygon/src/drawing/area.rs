@@ -33,6 +33,11 @@ fn build_left_click(
                     let figure = &mut borrowed.polygons[index];
                     figure.move_polygon(&vec);
                 }
+                super::Action::Rotate { from, .. } => {
+                    let angle = super::angle(&borrowed.action);
+                    let figure = &mut borrowed.polygons[index];
+                    figure.rotate(from.into(), angle.unwrap());
+                }
                 _ => (),
             }
 
@@ -113,6 +118,12 @@ fn build_drawing_area_motion(
         match borrowed.action {
             super::Action::Move { from, .. } => {
                 borrowed.action = super::Action::Move {
+                    from,
+                    to: (x as i16, y as i16),
+                }
+            }
+            super::Action::Rotate { from, .. } => {
+                borrowed.action = super::Action::Rotate {
                     from,
                     to: (x as i16, y as i16),
                 }

@@ -2,6 +2,7 @@ mod area;
 mod drawing;
 
 use std::cell::RefCell;
+use std::f64::consts::PI;
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -16,8 +17,34 @@ use self::area::build_area;
 pub enum Action {
     None,
     Move { from: (i16, i16), to: (i16, i16) },
-    Rotate { from: (i16, i16) },
-    Scale { from: (i16, i16) },
+    Rotate { from: (i16, i16), to: (i16, i16) },
+    Scale { from: (i16, i16), to: (i16, i16) },
+}
+
+fn distance(from: (i16, i16), to: (i16, i16)) -> f64 {
+    (((from.0 - to.0) as f64).powi(2) + ((from.1 - to.1) as f64).powi(2)).sqrt()
+}
+
+pub fn angle(action: &Action) -> Option<f64> {
+    match action {
+        Action::Rotate { from, to } => {
+            let arccos = (distance(*from, (to.0, from.1)) / distance(*from, *to)).acos();
+            let x = to.0 - from.0;
+            let y = to.1 - from.1;
+            let angle = if x > 0 && y > 0 {
+                arccos
+            } else if x < 0 && y > 0 {
+                PI - arccos
+            } else if x < 0 && y < 0 {
+                PI + arccos
+            } else {
+                PI * 2. - arccos
+            };
+
+            Some(angle)
+        }
+        _ => None,
+    }
 }
 
 pub struct DrawingContext {
@@ -69,6 +96,19 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
                 let figure = &mut borrowed.polygons[index];
                 let (&x, &y) = figure.get_vertex(0).unwrap().get_coordinates();
                 borrowed.action = Action::Move {
+                    from: (x, y),
+                    to: (x, y),
+                };
+                area.queue_draw();
+            }
+            gtk::glib::Propagation::Stop
+        }
+        gtk::gdk::Key::r => {
+            let mut borrowed = context.borrow_mut();
+            if let Some(index) = borrowed.selected {
+                let figure = &mut borrowed.polygons[index];
+                let (&x, &y) = figure.get_vertex(0).unwrap().get_coordinates();
+                borrowed.action = Action::Rotate {
                     from: (x, y),
                     to: (x, y),
                 };
