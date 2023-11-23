@@ -4,6 +4,8 @@ use crate::polygon::vertex::Vertex;
 use crate::polygon::Polygon;
 use std::f64::consts::PI;
 
+use super::angle;
+
 fn draw_shapes<'a>(
     cr: &gtk::cairo::Context,
     iter: impl IntoIterator<Item = &'a Figure<i16>>,
@@ -73,11 +75,24 @@ pub(crate) fn draw_context(context: &DrawingContext, cr: &gtk::cairo::Context) {
             (255., 255., 255.),
         );
 
+        cr.set_source_rgb(0., 255., 0.);
         match context.action {
             super::Action::Move { from, to } => {
                 cr.line_to(from.0 as f64, from.1 as f64);
                 cr.line_to(to.0 as f64, to.1 as f64);
-                cr.set_source_rgb(0., 255., 0.);
+                cr.stroke().unwrap();
+            }
+            super::Action::Rotate { from, to } => {
+                cr.line_to(from.0 as f64, from.1 as f64);
+                cr.line_to(to.0 as f64, to.1 as f64);
+                cr.stroke().unwrap();
+
+                cr.line_to(from.0 as f64, from.1 as f64);
+                cr.line_to(10000., from.1 as f64);
+                cr.stroke().unwrap();
+
+                let angle = angle(&context.action).unwrap();
+                cr.arc(from.0 as f64, from.1 as f64, 15., 0., angle);
                 cr.stroke().unwrap();
             }
             _ => (),
