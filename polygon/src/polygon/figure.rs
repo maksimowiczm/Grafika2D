@@ -2,8 +2,9 @@ use crate::polygon::vertex::point::Point;
 use crate::polygon::vertex::Vertex;
 use crate::polygon::Polygon;
 use std::ops::AddAssign;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Figure<T> {
     points: Vec<Point<T>>,
 }

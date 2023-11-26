@@ -3,6 +3,7 @@ mod drawing;
 
 use std::cell::RefCell;
 use std::f64::consts::PI;
+use std::io::prelude::*;
 use std::rc::Rc;
 
 use gtk::prelude::*;
@@ -149,6 +150,56 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
                 };
                 area.queue_draw();
             }
+            gtk::glib::Propagation::Stop
+        }
+        gtk::gdk::Key::w => {
+            let dialog = gtk::FileChooserDialog::builder()
+                .action(gtk::FileChooserAction::Save)
+                .build();
+            dialog.add_button("Save", gtk::ResponseType::Ok);
+            dialog.add_button("Cancel", gtk::ResponseType::Cancel);
+            dialog.show();
+
+            let c_context = Rc::clone(&context);
+            dialog.connect_response(move |dialog, res| match res {
+                gtk::ResponseType::Ok => {
+                    dialog.close();
+                    let file = dialog.file().unwrap();
+                    let path = file.path().unwrap().to_str().unwrap().to_owned();
+                    let mut file = std::fs::File::create(path).unwrap();
+                    let json = serde_json::to_string(&c_context.borrow().polygons).unwrap();
+                    file.write_all(json.as_bytes()).unwrap();
+                }
+                _ => (),
+            });
+
+            gtk::glib::Propagation::Stop
+        }
+        gtk::gdk::Key::l => {
+            let dialog = gtk::FileChooserDialog::builder()
+                .action(gtk::FileChooserAction::Open)
+                .build();
+            dialog.add_button("Load", gtk::ResponseType::Ok);
+            dialog.add_button("Cancel", gtk::ResponseType::Cancel);
+            dialog.show();
+
+            let c_context = Rc::clone(&context);
+            let c_area = area.clone();
+            dialog.connect_response(move |dialog, res| match res {
+                gtk::ResponseType::Ok => {
+                    dialog.close();
+                    let file = dialog.file().unwrap();
+                    let path = file.path().unwrap().to_str().unwrap().to_owned();
+                    let mut file = std::fs::File::open(path).unwrap();
+                    let mut json = String::new();
+                    file.read_to_string(&mut json).unwrap();
+                    let polygons = serde_json::from_str::<Vec<Figure<i16>>>(json.as_str()).unwrap();
+                    c_context.borrow_mut().polygons = polygons;
+                    c_area.queue_draw();
+                }
+                _ => (),
+            });
+
             gtk::glib::Propagation::Stop
         }
         _ => gtk::glib::Propagation::Stop,
