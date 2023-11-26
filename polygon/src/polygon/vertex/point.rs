@@ -1,6 +1,7 @@
+use serde::{Deserialize, Serialize};
 use crate::polygon::vertex::Vertex;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Point<T> {
     x: T,
     y: T,
