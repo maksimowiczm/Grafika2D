@@ -60,8 +60,8 @@ fn draw_polygons<'a>(
 }
 
 pub(crate) fn draw_context(context: &DrawingContext, cr: &gtk::cairo::Context) {
-    if let Some(index) = context.selected {
-        let selected = [&context.polygons[index]];
+    if let Some((poly_index, _)) = context.selected {
+        let selected = [&context.polygons[poly_index]];
         draw_polygons(cr, selected, (0., 0., 255.));
 
         draw_polygons(
@@ -70,19 +70,19 @@ pub(crate) fn draw_context(context: &DrawingContext, cr: &gtk::cairo::Context) {
                 .polygons
                 .iter()
                 .enumerate()
-                .filter(|(i, _)| *i != index)
+                .filter(|(i, _)| *i != poly_index)
                 .map(|(_, p)| p),
             (255., 255., 255.),
         );
 
         cr.set_source_rgb(0., 255., 0.);
         match &context.action {
-            super::Action::Move { from, to, info } | super::Action::Scale { from, to, info } => {
+            super::Action::Move { from, to, .. } | super::Action::Scale { from, to, .. } => {
                 cr.line_to(from.0 as f64, from.1 as f64);
                 cr.line_to(to.0 as f64, to.1 as f64);
                 cr.stroke().unwrap();
             }
-            super::Action::Rotate { from, to, info } => {
+            super::Action::Rotate { from, to, .. } => {
                 cr.line_to(from.0 as f64, from.1 as f64);
                 cr.line_to(to.0 as f64, to.1 as f64);
                 cr.stroke().unwrap();
