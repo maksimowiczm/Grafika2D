@@ -61,7 +61,7 @@ pub fn angle(from: (i16, i16), to: (i16, i16)) -> f64 {
 
 pub struct DrawingContext {
     polygons: Vec<Figure<i16>>,
-    selected: Option<usize>,
+    selected: Option<(usize, usize)>,
     action: Action,
 }
 
@@ -109,10 +109,10 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
         }
         gtk::gdk::Key::m => {
             let mut borrowed = context.borrow_mut();
-            if let Some(index) = borrowed.selected {
+            if let Some((index, point_index)) = borrowed.selected {
                 info.set_text("Moving");
                 let figure = &mut borrowed.polygons[index];
-                let (&x, &y) = figure.get_vertex(0).unwrap().get_coordinates();
+                let (&x, &y) = figure.get_vertex(point_index).unwrap().get_coordinates();
                 borrowed.action = Action::Move {
                     from: (x, y),
                     to: (x, y),
@@ -124,10 +124,10 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
         }
         gtk::gdk::Key::r => {
             let mut borrowed = context.borrow_mut();
-            if let Some(index) = borrowed.selected {
+            if let Some((index, point_index)) = borrowed.selected {
                 info.set_text("Rotating");
                 let figure = &mut borrowed.polygons[index];
-                let (&x, &y) = figure.get_vertex(0).unwrap().get_coordinates();
+                let (&x, &y) = figure.get_vertex(point_index).unwrap().get_coordinates();
                 borrowed.action = Action::Rotate {
                     from: (x, y),
                     to: (x, y),
@@ -139,10 +139,10 @@ pub fn build_drawing_area_container(parent_window: &gtk::ApplicationWindow) -> g
         }
         gtk::gdk::Key::s => {
             let mut borrowed = context.borrow_mut();
-            if let Some(index) = borrowed.selected {
+            if let Some((index, point_index)) = borrowed.selected {
                 info.set_text("Scaling");
                 let figure = &mut borrowed.polygons[index];
-                let (&x, &y) = figure.get_vertex(0).unwrap().get_coordinates();
+                let (&x, &y) = figure.get_vertex(point_index).unwrap().get_coordinates();
                 borrowed.action = Action::Scale {
                     from: (x, y),
                     to: (x, y),

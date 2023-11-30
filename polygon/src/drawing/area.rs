@@ -26,25 +26,25 @@ fn build_left_click(
 
     gesture.connect_pressed(move |_, _, x, y| {
         let borrowed = &mut context.borrow_mut();
-        if let Some(index) = borrowed.selected {
+        if let Some((poly_index, _)) = borrowed.selected {
             match &mut borrowed.action {
-                super::Action::Move { from, to, info } => {
+                super::Action::Move { from, to, .. } => {
                     let vec = (to.0 - from.0, to.1 - from.1);
-                    let figure = &mut borrowed.polygons[index];
+                    let figure = &mut borrowed.polygons[poly_index];
                     figure.move_polygon(&vec);
                 }
                 super::Action::Rotate { from, info, to } => {
                     info.clone().set_text("Drawing");
                     let reference = (from.0, from.1).into();
                     let angle = super::angle(*from, *to);
-                    let figure = &mut borrowed.polygons[index];
+                    let figure = &mut borrowed.polygons[poly_index];
                     figure.rotate(reference, angle);
                 }
                 super::Action::Scale { from, to, info } => {
                     info.clone().set_text("Drawing");
                     let reference = (from.0, from.1).into();
                     let scale = scale(*from, *to);
-                    let figure = &mut borrowed.polygons[index];
+                    let figure = &mut borrowed.polygons[poly_index];
                     figure.scale(reference, scale);
                 }
                 _ => (),
@@ -92,9 +92,9 @@ fn build_right_click(
                     },
                 )
                 .flatten()
-                .fold::<Option<(usize, f64)>, _>(None, |acc, (i, distance)| match acc {
+                .fold::<Option<(usize, (f64, usize))>, _>(None, |acc, (i, distance)| match acc {
                     Some((_, current)) => {
-                        if distance < current {
+                        if distance.0 < current.0 {
                             Some((i, distance))
                         } else {
                             acc
@@ -104,8 +104,8 @@ fn build_right_click(
                 });
 
             if let Some((index, distance)) = closest {
-                if distance < 10. {
-                    borrowed.selected = Some(index);
+                if distance.0 < 10. {
+                    borrowed.selected = Some((index, distance.1));
                 }
             }
         };

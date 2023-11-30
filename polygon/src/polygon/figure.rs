@@ -1,8 +1,8 @@
 use crate::polygon::vertex::point::Point;
 use crate::polygon::vertex::Vertex;
 use crate::polygon::Polygon;
-use std::ops::AddAssign;
 use serde::{Deserialize, Serialize};
+use std::ops::AddAssign;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Figure<T> {
@@ -64,16 +64,24 @@ where
 }
 
 impl Figure<i16> {
-    pub(crate) fn distance(&self, point: Point<i16>) -> Option<f64> {
+    pub(crate) fn distance(&self, point: Point<i16>) -> Option<(f64, usize)> {
         if self.points.is_empty() {
             None
         } else {
-            Some(
-                self.points
-                    .iter()
-                    .map(|p| p.distance(&point))
-                    .fold(f64::MAX, |acc, v| if v < acc { v } else { acc }),
-            )
+            match self
+                .points
+                .iter()
+                .map(|p| p.distance(&point))
+                .enumerate()
+                .fold(
+                    (f64::MAX, None),
+                    |acc, (i, v)| if v < acc.0 { (v, Some(i)) } else { acc },
+                ) {
+                (distance, index) => match index {
+                    Some(index) => Some((distance, index)),
+                    _ => None,
+                },
+            }
         }
     }
 
@@ -129,20 +137,6 @@ impl Figure<i16> {
                 (point, (x, y))
             })
             .collect();
-
-        // make sure it fits inside area
-        if new_points.iter().fold(
-            false,
-            |acc, (_, (x, y))| {
-                if *x < 0. || *y < 0. {
-                    true
-                } else {
-                    acc
-                }
-            },
-        ) {
-            return;
-        }
 
         new_points
             .iter_mut()
