@@ -35,4 +35,6 @@ pub unsafe trait UnsafeHitOrMissMask {
     unsafe fn opening(&mut self, mask: &Vec<Vec<u8>>);
 
     unsafe fn thickening(&mut self, mask: &Vec<Vec<u8>>);
+
+    unsafe fn thinning(&mut self, mask: &Vec<Vec<u8>>);
 }

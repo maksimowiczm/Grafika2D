@@ -23,6 +23,7 @@ pub fn build_buttons_container(picture: gtk::Picture, context: Rc<RefCell<Contex
             Mat::thickening,
             vec![vec![1, 1, 0], vec![1, 0, 0], vec![1, 0, 0]],
         ),
+        ("pocienianie", Mat::thinning, vec![vec![1, 1, 1]; 3]),
     ];
 
     operations
