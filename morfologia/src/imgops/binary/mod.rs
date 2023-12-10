@@ -6,7 +6,7 @@ pub trait ImageBinary {
     where
         Self: Sized;
 
-    fn to_rgb(img: &Self) -> Result<Self, cv::Error>
+    fn to_rgb(&self) -> Result<Self, cv::Error>
     where
         Self: Sized;
 }
@@ -22,9 +22,9 @@ impl ImageBinary for Mat {
         Ok(binarized)
     }
 
-    fn to_rgb(img: &Self) -> Result<Self, cv::Error> {
+    fn to_rgb(&self) -> Result<Self, cv::Error> {
         let mut out = Mat::default();
-        cv::imgproc::cvt_color(&img, &mut out, cv::imgproc::COLOR_GRAY2RGB, 0)?;
+        cv::imgproc::cvt_color(&self, &mut out, cv::imgproc::COLOR_GRAY2RGB, 0)?;
         Ok(out)
     }
 }
