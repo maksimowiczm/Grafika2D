@@ -28,20 +28,18 @@ unsafe impl UnsafeHitOrMissMask for Mat {
         }
     }
 
-    unsafe fn apply_mask(&mut self, mask: &Vec<Vec<u8>>, value: u8) {
+    unsafe fn apply_mask(
+        &mut self,
+        mask: &Vec<Vec<u8>>,
+        value: u8,
+        matcher: fn(_: HitOrMiss, _: (i32, i32)) -> Option<(i32, i32)>,
+    ) -> usize {
         let size = self.size().unwrap();
 
         let hits = (0..size.height)
             .flat_map(|y| {
-                let image = &self;
-                let mask = &mask;
                 (0..size.width)
-                    .flat_map(
-                        move |x| match image.hit_or_miss((x as usize, y as usize), mask) {
-                            HitOrMiss::HIT => Some((x, y)),
-                            _ => None,
-                        },
-                    )
+                    .flat_map(|x| matcher(self.hit_or_miss((x as usize, y as usize), mask), (x, y)))
                     .collect::<Vec<_>>()
             })
             .collect::<Vec<_>>();
@@ -49,14 +47,22 @@ unsafe impl UnsafeHitOrMissMask for Mat {
         hits.iter().for_each(|&(x, y)| {
             *self.at_2d_mut(y, x).unwrap() = value;
         });
+
+        hits.len()
     }
 
     unsafe fn dilatation(&mut self, mask: &Vec<Vec<u8>>) {
-        self.apply_mask(mask, 0)
+        self.apply_mask(mask, 0, |homo, pixel| match homo {
+            HitOrMiss::HIT => Some(pixel),
+            _ => None,
+        });
     }
 
     unsafe fn erosion(&mut self, mask: &Vec<Vec<u8>>) {
-        self.apply_mask(mask, 255)
+        self.apply_mask(mask, 255, |homo, pixel| match homo {
+            HitOrMiss::HIT => Some(pixel),
+            _ => None,
+        });
     }
 
     unsafe fn closing(&mut self, mask: &Vec<Vec<u8>>) {
@@ -67,5 +73,24 @@ unsafe impl UnsafeHitOrMissMask for Mat {
     unsafe fn opening(&mut self, mask: &Vec<Vec<u8>>) {
         self.erosion(mask);
         self.dilatation(mask);
+    }
+
+    unsafe fn thickening(&mut self, mask: &Vec<Vec<u8>>) {
+        let mut prev = self.apply_mask(mask, 0, |homo, pixel| match homo {
+            HitOrMiss::FIT => Some(pixel),
+            _ => None,
+        });
+        let mut current = self.apply_mask(mask, 0, |homo, pixel| match homo {
+            HitOrMiss::FIT => Some(pixel),
+            _ => None,
+        });
+
+        while prev != current {
+            prev = current;
+            current = self.apply_mask(mask, 0, |homo, pixel| match homo {
+                HitOrMiss::FIT => Some(pixel),
+                _ => None,
+            });
+        }
     }
 }

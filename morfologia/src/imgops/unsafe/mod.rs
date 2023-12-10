@@ -19,7 +19,12 @@ extern "C" {
 pub unsafe trait UnsafeHitOrMissMask {
     unsafe fn hit_or_miss(&self, pixel: (usize, usize), mask: &Vec<Vec<u8>>) -> HitOrMiss;
 
-    unsafe fn apply_mask(&mut self, mask: &Vec<Vec<u8>>, value: u8);
+    unsafe fn apply_mask(
+        &mut self,
+        mask: &Vec<Vec<u8>>,
+        value: u8,
+        matcher: fn(_: HitOrMiss, _: (i32, i32)) -> Option<(i32, i32)>,
+    ) -> usize;
 
     unsafe fn dilatation(&mut self, mask: &Vec<Vec<u8>>);
 
@@ -28,4 +33,6 @@ pub unsafe trait UnsafeHitOrMissMask {
     unsafe fn closing(&mut self, mask: &Vec<Vec<u8>>);
 
     unsafe fn opening(&mut self, mask: &Vec<Vec<u8>>);
+
+    unsafe fn thickening(&mut self, mask: &Vec<Vec<u8>>);
 }
