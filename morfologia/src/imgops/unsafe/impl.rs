@@ -11,13 +11,13 @@ unsafe impl UnsafeHitOrMissMask for Mat {
         let flat_mask = mask.iter().flatten().copied().collect::<Vec<_>>();
         let res = imgops_hit_or_miss(
             data,
-            size.width as u64,
-            size.height as u64,
-            x as u64,
-            y as u64,
+            size.width as i64,
+            size.height as i64,
+            x as i64,
+            y as i64,
             flat_mask.as_slice().as_ptr(),
-            mask[0].len() as u64,
-            mask.len() as u64,
+            mask[0].len() as i64,
+            mask.len() as i64,
         );
         match res {
             -1 => HitOrMiss::ERROR,
@@ -52,11 +52,11 @@ unsafe impl UnsafeHitOrMissMask for Mat {
     }
 
     unsafe fn dilatation(&mut self, mask: &Vec<Vec<u8>>) {
-        self.apply_mask(mask, 255)
+        self.apply_mask(mask, 0)
     }
 
     unsafe fn erosion(&mut self, mask: &Vec<Vec<u8>>) {
-        self.apply_mask(mask, 0)
+        self.apply_mask(mask, 255)
     }
 
     unsafe fn closing(&mut self, mask: &Vec<Vec<u8>>) {
