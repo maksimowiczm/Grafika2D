@@ -6,13 +6,13 @@ use crate::imgops::HitOrMiss;
 extern "C" {
     fn imgops_hit_or_miss(
         image: *const u8,
-        image_width: u64,
-        image_height: u64,
-        x: u64,
-        y: u64,
+        image_width: i64,
+        image_height: i64,
+        x: i64,
+        y: i64,
         mask: *const u8,
-        mask_width: u64,
-        mask_height: u64,
+        mask_width: i64,
+        mask_height: i64,
     ) -> i8;
 }
 
