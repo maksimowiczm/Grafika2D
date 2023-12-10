@@ -18,6 +18,11 @@ pub fn build_buttons_container(picture: gtk::Picture, context: Rc<RefCell<Contex
         ("erozja", Mat::erosion, vec![vec![1, 1, 1]; 3]),
         ("zamkniecie", Mat::closing, vec![vec![1, 1, 1]; 3]),
         ("otwarcie", Mat::opening, vec![vec![1, 1, 1]; 3]),
+        (
+            "pogrubienie",
+            Mat::thickening,
+            vec![vec![1, 1, 0], vec![1, 0, 0], vec![1, 0, 0]],
+        ),
     ];
 
     operations
