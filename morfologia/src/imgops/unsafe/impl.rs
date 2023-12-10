@@ -93,4 +93,23 @@ unsafe impl UnsafeHitOrMissMask for Mat {
             });
         }
     }
+
+    unsafe fn thinning(&mut self, mask: &Vec<Vec<u8>>) {
+        let mut prev = self.apply_mask(mask, 255, |homo, pixel| match homo {
+            HitOrMiss::FIT => Some(pixel),
+            _ => None,
+        });
+        let mut current = self.apply_mask(mask, 255, |homo, pixel| match homo {
+            HitOrMiss::FIT => Some(pixel),
+            _ => None,
+        });
+
+        while prev != current {
+            prev = current;
+            current = self.apply_mask(mask, 255, |homo, pixel| match homo {
+                HitOrMiss::FIT => Some(pixel),
+                _ => None,
+            });
+        }
+    }
 }
