@@ -1,7 +1,9 @@
 #include <windows.h>
+#include <stdio.h>
 #include <tchar.h>
-#include "draw.hpp"
-#include "context.hpp"
+#include "inttypes.h"
+#include "draw.h"
+#include "context.h"
 
 Context *context;
 
@@ -15,7 +17,7 @@ handle_button_load_click(HWND hwnd) {
   ofn.hwndOwner = hwnd;
   ofn.lpstrFile = szFile;
   ofn.nMaxFile = sizeof(szFile);
-  ofn.lpstrFilter = _T("JPEG\0*.jpg\0PPM\0*.ppm\0All\0*.*\0");
+  ofn.lpstrFilter = _T("PPM\0*.ppm\0All\0*.*\0");
   ofn.nFilterIndex = 1;
   ofn.lpstrFileTitle = NULL;
   ofn.nMaxFileTitle = 0;
@@ -24,15 +26,7 @@ handle_button_load_click(HWND hwnd) {
 
   if (GetOpenFileName(&ofn) == TRUE) {
     const char *file_path = ofn.lpstrFile;
-    if (strlen(file_path) < 3) {
-      return false;
-    }
-
-    if (strcmp(&file_path[strlen(file_path) - 3], "ppm") == 0) {
-      return context_load_image(context, file_path, PPM);
-    }
-
-    return context_load_image(context, file_path, OPEN_CV);
+    return context_load_image(context, file_path, PPM);
   }
 
   if (strlen(ofn.lpstrFile) > 0) {
@@ -44,10 +38,8 @@ handle_button_load_click(HWND hwnd) {
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
   switch (msg) {
-    case WM_PAINT: {
-      draw_pix_map_image(hwnd, &(context->image));
+    case WM_PAINT:draw_pix_map_image(hwnd, context->image);
       break;
-    }
     case WM_DESTROY:PostQuitMessage(0);
       return 0;
     case WM_COMMAND: {
@@ -71,12 +63,8 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, PTSTR cmdline, int nCmdShow) {
-  Context main_context{};
+  Context main_context = {0};
   context = &main_context;
-  context->image.pixels = new uint8_t *;
-  *context->image.pixels = nullptr;
-  context->image.to_free = new void *;
-  *context->image.to_free = nullptr;
 
   WNDCLASSW wc = {0};
   wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -110,8 +98,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, PTSTR cmdline, int 
     DispatchMessage(&msg);
   }
 
-  free(*context->image.to_free);
-  delete context->image.pixels;
-  delete context->image.to_free;
+  free(main_context.image);
   return (int) msg.wParam;
 }

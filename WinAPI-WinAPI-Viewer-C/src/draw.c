@@ -1,6 +1,7 @@
-#include "draw.hpp"
+#include <stdio.h>
+#include "draw.h"
 
-static void set_up_bit_map(BITMAPINFOHEADER *bmih, BITMAPINFO *dbmi, ImageHeader *header) {
+static void set_up_bit_map(BITMAPINFOHEADER *bmih, BITMAPINFO *dbmi, PixMapHeader *header) {
   // set up bit map
   bmih->biSize = sizeof(*bmih);
   bmih->biWidth = header->width;
@@ -21,8 +22,8 @@ static void set_up_bit_map(BITMAPINFOHEADER *bmih, BITMAPINFO *dbmi, ImageHeader
   dbmi->bmiColors->rgbReserved = 0;
 }
 
-void draw_pix_map_image(HWND hwnd, Image *image) {
-  if (*image->pixels == NULL) {
+void draw_pix_map_image(HWND hwnd, PixMapImage *image) {
+  if (image == NULL) {
     return;
   }
 
@@ -36,16 +37,17 @@ void draw_pix_map_image(HWND hwnd, Image *image) {
   // set up bit map
   BITMAPINFOHEADER bmih = {0};
   BITMAPINFO dbmi = {0};
-  ImageHeader *header = (ImageHeader *) image;
+  PixMapHeader *header = (PixMapHeader *) image;
   set_up_bit_map(&bmih, &dbmi, header);
   void *bits = (void *) &(image->pixels[0]);
 
   HDC hdc = BeginPaint(hwnd, &ps);
   HBITMAP hBitmap = CreateDIBSection(hdc, &dbmi, DIB_RGB_COLORS, &bits, NULL, 0);
   if (hBitmap == NULL) {
+    printf("[-] Failed to create bitmap. Error code: %lu", GetLastError());
     return;
   }
-  memcpy(bits, *image->pixels, header->width * header->height * 3);
+  memcpy(bits, image->pixels, header->width * header->height * 3);
 
   // calculate destination size
   int windowWidth = r.right - r.left;
