@@ -8,7 +8,4 @@ add_executable(ImageReader
         src/win-main.cpp
 )
 
-add_subdirectory(netpbm)
-add_subdirectory(image_viewer_openCV)
-
 target_link_libraries(${PROJECT_NAME} netpbm image_viewer)
