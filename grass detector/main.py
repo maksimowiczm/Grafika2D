@@ -79,7 +79,7 @@ class MyApplication(Gtk.Application):
         self.update_pixbuf()
 
     def erode(self, _):
-        eroded = cv2.dilate(self.image, np.ones((5, 5), np.uint8), iterations=1)
+        eroded = cv2.dilate(self.image, np.ones((3, 3), np.uint8), iterations=1)
         # eroded = cv2.erode(self.image, np.ones((3, 3), np.uint8), iterations=1)
         self.image = eroded
         self.update_pixbuf()
@@ -95,7 +95,7 @@ class MyApplication(Gtk.Application):
         return button
 
     def detect_green(self, _):
-        self.image = ColorDetector.detect_green(self.image.copy())
+        self.image = ColorDetector.detect_green(self.start_image.copy())
         self.update_pixbuf()
 
     def build_detect_green(self):
