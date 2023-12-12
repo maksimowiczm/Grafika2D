@@ -8,7 +8,7 @@ import gi
 from color_detector import ColorDetector
 
 gi.require_version("Gtk", "4.0")
-from gi.repository import Gtk,GdkPixbuf
+from gi.repository import Gtk, GdkPixbuf
 
 
 class Scale(enum.Enum):
@@ -23,7 +23,8 @@ class MyApplication(Gtk.Application):
             [0, 0, 0],
             [255, 255, 255]
         ]
-        self.image = None
+        self.image: cv2.Mat = None
+        self.start_image: cv2.Mat = None
         self.label = Gtk.Label.new()
         self.picture = Gtk.Picture.new()
 
@@ -51,7 +52,7 @@ class MyApplication(Gtk.Application):
         percent = np.sum(detected == 255) / detected.size
         self.label.set_label(f"{100 - percent * 100:.2f}%")
 
-    def update_scale(self, range, scroll, value, scale: Scale, color: int):
+    def update_scale(self, _, __, value, scale: Scale, color: int):
         scale = 0 if scale == Scale.Lower else 1
         self.bounds[scale][color] = int(value)
         self.update_pixbuf()
@@ -69,6 +70,47 @@ class MyApplication(Gtk.Application):
         container.append(self.build_scale("blue", scale, 2, default_value))
         return container
 
+    def dilate(self, _):
+        dilated = cv2.dilate(self.image, np.ones((5, 5), np.uint8), iterations=1)
+        self.image = dilated
+        self.update_pixbuf()
+
+    def erode(self, _):
+        eroded = cv2.erode(self.image, np.ones((3, 3), np.uint8), iterations=1)
+        self.image = eroded
+        self.update_pixbuf()
+
+    def build_dilate_button(self):
+        button = Gtk.Button.new_with_label("Dilate")
+        button.connect("clicked", self.dilate)
+        return button
+
+    def build_erode_button(self):
+        button = Gtk.Button.new_with_label("Erode")
+        button.connect("clicked", self.erode)
+        return button
+
+    def detect_green(self, _):
+        self.bounds[0] = [30, 30, 30]
+        self.bounds[1] = [100, 255, 255]
+        self.update_pixbuf()
+
+    def build_detect_green(self):
+        button = Gtk.Button.new_with_label("Detect green")
+        button.connect("clicked", self.detect_green)
+        return button
+
+    def reset_image(self, _):
+        self.bounds[0] = [0, 0, 0]
+        self.bounds[1] = [255, 255, 255]
+        self.image = self.start_image.copy()
+        self.update_pixbuf()
+
+    def build_reset_image(self):
+        button = Gtk.Button.new_with_label("Reset image")
+        button.connect("clicked", self.reset_image)
+        return button
+
     def do_activate(self):
         main_container = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
         main_container.append(Gtk.Label.new("Lower bound"))
@@ -77,11 +119,16 @@ class MyApplication(Gtk.Application):
         main_container.append(self.build_scales(Scale.Upper, 255))
         main_container.append(self.picture)
         main_container.append(self.label)
+        main_container.append(self.build_detect_green())
+        main_container.append(self.build_dilate_button())
+        main_container.append(self.build_erode_button())
+        main_container.append(self.build_reset_image())
         self.label.set_label(f"{100:.2f}%")
 
         path = "/home/user/Downloads/kampus-PB-analiza-terenow-zielonych.png"
         image = cv2.imread(path)
         self.image = cv2.resize(image, None, fx=0.5, fy=0.5)
+        self.start_image = image.copy()
         self.load_image(path)
 
         window = Gtk.ApplicationWindow(application=self, title="Hello World")
