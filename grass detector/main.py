@@ -39,7 +39,9 @@ class MyApplication(Gtk.Application):
     def load_image(self, path):
         image = cv2.imread(path)
         resized = cv2.resize(image, None, fx=0.5, fy=0.5)
-        pixbuf = MyApplication.image2pixbuf(resized)
+        self.image = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
+        self.start_image = self.image.copy()
+        pixbuf = MyApplication.image2pixbuf(self.image)
         self.picture.set_pixbuf(pixbuf)
 
     def update_pixbuf(self):
@@ -128,9 +130,6 @@ class MyApplication(Gtk.Application):
         self.label.set_label(f"{100:.2f}%")
 
         path = "/home/user/Downloads/kampus-PB-analiza-terenow-zielonych.png"
-        image = cv2.imread(path)
-        self.image = cv2.resize(image, None, fx=0.5, fy=0.5)
-        self.start_image = image.copy()
         self.load_image(path)
 
         window = Gtk.ApplicationWindow(application=self, title="Hello World")
