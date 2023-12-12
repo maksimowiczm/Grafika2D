@@ -71,12 +71,14 @@ class MyApplication(Gtk.Application):
         return container
 
     def dilate(self, _):
-        dilated = cv2.dilate(self.image, np.ones((5, 5), np.uint8), iterations=1)
+        dilated = cv2.erode(self.image, np.ones((3, 3), np.uint8), iterations=1)
+        # dilated = cv2.dilate(self.image, np.ones((5, 5), np.uint8), iterations=1)
         self.image = dilated
         self.update_pixbuf()
 
     def erode(self, _):
-        eroded = cv2.erode(self.image, np.ones((3, 3), np.uint8), iterations=1)
+        eroded = cv2.dilate(self.image, np.ones((5, 5), np.uint8), iterations=1)
+        # eroded = cv2.erode(self.image, np.ones((3, 3), np.uint8), iterations=1)
         self.image = eroded
         self.update_pixbuf()
 
