@@ -14,7 +14,7 @@ class ColorDetector:
     @staticmethod
     def detect_color(image, lower_range, upper_range):
         # Convert the image to HSV color space
-        img_hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        img_hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
 
         # Threshold the HSV image to get only green color
         mask = cv2.inRange(img_hsv, lower_range, upper_range)
