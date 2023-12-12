@@ -1,18 +1,94 @@
+import enum
+
 import cv2
 import numpy as np
+import sys
+import gi
 
 from color_detector import ColorDetector
 
-path = "/home/user/Downloads/kampus-PB-analiza-terenow-zielonych.png"
+gi.require_version("Gtk", "4.0")
+from gi.repository import Gtk,GdkPixbuf
 
-image = cv2.imread(path)
-resized = cv2.resize(image, None, fx=0.5, fy=0.5)
-cv2.imshow("image", resized)
 
-green = ColorDetector.detect_green(resized)
-cv2.imshow("greened", green)
+class Scale(enum.Enum):
+    Lower = 0,
+    Upper = 1
 
-percent = np.sum(green == 255) / green.size
-print(percent)
 
-cv2.waitKey()
+class MyApplication(Gtk.Application):
+    def __init__(self):
+        super().__init__()
+        self.bounds = [
+            [0, 0, 0],
+            [255, 255, 255]
+        ]
+        self.image = None
+        self.label = Gtk.Label.new()
+        self.picture = Gtk.Picture.new()
+
+    @staticmethod
+    def image2pixbuf(image):
+        height, width = image.shape[:2]
+        img = np.reshape(image, (1, width * height * 3))[0]
+        pixl = GdkPixbuf.Pixbuf.new_from_data(img.data, GdkPixbuf.Colorspace.RGB, False,
+                                              8, width, height, width * 3, None)
+        return pixl
+
+    def load_image(self, path):
+        image = cv2.imread(path)
+        resized = cv2.resize(image, None, fx=0.5, fy=0.5)
+        pixbuf = MyApplication.image2pixbuf(resized)
+        self.picture.set_pixbuf(pixbuf)
+
+    def update_pixbuf(self):
+        lower = self.bounds[0]
+        upper = self.bounds[1]
+
+        detected = ColorDetector.detect_color(self.image, np.array(lower), np.array(upper))
+        pixbuf = MyApplication.image2pixbuf(detected)
+        self.picture.set_pixbuf(pixbuf)
+        percent = np.sum(detected == 255) / detected.size
+        self.label.set_label(f"{100 - percent * 100:.2f}%")
+
+    def update_scale(self, range, scroll, value, scale: Scale, color: int):
+        scale = 0 if scale == Scale.Lower else 1
+        self.bounds[scale][color] = int(value)
+        self.update_pixbuf()
+
+    def build_scale(self, label: str, bound: Scale, color: int, default_value):
+        adjustment = Gtk.Adjustment().new(default_value, 0, 255, 1, 0, 0)
+        scale = Gtk.Scale.new(Gtk.Orientation.HORIZONTAL, adjustment)
+        scale.connect("change-value", self.update_scale, bound, color)
+        return scale
+
+    def build_scales(self, scale: Scale, default_value):
+        container = Gtk.Box.new(Gtk.Orientation.VERTICAL, 5)
+        container.append(self.build_scale("red", scale, 0, default_value))
+        container.append(self.build_scale("green", scale, 1, default_value))
+        container.append(self.build_scale("blue", scale, 2, default_value))
+        return container
+
+    def do_activate(self):
+        main_container = Gtk.Box.new(Gtk.Orientation.VERTICAL, 0)
+        main_container.append(Gtk.Label.new("Lower bound"))
+        main_container.append(self.build_scales(Scale.Lower, 0))
+        main_container.append(Gtk.Label.new("Upper bound"))
+        main_container.append(self.build_scales(Scale.Upper, 255))
+        main_container.append(self.picture)
+        main_container.append(self.label)
+        self.label.set_label(f"{100:.2f}%")
+
+        path = "/home/user/Downloads/kampus-PB-analiza-terenow-zielonych.png"
+        image = cv2.imread(path)
+        self.image = cv2.resize(image, None, fx=0.5, fy=0.5)
+        self.load_image(path)
+
+        window = Gtk.ApplicationWindow(application=self, title="Hello World")
+        window.set_child(main_container)
+        window.present()
+
+
+app = MyApplication()
+exit_status = app.run(sys.argv)
+sys.exit(exit_status)
