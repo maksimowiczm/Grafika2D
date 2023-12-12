@@ -95,8 +95,7 @@ class MyApplication(Gtk.Application):
         return button
 
     def detect_green(self, _):
-        self.bounds[0] = [30, 30, 30]
-        self.bounds[1] = [100, 255, 255]
+        self.image = ColorDetector.detect_green(self.image.copy())
         self.update_pixbuf()
 
     def build_detect_green(self):
